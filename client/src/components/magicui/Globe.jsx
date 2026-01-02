@@ -16,13 +16,13 @@ export const Globe = ({ className }) => {
             height: 600 * 2,
             phi: 0,
             theta: 0,
-            dark: 1, // 1 for dark mode, 0 for light
-            diffuse: 1.2,
+            dark: 1,
+            diffuse: 2.5,
             mapSamples: 16000,
-            mapBrightness: 6,
-            baseColor: [0.3, 0.3, 0.3],
-            markerColor: [1, 0.8, 0], // Yellow/Gold to match theme
-            glowColor: [1, 1, 1],
+            mapBrightness: 12,
+            baseColor: [0.8, 0.6, 0.1],
+            markerColor: [1, 0.9, 0.2],
+            glowColor: [1, 0.9, 0.3],
             opacity: 1,
             markers: [
                 // longitude latitude
@@ -45,24 +45,21 @@ export const Globe = ({ className }) => {
     return (
         <div
             className={cn(
-                "absolute inset-0 mx-auto aspect-square h-full w-full",
+                "absolute left-1/2 -translate-x-1/2 aspect-square w-full max-w-[600px]",
                 className,
             )}
         >
             <canvas
-                ref={canvasRef}
-                style={{
-                    width: "100%",
-                    height: "100%",
-                    opacity: 0,
-                    transition: "opacity 1s ease",
-                }}
-                onContextMenu={(e) => e.preventDefault()}
-                onLoad={(e) => (e.target.style.opacity = 1)}
                 ref={(el) => {
                     canvasRef.current = el;
                     if (el) el.style.opacity = 1;
                 }}
+                style={{
+                    width: "100%",
+                    height: "100%",
+                    transition: "opacity 1s ease",
+                }}
+                onContextMenu={(e) => e.preventDefault()}
             />
         </div>
     );

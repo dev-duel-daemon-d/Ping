@@ -91,7 +91,7 @@ const PingLanding = () => {
       description: "Stay updated with the latest esports news, team announcements, and opportunities.",
       href: "#",
       cta: "Stay Updated",
-      background: <Globe className="top-12 opacity-100" />,
+      background: <Globe className="-top-20" />,
       className: "col-span-3 lg:col-span-2 relative overflow-hidden",
       color: "from-yellow-300 to-yellow-500",
     },
