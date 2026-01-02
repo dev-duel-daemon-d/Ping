@@ -4,6 +4,7 @@ import { SocketProvider } from './context/SocketContext'
 
 // Pages
 import Home from './pages/Home'
+import PingLanding from './pages/PingLanding'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
@@ -15,7 +16,7 @@ function App() {
             <SocketProvider>
                 <div className="min-h-screen bg-slate-900">
                     <Routes>
-                        <Route path="/" element={<Home />} />
+                        <Route path="/" element={<PingLanding />} />
                         <Route path="/login" element={<Login />} />
                         <Route path="/register" element={<Register />} />
                         <Route path="/dashboard" element={<Dashboard />} />
