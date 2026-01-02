@@ -16,12 +16,16 @@
     "@mui/material": "^5.15.6",
     "animejs": "^3.2.2",
     "axios": "^1.6.7",
+    "clsx": "^2.1.1",
+    "cobe": "^0.6.5",
     "framer-motion": "^12.23.26",
     "lucide-react": "^0.562.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.22.0",
+    "react-spring": "^10.0.3",
     "socket.io-client": "^4.7.4",
+    "tailwind-merge": "^3.4.0",
     "three": "^0.161.0"
   },
   "devDependencies": {
