@@ -39,6 +39,7 @@ router.post('/register', async (req, res) => {
                 email: user.email,
                 avatar: user.avatar,
                 status: user.status,
+                lastSeen: user.lastSeen,
             },
         })
     } catch (error) {
@@ -82,6 +83,7 @@ router.post('/login', async (req, res) => {
                 email: user.email,
                 avatar: user.avatar,
                 status: user.status,
+                lastSeen: user.lastSeen,
             },
         })
     } catch (error) {

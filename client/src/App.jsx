@@ -5,8 +5,7 @@ import { SocketProvider } from './context/SocketContext'
 // Pages
 import Home from './pages/Home'
 import PingLanding from './pages/PingLanding'
-import Login from './pages/Login'
-import Register from './pages/Register'
+import AuthPage from './pages/AuthPage'
 import Dashboard from './pages/Dashboard'
 import NotFound from './pages/NotFound'
 
@@ -17,8 +16,8 @@ function App() {
                 <div className="min-h-screen bg-slate-900">
                     <Routes>
                         <Route path="/" element={<PingLanding />} />
-                        <Route path="/login" element={<Login />} />
-                        <Route path="/register" element={<Register />} />
+                        <Route path="/login" element={<AuthPage />} />
+                        <Route path="/register" element={<AuthPage />} />
                         <Route path="/dashboard" element={<Dashboard />} />
                         <Route path="*" element={<NotFound />} />
                     </Routes>

@@ -136,17 +136,17 @@ const PingLanding = () => {
             </span>
           </div>
 
-          <div className="hidden md:flex space-x-8">
-            {["Features", "Community", "Tournaments", "About"].map((item) => (
-              <button
-                key={item}
-                className="relative text-gray-300 hover:text-yellow-400 transition-colors group"
-              >
-                {item}
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-yellow-500 to-amber-500 group-hover:w-full transition-all duration-300" />
-              </button>
-            ))}
-          </div>
+          {/* <div className="hidden md:flex space-x-8"> */}
+          {/*   {["Features", "Community", "Tournaments", "About"].map((item) => ( */}
+          {/*     <button */}
+          {/*       key={item} */}
+          {/*       className="relative text-gray-300 hover:text-yellow-400 transition-colors group" */}
+          {/*     > */}
+          {/*       {item} */}
+          {/*       <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-yellow-500 to-amber-500 group-hover:w-full transition-all duration-300" /> */}
+          {/*     </button> */}
+          {/*   ))} */}
+          {/* </div> */}
 
           <div className="flex space-x-4">
             <button className="px-6 py-2 text-white hover:text-yellow-400 transition-colors">
@@ -386,10 +386,8 @@ const PingLanding = () => {
           <p>© 2026 Ping. Level up your gaming career.</p>
         </div>
       </footer>
-
     </div>
   );
 };
 
 export default PingLanding;
-
