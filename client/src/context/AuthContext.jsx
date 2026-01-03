@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react'
-import api from '../services/api'
+import { authService } from '../services/api'
 
 const AuthContext = createContext(null)
 
@@ -20,12 +20,13 @@ export const AuthProvider = ({ children }) => {
         const initAuth = async () => {
             if (token) {
                 try {
-                    const response = await api.get('/api/auth/me')
+                    const response = await authService.getMe()
                     setUser(response.data.user)
                 } catch (error) {
                     console.error('Auth initialization failed:', error)
                     localStorage.removeItem('token')
                     setToken(null)
+                    setUser(null)
                 }
             }
             setLoading(false)
@@ -35,7 +36,7 @@ export const AuthProvider = ({ children }) => {
     }, [token])
 
     const login = async (email, password) => {
-        const response = await api.post('/api/auth/login', { email, password })
+        const response = await authService.login({ email, password })
         const { token: newToken, user: userData } = response.data
         localStorage.setItem('token', newToken)
         setToken(newToken)
@@ -44,7 +45,7 @@ export const AuthProvider = ({ children }) => {
     }
 
     const register = async (username, email, password) => {
-        const response = await api.post('/api/auth/register', { username, email, password })
+        const response = await authService.register({ username, email, password })
         const { token: newToken, user: userData } = response.data
         localStorage.setItem('token', newToken)
         setToken(newToken)
@@ -52,10 +53,19 @@ export const AuthProvider = ({ children }) => {
         return userData
     }
 
-    const logout = () => {
+    const logout = async () => {
+        try {
+            await authService.logout()
+        } catch (error) {
+            console.error('Logout error', error)
+        }
         localStorage.removeItem('token')
         setToken(null)
         setUser(null)
+    }
+
+    const updateUser = (userData) => {
+        setUser(prev => ({ ...prev, ...userData }))
     }
 
     const value = {
@@ -65,12 +75,13 @@ export const AuthProvider = ({ children }) => {
         login,
         register,
         logout,
+        updateUser,
         isAuthenticated: !!user,
     }
 
     return (
         <AuthContext.Provider value={value}>
-            {children}
+            {!loading && children}
         </AuthContext.Provider>
     )
 }

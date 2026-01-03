@@ -1,5 +1,7 @@
 import jwt from 'jsonwebtoken'
 import User from '../models/User.js'
+import Message from '../models/Message.js'
+import Notification from '../models/Notification.js'
 
 // Store connected users
 const connectedUsers = new Map()
@@ -59,16 +61,85 @@ export const initSocket = (io) => {
 
         // Handle private messages
         socket.on('message:private', async (data) => {
-            const { recipientId, content } = data
+            try {
+                const { recipientId, content } = data
 
-            const recipient = connectedUsers.get(recipientId)
-            if (recipient) {
-                io.to(recipient.socketId).emit('message:receive', {
-                    senderId: socket.user._id,
-                    senderName: socket.user.username,
+                // Save message to database
+                const newMessage = await Message.create({
+                    sender: socket.user._id,
+                    recipient: recipientId,
                     content,
-                    timestamp: new Date(),
                 })
+
+                                const recipient = connectedUsers.get(recipientId)
+
+                                if (recipient) {
+
+                                    io.to(recipient.socketId).emit('message:receive', {
+
+                                        _id: newMessage._id,
+
+                                        senderId: socket.user._id,
+
+                                        senderName: socket.user.username,
+
+                                        content: newMessage.content,
+
+                                        createdAt: newMessage.createdAt,
+
+                                    })
+
+                                }
+
+                
+
+                                // Create notification for the recipient
+
+                                const notification = await Notification.create({
+
+                                    recipient: recipientId,
+
+                                    sender: socket.user._id,
+
+                                    type: 'message',
+
+                                    relatedId: newMessage._id
+
+                                })
+
+                
+
+                                // Emit notification
+
+                                io.to(recipientId).emit('notification:new', {
+
+                                    ...notification.toObject(),
+
+                                    sender: {
+
+                                        _id: socket.user._id,
+
+                                        username: socket.user.username,
+
+                                        avatar: socket.user.avatar
+
+                                    }
+
+                                })
+
+                                
+
+                                // Also send back the created message to the sender to confirm save and provide ID/timestamp
+                socket.emit('message:sent', {
+                    _id: newMessage._id,
+                    recipientId,
+                    content: newMessage.content,
+                    createdAt: newMessage.createdAt,
+                })
+
+            } catch (error) {
+                console.error('Error handling private message:', error)
+                socket.emit('error', { message: 'Failed to send message' })
             }
         })
 

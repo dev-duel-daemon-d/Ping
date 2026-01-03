@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || '',
+    baseURL: `${import.meta.env.VITE_API_URL}/api`,
     headers: {
         'Content-Type': 'application/json',
     },
@@ -16,22 +16,76 @@ api.interceptors.request.use(
         }
         return config
     },
-    (error) => {
-        return Promise.reject(error)
-    }
+    (error) => Promise.reject(error)
 )
 
-// Response interceptor for error handling
+// Response interceptor
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.response?.status === 401) {
-            // Token expired or invalid
-            localStorage.removeItem('token')
-            window.location.href = '/login'
+        const originalRequest = error.config
+        if (error.response?.status === 401 && !originalRequest._retry) {
+            // Only redirect if not already on auth pages
+            if (!window.location.pathname.includes('/login') && 
+                !window.location.pathname.includes('/register')) {
+                localStorage.removeItem('token')
+                window.location.href = '/login'
+            }
         }
         return Promise.reject(error)
     }
 )
+
+export const authService = {
+    login: (credentials) => api.post('/auth/login', credentials),
+    register: (userData) => api.post('/auth/register', userData),
+    logout: () => api.post('/auth/logout'),
+    getMe: () => api.get('/auth/me'),
+    forgotPassword: (email) => api.post('/auth/forgotpassword', { email }),
+    resetPassword: (token, password) => api.put(`/auth/resetpassword/${token}`, { password }),
+}
+
+export const userService = {
+    getProfile: (username) => api.get(`/users/${username}`),
+    updateProfile: (data) => api.put('/users/profile', data),
+    search: (query) => api.get(`/search?q=${query}`),
+}
+
+export const connectionService = {
+    sendRequest: (userId) => api.post(`/connections/request/${userId}`),
+    acceptRequest: (requestId) => api.put(`/connections/accept/${requestId}`),
+    getConnections: () => api.get('/connections'),
+    getPendingRequests: () => api.get('/connections/pending'),
+}
+
+export const messageService = {
+    getHistory: (userId) => api.get(`/messages/history/${userId}`),
+    getConversations: () => api.get(`/messages/conversations`),
+    markRead: (senderId) => api.put(`/messages/read/${senderId}`),
+}
+
+export const notificationService = {
+    getAll: () => api.get('/notifications'),
+    markRead: (id) => api.put(`/notifications/${id}/read`),
+    markAllRead: () => api.put('/notifications/read-all'),
+}
+
+export const tournamentService = {
+    getAll: () => api.get('/tournaments'),
+    create: (data) => api.post('/tournaments', data),
+    join: (id) => api.post(`/tournaments/${id}/join`),
+}
+
+export const teamService = {
+    getAll: () => api.get('/teams'),
+    create: (data) => api.post('/teams', data),
+    join: (id) => api.post(`/teams/${id}/join`),
+}
+
+export const uploadService = {
+    uploadImage: (formData) => api.post('/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+    }),
+}
 
 export default api

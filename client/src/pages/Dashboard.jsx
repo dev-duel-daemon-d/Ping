@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useSocket } from "../context/SocketContext";
@@ -22,56 +22,286 @@ import {
   LogOut,
   Settings,
 } from "lucide-react";
-import { Avatar } from "@mui/material";
+import { Avatar, Modal, Box, IconButton, InputBase, Badge, Menu, MenuItem, Typography, Button } from "@mui/material";
+import { X, Check } from "lucide-react";
+import { userService, notificationService, connectionService } from "../services/api";
 
 // --- Helper Components ---
+const NotificationMenu = ({ anchorEl, open, onClose, notifications, onAccept, onMarkRead }) => {
+    return (
+        <Menu
+            anchorEl={anchorEl}
+            open={open}
+            onClose={onClose}
+            PaperProps={{
+                style: {
+                    maxHeight: 400,
+                    width: 350,
+                    backgroundColor: '#1b1f23',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    color: 'white',
+                },
+            }}
+        >
+            <Typography variant="h6" className="p-4 border-b border-white/10 text-slate-200">
+                Notifications
+            </Typography>
+            {notifications.length === 0 ? (
+                <MenuItem className="justify-center text-slate-500 py-8">
+                    No new notifications
+                </MenuItem>
+            ) : (
+                notifications.map((notif) => (
+                    <MenuItem 
+                        key={notif._id} 
+                        className={`flex flex-col items-start gap-2 border-b border-white/5 p-4 ${!notif.isRead ? 'bg-white/5' : ''}`}
+                        onClick={() => !notif.isRead && onMarkRead(notif._id)}
+                    >
+                        <div className="flex items-center gap-3 w-full">
+                            <Avatar src={notif.sender?.avatar} className="w-10 h-10 border border-lime-500/30">
+                                {notif.sender?.username?.[0]}
+                            </Avatar>
+                            <div className="flex-1 overflow-hidden">
+                                <Typography variant="subtitle2" className="text-slate-200 font-bold truncate">
+                                    {notif.sender?.username}
+                                </Typography>
+                                <Typography variant="body2" className="text-slate-400 text-xs">
+                                    {notif.type === 'connection_request' && 'sent you a connection request'}
+                                    {notif.type === 'connection_accepted' && 'accepted your connection request'}
+                                    {notif.type === 'message' && 'sent you a message'}
+                                </Typography>
+                            </div>
+                        </div>
+                        
+                        {notif.type === 'connection_request' && !notif.isRead && (
+                             <div className="flex gap-2 w-full mt-2 pl-12">
+                                <Button 
+                                    size="small" 
+                                    variant="contained" 
+                                    color="success"
+                                    startIcon={<Check size={14} />}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onAccept(notif.relatedId, notif._id);
+                                    }}
+                                    sx={{ bgcolor: '#84cc16', color: 'black', '&:hover': { bgcolor: '#65a30d' } }}
+                                >
+                                    Accept
+                                </Button>
+                             </div>
+                        )}
+                    </MenuItem>
+                ))
+            )}
+        </Menu>
+    );
+};
 
-const Navbar = ({ user, logout }) => (
-  <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md border-b border-white/10 h-16">
-    <div className="max-w-7xl mx-auto px-4 h-full flex items-center justify-between">
-      <Link to="/" className="flex items-center gap-2 group">
-        <div className="relative">
-          <Gamepad2 className="w-8 h-8 text-lime-500 transition-transform group-hover:rotate-12" />
-          <div className="absolute inset-0 bg-lime-500 blur-lg opacity-20 group-hover:opacity-40 transition-opacity" />
-        </div>
-        <span className="font-bold text-xl tracking-tight hidden md:block">
-          Ping
-        </span>
-      </Link>
+const FindModal = ({ open, onClose, onConnect }) => {
+    const [query, setQuery] = useState("");
+    const [results, setResults] = useState([]);
+    const [loading, setLoading] = useState(false);
 
-      <div className="flex items-center gap-6">
-        <div className="hidden md:flex items-center bg-white/5 rounded-full px-4 py-2 border border-white/10">
-          <Search className="w-4 h-4 text-slate-400 mr-2" />
-          <input
-            type="text"
-            placeholder="Search players, teams..."
-            className="bg-transparent border-none focus:outline-none text-sm text-slate-200 placeholder:text-slate-500 w-64"
-          />
-        </div>
+    useEffect(() => {
+        if (open) {
+            searchUsers("");
+        }
+    }, [open]);
 
-        <button className="text-slate-400 hover:text-white transition-colors relative">
-          <Bell className="w-5 h-5" />
-          <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full" />
-        </button>
+    const searchUsers = async (q) => {
+        setLoading(true);
+        try {
+            const response = await userService.search(q);
+            setResults(response.data.users || []);
+        } catch (error) {
+            console.error("Search failed", error);
+        }
+        setLoading(false);
+    };
 
-        <div className="flex items-center gap-3 pl-6 border-l border-white/10">
-          <Avatar
-            src={user?.avatar}
-            className="w-8 h-8 border border-lime-500/50"
-          >
-            {user?.username?.charAt(0).toUpperCase()}
-          </Avatar>
-          <button
-            onClick={logout}
-            className="text-slate-400 hover:text-red-400 transition-colors"
-          >
-            <LogOut className="w-5 h-5" />
-          </button>
-        </div>
-      </div>
-    </div>
-  </nav>
-);
+    const handleSearch = (e) => {
+        const q = e.target.value;
+        setQuery(q);
+        searchUsers(q);
+    };
+
+    return (
+        <Modal open={open} onClose={onClose}>
+            <Box className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-[#1b1f23] border border-white/10 rounded-2xl p-6 shadow-2xl outline-none">
+                <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-2xl font-bold text-white">Find Players</h2>
+                    <IconButton onClick={onClose} className="text-slate-400 hover:text-white">
+                        <X />
+                    </IconButton>
+                </div>
+
+                <div className="bg-white/5 rounded-full px-4 py-2 border border-white/10 mb-6 flex items-center">
+                    <Search className="w-5 h-5 text-slate-400 mr-3" />
+                    <InputBase
+                        placeholder="Search by username..."
+                        value={query}
+                        onChange={handleSearch}
+                        className="w-full text-slate-200"
+                        sx={{ color: 'inherit' }}
+                    />
+                </div>
+
+                <div className="max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
+                    {results.map((user) => (
+                        <div key={user._id} className="flex items-center justify-between p-3 hover:bg-white/5 rounded-xl transition-colors">
+                            <div className="flex items-center gap-3">
+                                <Avatar src={user.avatar} className="border border-lime-500/30">
+                                    {user.username[0]}
+                                </Avatar>
+                                <div>
+                                    <h4 className="font-bold text-slate-200 text-sm">{user.username}</h4>
+                                    <p className="text-xs text-slate-500">{user.bio || "No bio available"}</p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => onConnect(user._id)}
+                                className="px-3 py-1 bg-lime-500/10 text-lime-500 border border-lime-500/50 rounded-full text-xs font-bold hover:bg-lime-500 hover:text-black transition-all"
+                            >
+                                Connect
+                            </button>
+                        </div>
+                    ))}
+                    {results.length === 0 && !loading && (
+                        <div className="text-center text-slate-500 py-8">No players found</div>
+                    )}
+                </div>
+            </Box>
+        </Modal>
+    );
+};
+
+const Navbar = ({ user, logout, onConnectionUpdate }) => {
+    const [notifications, setNotifications] = useState([]);
+    const [anchorEl, setAnchorEl] = useState(null);
+    const { socket } = useSocket();
+    const navigate = useNavigate();
+
+    const unreadCount = notifications.filter(n => !n.isRead).length;
+
+    useEffect(() => {
+        fetchNotifications();
+    }, []);
+
+    useEffect(() => {
+        if (socket) {
+            socket.on('notification:new', (newNotif) => {
+                setNotifications(prev => [newNotif, ...prev]);
+            });
+            return () => socket.off('notification:new');
+        }
+    }, [socket]);
+
+    const fetchNotifications = async () => {
+        try {
+            const res = await notificationService.getAll();
+            setNotifications(res.data);
+        } catch (error) {
+            console.error("Failed to fetch notifications", error);
+        }
+    };
+
+    const handleOpenMenu = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleCloseMenu = () => {
+        setAnchorEl(null);
+    };
+
+    const handleAccept = async (requestId, notifId) => {
+        try {
+            await connectionService.acceptRequest(requestId);
+            await notificationService.markRead(notifId);
+            
+            // Update local state
+            setNotifications(prev => 
+                prev.map(n => n._id === notifId ? { ...n, isRead: true } : n)
+            );
+            
+            // Trigger dashboard refresh
+            if (onConnectionUpdate) onConnectionUpdate();
+            
+        } catch (error) {
+            console.error("Failed to accept request", error);
+        }
+    };
+
+    const handleMarkRead = async (id) => {
+        try {
+            await notificationService.markRead(id);
+            setNotifications(prev => 
+                prev.map(n => n._id === id ? { ...n, isRead: true } : n)
+            );
+        } catch (error) {
+            console.error("Failed to mark read", error);
+        }
+    };
+
+    return (
+        <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md border-b border-white/10 h-16">
+            <div className="max-w-7xl mx-auto px-4 h-full flex items-center justify-between">
+                <Link to="/" className="flex items-center gap-2 group">
+                    <div className="relative">
+                        <Gamepad2 className="w-8 h-8 text-lime-500 transition-transform group-hover:rotate-12" />
+                        <div className="absolute inset-0 bg-lime-500 blur-lg opacity-20 group-hover:opacity-40 transition-opacity" />
+                    </div>
+                    <span className="font-bold text-xl tracking-tight hidden md:block">
+                        Ping
+                    </span>
+                </Link>
+
+                <div className="flex items-center gap-6">
+                    <div className="hidden md:flex items-center bg-white/5 rounded-full px-4 py-2 border border-white/10">
+                        <Search className="w-4 h-4 text-slate-400 mr-2" />
+                        <input
+                            type="text"
+                            placeholder="Search players, teams..."
+                            className="bg-transparent border-none focus:outline-none text-sm text-slate-200 placeholder:text-slate-500 w-64"
+                        />
+                    </div>
+
+                    <IconButton 
+                        onClick={handleOpenMenu}
+                        className="text-slate-400 hover:text-white transition-colors relative"
+                    >
+                        <Badge badgeContent={unreadCount} color="error">
+                            <Bell className="w-5 h-5" />
+                        </Badge>
+                    </IconButton>
+
+                    <NotificationMenu 
+                        anchorEl={anchorEl}
+                        open={Boolean(anchorEl)}
+                        onClose={handleCloseMenu}
+                        notifications={notifications}
+                        onAccept={handleAccept}
+                        onMarkRead={handleMarkRead}
+                    />
+
+                    <div className="flex items-center gap-3 pl-6 border-l border-white/10">
+                        <Avatar
+                            src={user?.avatar}
+                            className="w-8 h-8 border border-lime-500/50"
+                        >
+                            {user?.username?.charAt(0).toUpperCase()}
+                        </Avatar>
+                        <button
+                            onClick={logout}
+                            className="text-slate-400 hover:text-red-400 transition-colors"
+                        >
+                            <LogOut className="w-5 h-5" />
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    );
+};
 
 const StatBar = ({ label, value, color = "bg-lime-500" }) => (
   <div className="mb-3">
@@ -162,6 +392,17 @@ const Dashboard = () => {
   const [postTab, setPostTab] = useState('professional');
   const [currentPostIndex, setCurrentPostIndex] = useState(0);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [connections, setConnections] = useState([]);
+  const [showFindModal, setShowFindModal] = useState(false);
+
+  const fetchConnections = async () => {
+      try {
+          const response = await connectionService.getConnections();
+          setConnections(response.data);
+      } catch (error) {
+          console.error("Failed to fetch connections", error);
+      }
+  };
 
   React.useEffect(() => {
     const handleMouseMove = (e) => {
@@ -174,6 +415,23 @@ const Dashboard = () => {
       window.removeEventListener("mousemove", handleMouseMove);
     };
   }, []);
+
+  React.useEffect(() => {
+      if (user) {
+          fetchConnections();
+      }
+  }, [user]);
+
+  const handleConnect = async (userId) => {
+      try {
+          await connectionService.sendRequest(userId);
+          // Optional: Show success feedback or close modal
+          setShowFindModal(false);
+          // Refresh connections or show toast
+      } catch (error) {
+          console.error("Connection request failed", error);
+      }
+  };
 
   // --- Mock Data ---
   const games = [
@@ -266,7 +524,11 @@ const Dashboard = () => {
           top: `${mousePos.y - 150}px`,
         }}
       />
-      <Navbar user={user} logout={() => { logout(); navigate('/'); }} />
+      <Navbar 
+          user={user} 
+          logout={() => { logout(); navigate('/'); }} 
+          onConnectionUpdate={fetchConnections}
+      />
 
       <main className="max-w-5xl mx-auto px-4 pt-24 pb-20">
         {/* --- Profile Section --- */}
@@ -368,33 +630,42 @@ const Dashboard = () => {
               <Users className="w-5 h-5 text-lime-500" />
               <h3 className="font-bold text-lg text-white">Connections</h3>
             </div>
-            <button className="text-xs text-lime-500 hover:underline">
+            <Link to="/connections" className="text-xs text-lime-500 hover:underline">
               View All
-            </button>
+            </Link>
           </div>
 
           <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
-            {[1, 2, 3, 4, 5, 6, 7].map((i) => (
-              <div
-                key={i}
-                className="flex flex-col items-center min-w-[80px] group cursor-pointer"
-              >
-                <div className="w-14 h-14 rounded-full bg-slate-800 border-2 border-slate-700 group-hover:border-lime-500 transition-colors mb-2 overflow-hidden">
-                  <img
-                    src={`https://i.pravatar.cc/150?u=${i}`}
-                    alt="User"
-                    className="w-full h-full object-cover"
-                  />
+            {connections.length > 0 ? (
+              connections.map((conn) => (
+                <div
+                  key={conn._id}
+                  className="flex flex-col items-center min-w-[80px] group cursor-pointer"
+                >
+                  <div className="w-14 h-14 rounded-full bg-slate-800 border-2 border-slate-700 group-hover:border-lime-500 transition-colors mb-2 overflow-hidden">
+                    <Avatar
+                      src={conn.avatar}
+                      className="w-full h-full"
+                      sx={{ width: "100%", height: "100%" }}
+                    >
+                      {conn.username?.charAt(0).toUpperCase()}
+                    </Avatar>
+                  </div>
+                  <span className="text-xs text-slate-400 font-medium truncate w-full text-center group-hover:text-white transition-colors">
+                    {conn.username}
+                  </span>
+                  <span className="text-[10px] text-slate-600 truncate w-full text-center">
+                    {conn.status === 'online' ? 'Online' : 'Offline'}
+                  </span>
                 </div>
-                <span className="text-xs text-slate-400 font-medium truncate w-full text-center group-hover:text-white transition-colors">
-                  Player {i}
-                </span>
-                <span className="text-[10px] text-slate-600 truncate w-full text-center">
-                  Pro Team
-                </span>
-              </div>
-            ))}
-            <div className="flex flex-col items-center justify-center min-w-[80px] cursor-pointer group">
+              ))
+            ) : (
+              <div className="text-slate-500 text-sm px-4">No connections yet. Go find some players!</div>
+            )}
+            <div 
+                onClick={() => setShowFindModal(true)}
+                className="flex flex-col items-center justify-center min-w-[80px] cursor-pointer group"
+            >
               <div className="w-14 h-14 rounded-full border-2 border-dashed border-slate-700 flex items-center justify-center group-hover:border-slate-500 transition-colors mb-2">
                 <span className="text-slate-500 group-hover:text-white transition-colors">
                   +
@@ -404,6 +675,13 @@ const Dashboard = () => {
             </div>
           </div>
         </motion.div>
+
+        <FindModal 
+            open={showFindModal} 
+            onClose={() => setShowFindModal(false)} 
+            onConnect={handleConnect}
+        />
+
         {/* --- Posts Section --- */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
