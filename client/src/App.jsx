@@ -19,6 +19,7 @@ function App() {
                         <Route path="/login" element={<AuthPage />} />
                         <Route path="/register" element={<AuthPage />} />
                         <Route path="/dashboard" element={<Dashboard />} />
+                        <Route path="/dashboard/:username" element={<Dashboard />} />
                         <Route path="*" element={<NotFound />} />
                     </Routes>
                 </div>
