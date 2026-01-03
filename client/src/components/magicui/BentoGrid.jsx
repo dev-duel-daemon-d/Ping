@@ -39,16 +39,18 @@ const BentoCard = ({
       className,
     )}
   >
-    <div className="absolute inset-0 z-0 transition-transform duration-300 group-hover:scale-105 opacity-50">
+    <div className="absolute inset-0 z-0 transition-transform duration-300 group-hover:scale-105">
       {background}
     </div>
 
-    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-10 transition-opacity duration-300 group-hover:from-black/100" />
+    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10 transition-opacity duration-300 group-hover:from-black/90" />
 
     <div className="pointer-events-none z-20 flex transform-gpu flex-col gap-1 p-6 transition-all duration-300 group-hover:-translate-y-10 group-hover:scale-95 place-content-end h-full">
-      <div className="w-12 h-12 bg-lime-500/20 rounded-lg flex items-center justify-center backdrop-blur-sm mb-2 border border-lime-500/30">
-        <Icon className="h-8 w-8 origin-left transform-gpu text-lime-400 transition-all duration-300 ease-in-out group-hover:scale-75" />
-      </div>
+      {Icon && (
+        <div className="w-12 h-12 bg-lime-500/20 rounded-lg flex items-center justify-center backdrop-blur-sm mb-2 border border-lime-500/30">
+          <Icon className="h-8 w-8 origin-left transform-gpu text-lime-400 transition-all duration-300 ease-in-out group-hover:scale-75" />
+        </div>
+      )}
 
       <h3 className="text-2xl font-semibold text-white group-hover:text-lime-400 transition-colors">
         {name}
