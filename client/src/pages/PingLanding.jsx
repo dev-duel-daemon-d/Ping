@@ -9,12 +9,15 @@ import {
     Target,
     Star,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { BentoGrid, BentoCard } from "../components/magicui/BentoGrid";
 import { Globe } from "../components/magicui/Globe";
 import { ConnectNetworkBeam } from "../components/ConnectNetworkBeam";
+import { useAuth } from "../context/AuthContext";
 
 const PingLanding = () => {
+    const { isAuthenticated } = useAuth();
+    const navigate = useNavigate();
     const [scrollY, setScrollY] = useState(0);
     const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
     const heroRef = useRef(null);
@@ -175,12 +178,26 @@ const PingLanding = () => {
                     {/* </div> */}
 
                     <div className="flex space-x-4">
-                        <button className="px-6 py-2 text-white hover:text-lime-400 transition-colors">
-                            <Link to={"/login"}>Login</Link>
-                        </button>
-                        <button className="px-6 py-2 bg-gradient-to-r from-lime-500 to-lime-600 rounded-full font-semibold hover:shadow-lg hover:shadow-lime-500/50 transform hover:scale-105 transition-all duration-300 text-black">
-                            <Link to={"/register"}>Register</Link>
-                        </button>
+                        {isAuthenticated ? (
+                            <Link to="/dashboard">
+                                <button className="px-6 py-2 bg-gradient-to-r from-lime-500 to-lime-600 rounded-full font-semibold hover:shadow-lg hover:shadow-lime-500/50 transform hover:scale-105 transition-all duration-300 text-black">
+                                    Dashboard
+                                </button>
+                            </Link>
+                        ) : (
+                            <>
+                                <Link to="/login">
+                                    <button className="px-6 py-2 text-white hover:text-lime-400 transition-colors">
+                                        Login
+                                    </button>
+                                </Link>
+                                <Link to="/register">
+                                    <button className="px-6 py-2 bg-gradient-to-r from-lime-500 to-lime-600 rounded-full font-semibold hover:shadow-lg hover:shadow-lime-500/50 transform hover:scale-105 transition-all duration-300 text-black">
+                                        Register
+                                    </button>
+                                </Link>
+                            </>
+                        )}
                     </div>
                 </div>
             </nav>
@@ -220,10 +237,12 @@ const PingLanding = () => {
                         </p>
 
                         <div className="flex flex-wrap gap-4">
-                            <button className="group px-8 py-4 bg-gradient-to-r from-lime-500 to-lime-600 rounded-full font-bold text-lg hover:shadow-2xl hover:shadow-lime-500/50 transform hover:scale-105 transition-all duration-300 flex items-center space-x-2 text-black">
-                                <span>Start Your Journey</span>
-                                <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                            </button>
+                            <Link to={isAuthenticated ? "/dashboard" : "/register"}>
+                                <button className="group px-8 py-4 bg-gradient-to-r from-lime-500 to-lime-600 rounded-full font-bold text-lg hover:shadow-2xl hover:shadow-lime-500/50 transform hover:scale-105 transition-all duration-300 flex items-center space-x-2 text-black">
+                                    <span>Start Your Journey</span>
+                                    <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                                </button>
+                            </Link>
 
                             <button className="px-8 py-4 bg-transparent border-2 border-lime-500 rounded-full font-bold text-lg hover:bg-lime-500 hover:bg-opacity-20 hover:shadow-lg hover:shadow-lime-500/50 transform hover:scale-105 transition-all duration-300 text-lime-400">
                                 Watch Demo
@@ -367,10 +386,12 @@ const PingLanding = () => {
                     </p>
 
                     <div className="flex flex-wrap justify-center gap-6 pt-8">
-                        <button className="group px-12 py-5 bg-gradient-to-r from-lime-500 to-lime-600 rounded-full font-bold text-xl hover:shadow-2xl hover:shadow-lime-500/70 transform hover:scale-110 transition-all duration-300 flex items-center space-x-3 text-black">
-                            <span>Join Ping Today</span>
-                            <ChevronRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
-                        </button>
+                        <Link to={isAuthenticated ? "/dashboard" : "/register"}>
+                            <button className="group px-12 py-5 bg-gradient-to-r from-lime-500 to-lime-600 rounded-full font-bold text-xl hover:shadow-2xl hover:shadow-lime-500/70 transform hover:scale-110 transition-all duration-300 flex items-center space-x-3 text-black">
+                                <span>Join Ping Today</span>
+                                <ChevronRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
+                            </button>
+                        </Link>
                     </div>
                 </div>
             </section>

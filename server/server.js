@@ -1,14 +1,25 @@
+import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
-import dotenv from 'dotenv'
 import connectDB from './config/db.js'
+import path from 'path'
+import { fileURLToPath } from 'url'
 import authRoutes from './routes/auth.js'
+import userRoutes from './routes/users.js'
+import connectionRoutes from './routes/connections.js'
+import messageRoutes from './routes/messages.js'
+import notificationRoutes from './routes/notifications.js'
+import tournamentRoutes from './routes/tournaments.js'
+import teamRoutes from './routes/teams.js'
+import searchRoutes from './routes/search.js'
+import uploadRoutes from './routes/upload.js'
 import { initSocket } from './socket/index.js'
 
-// Load environment variables
-dotenv.config()
+// Setup __dirname for ES modules
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 // Connect to MongoDB
 connectDB()
@@ -41,6 +52,17 @@ app.set('io', io)
 
 // Routes
 app.use('/api/auth', authRoutes)
+app.use('/api/users', userRoutes)
+app.use('/api/connections', connectionRoutes)
+app.use('/api/messages', messageRoutes)
+app.use('/api/notifications', notificationRoutes)
+app.use('/api/tournaments', tournamentRoutes)
+app.use('/api/teams', teamRoutes)
+app.use('/api/search', searchRoutes)
+app.use('/api/upload', uploadRoutes)
+
+// Static folder for uploads
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
