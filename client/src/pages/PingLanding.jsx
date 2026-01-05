@@ -1,411 +1,300 @@
-import React, { useState, useEffect, useRef } from "react";
-import {
-    Gamepad2,
-    Trophy,
-    Users,
-    Zap,
-    ChevronRight,
-    Sparkles,
-    Target,
-    Star,
+import React, { useRef } from "react";
+import { Link } from "react-router-dom";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { 
+    Gamepad2, 
+    Trophy, 
+    Users, 
+    Zap, 
+    ArrowRight, 
+    CheckCircle,
+    Globe,
+    Shield
 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-import { BentoGrid, BentoCard } from "../components/magicui/BentoGrid";
-import { Globe } from "../components/magicui/Globe";
-import { ConnectNetworkBeam } from "../components/ConnectNetworkBeam";
 import { useAuth } from "../context/AuthContext";
+
+// --- Components ---
+
+const Navbar = ({ isAuthenticated }) => (
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-black/50 backdrop-blur-md border-b border-white/5">
+        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <Link to="/" className="flex items-center gap-2 group">
+                <div className="w-10 h-10 rounded-xl bg-lime-500 flex items-center justify-center text-black group-hover:scale-105 transition-transform">
+                    <Gamepad2 className="w-6 h-6" />
+                </div>
+                <span className="text-xl font-bold tracking-tight text-white">Ping</span>
+            </Link>
+
+            <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-400">
+                <a href="#features" className="hover:text-white transition-colors">Features</a>
+                <a href="#community" className="hover:text-white transition-colors">Community</a>
+                <a href="#tournaments" className="hover:text-white transition-colors">Tournaments</a>
+            </div>
+
+            <div className="flex items-center gap-4">
+                {isAuthenticated ? (
+                    <Link to="/dashboard">
+                        <button className="px-5 py-2.5 bg-white text-black rounded-full font-semibold hover:bg-lime-400 transition-colors">
+                            Dashboard
+                        </button>
+                    </Link>
+                ) : (
+                    <>
+                        <Link to="/login" className="hidden md:block text-slate-300 hover:text-white font-medium transition-colors">
+                            Log in
+                        </Link>
+                        <Link to="/register">
+                            <button className="px-5 py-2.5 bg-lime-500 text-black rounded-full font-semibold hover:bg-lime-400 transition-colors shadow-[0_0_20px_rgba(132,204,22,0.3)] hover:shadow-[0_0_30px_rgba(132,204,22,0.5)]">
+                                Get Started
+                            </button>
+                        </Link>
+                    </>
+                )}
+            </div>
+        </div>
+    </nav>
+);
+
+const FeatureCard = ({ icon: Icon, title, description, delay }) => (
+    <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5, delay }}
+        className="p-6 rounded-3xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors group"
+    >
+        <div className="w-12 h-12 rounded-2xl bg-lime-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+            <Icon className="w-6 h-6 text-lime-500" />
+        </div>
+        <h3 className="text-xl font-bold text-white mb-2">{title}</h3>
+        <p className="text-slate-400 leading-relaxed">{description}</p>
+    </motion.div>
+);
+
+const StatItem = ({ value, label }) => (
+    <div className="text-center">
+        <div className="text-4xl md:text-5xl font-bold text-white mb-2 tracking-tight">{value}</div>
+        <div className="text-slate-500 uppercase tracking-widest text-xs font-semibold">{label}</div>
+    </div>
+);
 
 const PingLanding = () => {
     const { isAuthenticated } = useAuth();
-    const navigate = useNavigate();
-    const [scrollY, setScrollY] = useState(0);
-    const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-    const heroRef = useRef(null);
-    const featuresRef = useRef(null);
-    const statsRef = useRef(null);
-    const ctaRef = useRef(null);
+    const containerRef = useRef(null);
+    const { scrollYProgress } = useScroll({
+        target: containerRef,
+        offset: ["start start", "end end"]
+    });
 
-    useEffect(() => {
-        const handleScroll = () => setScrollY(window.scrollY);
-        const handleMouseMove = (e) => {
-            setMousePos({ x: e.clientX, y: e.clientY });
-        };
-
-        window.addEventListener("scroll", handleScroll);
-        window.addEventListener("mousemove", handleMouseMove);
-
-        // Intersection Observer for scroll animations
-        const observer = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add("animate-in");
-                    } else {
-                        entry.target.classList.remove("animate-in");
-                    }
-                });
-            },
-            { threshold: 0.2 },
-        );
-
-        [featuresRef, statsRef, ctaRef].forEach((ref) => {
-            if (ref.current) observer.observe(ref.current);
-        });
-
-        return () => {
-            window.removeEventListener("scroll", handleScroll);
-            window.removeEventListener("mousemove", handleMouseMove);
-        };
-    }, []);
-
-    const features = [
-        {
-            name: "Connect & Network",
-            description:
-                "Build meaningful connections with pro gamers, teams, and esports organizations.",
-            href: "#",
-            cta: "Learn more",
-            background: (
-                <ConnectNetworkBeam className="absolute inset-0 opacity-100" />
-            ),
-            className: "col-span-3 lg:col-span-2",
-            color: "from-lime-500 to-lime-600",
-        },
-        {
-            Icon: Users,
-            name: "Gaming Portfolio",
-            description:
-                "Showcase your achievements, clips, and gaming journey with a professional profile.",
-            href: "#",
-            cta: "Connect",
-            background: (
-                <div className="absolute inset-0 bg-gradient-to-tl from-lime-600/10 to-transparent opacity-50" />
-            ),
-            className: "col-span-3 lg:col-span-1",
-            color: "from-lime-400 to-lime-600",
-        },
-        {
-            Icon: Trophy,
-            name: "Tournament Hub",
-            description:
-                "Discover, join, and track tournaments. Share your competitive experiences.",
-            href: "#",
-            cta: "Compete",
-            background: (
-                <div className="absolute inset-0 bg-gradient-to-bl from-lime-500/10 to-transparent opacity-50" />
-            ),
-            className: "col-span-3 lg:col-span-1",
-            color: "from-lime-500 to-green-500",
-        },
-        {
-            Icon: Zap,
-            name: "Real-time Updates",
-            description:
-                "Stay updated with the latest esports news, team announcements, and opportunities.",
-            href: "#",
-            cta: "Stay Updated",
-            background: (
-                <Globe className="-top-20 left-auto -right-10 translate-x-0 origin-top-right scale-110 md:scale-125" />
-            ),
-            className: "col-span-3 lg:col-span-2 relative overflow-hidden",
-            color: "from-lime-300 to-lime-500",
-        },
-    ];
-
-    const stats = [
-        { number: "50K+", label: "Pro Gamers", icon: <Target /> },
-        { number: "200+", label: "Esports Teams", icon: <Users /> },
-        { number: "1000+", label: "Tournaments", icon: <Trophy /> },
-        { number: "24/7", label: "Active Community", icon: <Sparkles /> },
-    ];
+    const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
 
     return (
-        <div className="min-h-screen bg-black text-white overflow-hidden relative">
-            {/* Animated Lightning Effect */}
-            <div className="fixed inset-0 overflow-hidden pointer-events-none">
-                {[...Array(5)].map((_, i) => (
-                    <div
-                        key={i}
-                        className="absolute w-1 bg-gradient-to-b from-lime-400 via-lime-500 to-transparent animate-lightning"
-                        style={{
-                            left: `${20 + i * 20}%`,
-                            height: "100%",
-                            animationDelay: `${i * 1.5}s`,
-                            animationDuration: `${3 + Math.random() * 2}s`,
-                            opacity: 0.3,
-                        }}
-                    />
-                ))}
-            </div>
+        <div ref={containerRef} className="min-h-screen bg-black text-slate-200 selection:bg-lime-500/30 overflow-hidden font-sans">
+            <Navbar isAuthenticated={isAuthenticated} />
 
-            {/* Mouse Glow Effect */}
-            <div
-                className="fixed w-[300px] h-[300px] bg-lime-400 rounded-full filter blur-[80px] opacity-40 pointer-events-none z-50 transition-opacity duration-300"
-                style={{
-                    left: `${mousePos.x - 150}px`,
-                    top: `${mousePos.y - 150}px`,
-                }}
-            />
+            {/* --- Hero Section --- */}
+            <section className="relative min-h-screen flex items-center pt-20 overflow-hidden">
+                {/* Background Elements */}
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-lime-900/20 via-black to-black" />
+                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150 mix-blend-overlay" />
+                
+                <div className="container max-w-7xl mx-auto px-6 relative z-10">
+                    <div className="max-w-4xl mx-auto text-center">
+                        <motion.div 
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.6 }}
+                            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-sm text-lime-400 font-medium mb-8"
+                        >
+                            <span className="relative flex h-2 w-2">
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-lime-400 opacity-75"></span>
+                              <span className="relative inline-flex rounded-full h-2 w-2 bg-lime-500"></span>
+                            </span>
+                            The Professional Network for Gamers
+                        </motion.div>
 
-            {/* Scanlines Effect */}
-            <div className="fixed inset-0 pointer-events-none opacity-10">
-                <div className="w-full h-full bg-gradient-to-b from-transparent via-lime-500 to-transparent animate-scan" />
-            </div>
+                        <motion.h1 
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.6, delay: 0.1 }}
+                            className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight text-white mb-8 leading-[1.1]"
+                        >
+                            Elevate your <br className="hidden md:block" />
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-emerald-500">
+                                Gaming Legacy
+                            </span>
+                        </motion.h1>
 
-            {/* Navigation */}
-            <nav className="fixed top-0 left-0 right-0 z-50 bg-black bg-opacity-80 backdrop-blur-lg border-b border-lime-500 border-opacity-30">
-                <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-                    <div className="flex items-center space-x-2 group cursor-pointer">
-                        <div className="relative">
-                            <Gamepad2 className="w-10 h-10 text-lime-400 transform group-hover:rotate-12 transition-transform duration-300" />
-                            <div className="absolute inset-0 bg-lime-500 blur-xl opacity-0 group-hover:opacity-70 transition-opacity" />
-                        </div>
-                        <span className="text-3xl font-bold bg-gradient-to-r from-lime-400 via-lime-400 to-lime-500 bg-clip-text text-transparent">
-                            Ping
-                        </span>
-                    </div>
+                        <motion.p 
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.6, delay: 0.2 }}
+                            className="text-lg md:text-xl text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed"
+                        >
+                            Connect with elite players, showcase your stats, and get scouted by top teams. 
+                            Ping is where champions are made and legends are born.
+                        </motion.p>
 
-                    {/* <div className="hidden md:flex space-x-8"> */}
-                    {/*   {["Features", "Community", "Tournaments", "About"].map((item) => ( */}
-                    {/*     <button */}
-                    {/*       key={item} */}
-                    {/*       className="relative text-gray-300 hover:text-lime-400 transition-colors group" */}
-                    {/*     > */}
-                    {/*       {item} */}
-                    {/*       <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-lime-500 to-lime-600 group-hover:w-full transition-all duration-300" /> */}
-                    {/*     </button> */}
-                    {/*   ))} */}
-                    {/* </div> */}
-
-                    <div className="flex space-x-4">
-                        {isAuthenticated ? (
-                            <Link to="/dashboard">
-                                <button className="px-6 py-2 bg-gradient-to-r from-lime-500 to-lime-600 rounded-full font-semibold hover:shadow-lg hover:shadow-lime-500/50 transform hover:scale-105 transition-all duration-300 text-black">
-                                    Dashboard
+                        <motion.div 
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.6, delay: 0.3 }}
+                            className="flex flex-col sm:flex-row items-center justify-center gap-4"
+                        >
+                            <Link to={isAuthenticated ? "/dashboard" : "/register"} className="w-full sm:w-auto">
+                                <button className="w-full sm:w-auto px-8 py-4 bg-lime-500 text-black rounded-full font-bold text-lg hover:bg-lime-400 transition-all hover:scale-105 flex items-center justify-center gap-2">
+                                    Start Your Career <ArrowRight className="w-5 h-5" />
                                 </button>
                             </Link>
-                        ) : (
-                            <>
-                                <Link to="/login">
-                                    <button className="px-6 py-2 text-white hover:text-lime-400 transition-colors">
-                                        Login
-                                    </button>
-                                </Link>
-                                <Link to="/register">
-                                    <button className="px-6 py-2 bg-gradient-to-r from-lime-500 to-lime-600 rounded-full font-semibold hover:shadow-lg hover:shadow-lime-500/50 transform hover:scale-105 transition-all duration-300 text-black">
-                                        Register
-                                    </button>
-                                </Link>
-                            </>
-                        )}
-                    </div>
-                </div>
-            </nav>
-
-            {/* Hero Section */}
-            <section
-                ref={heroRef}
-                className="relative min-h-screen flex items-center justify-center pt-20 px-6"
-            >
-                <div
-                    className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center"
-                    style={{ transform: `translateY(${scrollY * 0.3}px)` }}
-                >
-                    <div className="space-y-8 animate-slide-in-left">
-                        <div className="inline-block px-4 py-2 bg-lime-500 bg-opacity-20 rounded-full border border-lime-500 border-opacity-50 animate-pulse-glow">
-                            <span className="text-lime-400 font-semibold">Ping</span>
-                        </div>
-
-                        <h1 className="text-6xl md:text-7xl font-bold leading-tight">
-                            <span className="bg-gradient-to-r from-lime-300 via-lime-400 to-lime-500 bg-clip-text text-transparent animate-gradient">
-                                Level Up Your
-                            </span>
-                            <br />
-                            <span className="text-white drop-shadow-[0_0_30px_rgba(132,204,22,0.5)]">
-                                Gaming Career
-                            </span>
-                            <br />
-                            <span className="text-5xl md:text-6xl  from-lime-400 to-lime-300 bg-clip-text text-transparent">
-                                in Real-Time
-                            </span>
-                        </h1>
-
-                        <p className="text-xl text-gray-300 leading-relaxed">
-                            The ultimate platform for professional gamers to showcase
-                            achievements, connect with teams, and build their esports legacy.
-                            Your gaming LinkedIn starts here.
-                        </p>
-
-                        <div className="flex flex-wrap gap-4">
-                            <Link to={isAuthenticated ? "/dashboard" : "/register"}>
-                                <button className="group px-8 py-4 bg-gradient-to-r from-lime-500 to-lime-600 rounded-full font-bold text-lg hover:shadow-2xl hover:shadow-lime-500/50 transform hover:scale-105 transition-all duration-300 flex items-center space-x-2 text-black">
-                                    <span>Start Your Journey</span>
-                                    <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                                </button>
-                            </Link>
-
-                            <button className="px-8 py-4 bg-transparent border-2 border-lime-500 rounded-full font-bold text-lg hover:bg-lime-500 hover:bg-opacity-20 hover:shadow-lg hover:shadow-lime-500/50 transform hover:scale-105 transition-all duration-300 text-lime-400">
-                                Watch Demo
+                            <button className="w-full sm:w-auto px-8 py-4 bg-white/5 border border-white/10 text-white rounded-full font-bold text-lg hover:bg-white/10 transition-all">
+                                Explore Tournaments
                             </button>
-                        </div>
+                        </motion.div>
                     </div>
+                </div>
 
-                    {/* 3D Animated Graphics */}
-                    <div className="relative animate-slide-in-right">
-                        <div className="relative w-full h-[600px]">
-                            {/* Central Gaming Controller with Electric Effect */}
-                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
-                                <div className="relative w-40 h-40 bg-gradient-to-br from-lime-400 via-lime-500 to-lime-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-lime-500/80 animate-float">
-                                    <Gamepad2 className="w-24 h-24 text-black" />
-                                    <div className="absolute inset-0 bg-lime-300 rounded-3xl blur-2xl opacity-60 animate-pulse-slow" />
+                {/* Abstract Visual */}
+                <motion.div 
+                    style={{ y }}
+                    className="absolute -bottom-1/2 left-0 right-0 h-[800px] bg-gradient-to-t from-lime-500/10 to-transparent blur-3xl pointer-events-none" 
+                />
+            </section>
 
-                                    {/* Electric sparks around controller */}
-                                    {[...Array(8)].map((_, i) => (
-                                        <div
-                                            key={i}
-                                            className="absolute w-2 h-2 bg-lime-300 rounded-full animate-spark"
-                                            style={{
-                                                top: "50%",
-                                                left: "50%",
-                                                transform: `rotate(${i * 45}deg) translateX(80px)`,
-                                                animationDelay: `${i * 0.2}s`,
-                                            }}
-                                        />
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Orbiting Icons with Trails */}
-                            {[Trophy, Users, Target, Star, Zap, Sparkles].map(
-                                (Icon, index) => (
-                                    <div
-                                        key={index}
-                                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-                                    >
-                                        <div
-                                            className="animate-orbit"
-                                            style={{
-                                                animationDelay: `${index * 1}s`,
-                                                animationDuration: "8s",
-                                            }}
-                                        >
-                                            <div className="relative w-20 h-20 bg-gradient-to-br from-lime-500 to-lime-600 rounded-2xl flex items-center justify-center shadow-lg shadow-lime-500/70 hover:scale-125 transition-transform cursor-pointer">
-                                                <Icon className="w-10 h-10 text-black" />
-                                                <div className="absolute inset-0 bg-lime-400 rounded-2xl blur-md opacity-50" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                ),
-                            )}
-
-                            {/* Stats Cards */}
-                            <div className="absolute top-10 right-10 bg-black bg-opacity-70 backdrop-blur-lg rounded-2xl p-4 border border-lime-500 border-opacity-50 animate-slide-in-right animation-delay-1000 shadow-lg shadow-lime-500/30">
-                                <div className="flex items-center space-x-2">
-                                    <div className="w-3 h-3 bg-lime-400 rounded-full animate-pulse-fast shadow-lg shadow-lime-400" />
-                                    <span className="text-sm text-lime-200">
-                                        50K+ Active Users
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div className="absolute bottom-10 left-10 bg-black bg-opacity-70 backdrop-blur-lg rounded-2xl p-4 border border-lime-500 border-opacity-50 animate-slide-in-left animation-delay-1500 shadow-lg shadow-lime-500/30">
-                                <div className="flex items-center space-x-2">
-                                    <Trophy className="w-5 h-5 text-lime-400" />
-                                    <span className="text-sm text-lime-200">
-                                        1000+ Tournaments
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
+            {/* --- Stats Section --- */}
+            <section className="py-20 border-y border-white/5 bg-white/[0.02]">
+                <div className="max-w-7xl mx-auto px-6">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
+                        <StatItem value="50K+" label="Active Players" />
+                        <StatItem value="200+" label="Verified Teams" />
+                        <StatItem value="$1M+" label="Prize Pool" />
+                        <StatItem value="24/7" label="Live Support" />
                     </div>
                 </div>
             </section>
 
-            {/* Features Section */}
-            <section
-                ref={featuresRef}
-                className="relative py-32 px-6 mt-20 scroll-animate"
-            >
-                <div className="max-w-7xl mx-auto">
-                    <div className="text-center mb-16 space-y-4">
-                        <h2 className="text-5xl font-bold bg-gradient-to-r from-lime-300 to-lime-500 bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(132,204,22,0.5)]">
-                            Power-Up Your Profile
-                        </h2>
-                        <p className="text-xl text-gray-400">
-                            Everything you need to dominate the esports scene
+            {/* --- Features Grid --- */}
+            <section id="features" className="py-32 relative">
+                <div className="max-w-7xl mx-auto px-6">
+                    <div className="text-center mb-20 max-w-3xl mx-auto">
+                        <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">Everything you need to go Pro</h2>
+                        <p className="text-slate-400 text-lg">
+                            We provide the infrastructure for you to focus on what matters most: your performance.
                         </p>
                     </div>
 
-                    <BentoGrid className="lg:grid-rows-2">
-                        {features.map((feature) => (
-                            <BentoCard key={feature.name} {...feature} />
-                        ))}
-                    </BentoGrid>
-                </div>
-            </section>
-
-            {/* Stats Section */}
-            <section ref={statsRef} className="relative py-32 px-6 scroll-animate">
-                <div className="max-w-7xl mx-auto">
-                    <div className="grid md:grid-cols-4 gap-8">
-                        {stats.map((stat, index) => (
-                            <div
-                                key={index}
-                                className="text-center group cursor-pointer"
-                                style={{ animationDelay: `${index * 100}ms` }}
-                            >
-                                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-lime-500 to-lime-600 rounded-2xl mb-4 transform group-hover:scale-110 group-hover:rotate-12 transition-all duration-300 shadow-lg shadow-lime-500/70">
-                                    {React.cloneElement(stat.icon, {
-                                        className: "w-8 h-8 text-black",
-                                    })}
-                                </div>
-                                <div className="text-5xl font-bold bg-gradient-to-r from-lime-300 to-lime-500 bg-clip-text text-transparent mb-2 group-hover:scale-110 transition-transform drop-shadow-[0_0_20px_rgba(132,204,22,0.5)]">
-                                    {stat.number}
-                                </div>
-                                <div className="text-gray-400 text-lg group-hover:text-lime-400 transition-colors">
-                                    {stat.label}
-                                </div>
-                            </div>
-                        ))}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <FeatureCard 
+                            icon={Users}
+                            title="Team Management"
+                            description="Create organizations, manage rosters, and schedule scrims with integrated calendar tools."
+                            delay={0.1}
+                        />
+                        <FeatureCard 
+                            icon={Trophy}
+                            title="Tournament System"
+                            description="Automated bracket generation, score reporting, and prize distribution for seamless events."
+                            delay={0.2}
+                        />
+                        <FeatureCard 
+                            icon={Globe}
+                            title="Global Scouting"
+                            description="Get discovered by international organizations through our advanced player search and stats analysis."
+                            delay={0.3}
+                        />
+                        <FeatureCard 
+                            icon={Zap}
+                            title="Real-time Chat"
+                            description="Instant communication with your team and opponents. Voice channels coming soon."
+                            delay={0.4}
+                        />
+                        <FeatureCard 
+                            icon={Shield}
+                            title="Verified Stats"
+                            description="Connect your game accounts to automatically verify rank and match history."
+                            delay={0.5}
+                        />
+                        <FeatureCard 
+                            icon={Gamepad2}
+                            title="Multi-Game Support"
+                            description="Whether you play FPS, MOBA, or Battle Royale, we have a home for your competitive journey."
+                            delay={0.6}
+                        />
                     </div>
                 </div>
             </section>
 
-            {/* CTA Section */}
-            <section ref={ctaRef} className="relative py-32 px-6 scroll-animate">
-                <div className="max-w-4xl mx-auto text-center space-y-8">
-                    <div className="relative inline-block">
-                        <h2 className="text-6xl font-bold bg-gradient-to-r from-lime-300 via-lime-400 to-lime-500 bg-clip-text text-transparent">
-                            Ready to Go Pro?
-                        </h2>
-                        <div className="absolute -inset-4 bg-gradient-to-r from-lime-500 to-lime-600 blur-3xl opacity-40 animate-pulse" />
-                    </div>
-
-                    <p className="text-2xl text-gray-300">
-                        Join thousands of pro gamers building their legacy on Ping
+            {/* --- Big CTA --- */}
+            <section className="py-32 relative overflow-hidden">
+                <div className="absolute inset-0 bg-lime-500/5" />
+                <div className="max-w-5xl mx-auto px-6 relative z-10 text-center">
+                    <h2 className="text-4xl md:text-6xl font-bold text-white mb-8 tracking-tight">
+                        Ready to dominate the server?
+                    </h2>
+                    <p className="text-xl text-slate-400 mb-12 max-w-2xl mx-auto">
+                        Join the fastest growing community of competitive gamers. Create your profile today and take the first step towards pro play.
                     </p>
-
-                    <div className="flex flex-wrap justify-center gap-6 pt-8">
-                        <Link to={isAuthenticated ? "/dashboard" : "/register"}>
-                            <button className="group px-12 py-5 bg-gradient-to-r from-lime-500 to-lime-600 rounded-full font-bold text-xl hover:shadow-2xl hover:shadow-lime-500/70 transform hover:scale-110 transition-all duration-300 flex items-center space-x-3 text-black">
-                                <span>Join Ping Today</span>
-                                <ChevronRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
-                            </button>
-                        </Link>
-                    </div>
+                    <Link to="/register">
+                        <button className="px-10 py-5 bg-white text-black rounded-full font-bold text-xl hover:bg-lime-400 transition-all hover:scale-105 shadow-2xl">
+                            Join Ping Now
+                        </button>
+                    </Link>
                 </div>
             </section>
 
-            {/* Footer */}
-            <footer className="relative py-12 px-6 border-t border-lime-500 border-opacity-30">
-                <div className="max-w-7xl mx-auto text-center text-gray-400">
-                    <div className="flex items-center justify-center space-x-2 mb-4">
-                        <Gamepad2 className="w-8 h-8 text-lime-400" />
-                        <span className="text-2xl font-bold bg-gradient-to-r from-lime-400 to-lime-500 bg-clip-text text-transparent">
-                            Ping
-                        </span>
+            {/* --- Footer --- */}
+            <footer className="border-t border-white/10 bg-[#050505] pt-20 pb-10">
+                <div className="max-w-7xl mx-auto px-6">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 rounded-lg bg-lime-500 flex items-center justify-center text-black">
+                                    <Gamepad2 className="w-5 h-5" />
+                                </div>
+                                <span className="text-lg font-bold text-white">Ping</span>
+                            </div>
+                            <p className="text-slate-500 text-sm leading-relaxed">
+                                The premier destination for competitive gaming. Build your legacy with Ping.
+                            </p>
+                        </div>
+                        
+                        <div>
+                            <h4 className="text-white font-bold mb-6">Platform</h4>
+                            <ul className="space-y-4 text-sm text-slate-400">
+                                <li><a href="#" className="hover:text-lime-500 transition-colors">Tournaments</a></li>
+                                <li><a href="#" className="hover:text-lime-500 transition-colors">Teams</a></li>
+                                <li><a href="#" className="hover:text-lime-500 transition-colors">Players</a></li>
+                                <li><a href="#" className="hover:text-lime-500 transition-colors">News</a></li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h4 className="text-white font-bold mb-6">Company</h4>
+                            <ul className="space-y-4 text-sm text-slate-400">
+                                <li><a href="#" className="hover:text-lime-500 transition-colors">About Us</a></li>
+                                <li><a href="#" className="hover:text-lime-500 transition-colors">Careers</a></li>
+                                <li><a href="#" className="hover:text-lime-500 transition-colors">Partners</a></li>
+                                <li><a href="#" className="hover:text-lime-500 transition-colors">Contact</a></li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h4 className="text-white font-bold mb-6">Legal</h4>
+                            <ul className="space-y-4 text-sm text-slate-400">
+                                <li><a href="#" className="hover:text-lime-500 transition-colors">Privacy Policy</a></li>
+                                <li><a href="#" className="hover:text-lime-500 transition-colors">Terms of Service</a></li>
+                                <li><a href="#" className="hover:text-lime-500 transition-colors">Code of Conduct</a></li>
+                            </ul>
+                        </div>
                     </div>
-                    <p>© 2026 Ping. Level up your gaming career.</p>
+
+                    <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-600">
+                        <p>&copy; 2026 Ping Inc. All rights reserved.</p>
+                        <div className="flex items-center gap-6">
+                            <a href="#" className="hover:text-white transition-colors">Twitter</a>
+                            <a href="#" className="hover:text-white transition-colors">Discord</a>
+                            <a href="#" className="hover:text-white transition-colors">Instagram</a>
+                        </div>
+                    </div>
                 </div>
             </footer>
         </div>
