@@ -72,6 +72,7 @@ export const notificationService = {
 
 export const tournamentService = {
     getAll: () => api.get('/tournaments'),
+    getById: (id) => api.get(`/tournaments/${id}`),
     create: (data) => api.post('/tournaments', data),
     join: (id) => api.post(`/tournaments/${id}/join`),
 }

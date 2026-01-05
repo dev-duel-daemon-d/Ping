@@ -49,6 +49,11 @@ const tournamentSchema = new mongoose.Schema(
             enum: ['upcoming', 'ongoing', 'completed', 'cancelled'],
             default: 'upcoming',
         },
+        difficulty: {
+            type: String,
+            enum: ['Legendary', 'Expert', 'Rookie', 'Casual'],
+            default: 'Casual',
+        },
         maxParticipants: {
             type: Number,
             default: 100,

@@ -7,6 +7,8 @@ import Home from './pages/Home'
 import PingLanding from './pages/PingLanding'
 import AuthPage from './pages/AuthPage'
 import Dashboard from './pages/Dashboard'
+import Contests from './pages/Contests'
+import TournamentDetails from './pages/TournamentDetails'
 import NotFound from './pages/NotFound'
 
 function App() {
@@ -20,6 +22,8 @@ function App() {
                         <Route path="/register" element={<AuthPage />} />
                         <Route path="/dashboard" element={<Dashboard />} />
                         <Route path="/dashboard/:username" element={<Dashboard />} />
+                        <Route path="/contests" element={<Contests />} />
+                        <Route path="/contests/:id" element={<TournamentDetails />} />
                         <Route path="*" element={<NotFound />} />
                     </Routes>
                 </div>

@@ -19,6 +19,28 @@ router.get('/', async (req, res) => {
     }
 })
 
+// @route   GET /api/tournaments/:id
+// @desc    Get tournament by ID
+// @access  Public
+router.get('/:id', async (req, res) => {
+    try {
+        const tournament = await Tournament.findById(req.params.id)
+            .populate('organizer', 'username avatar')
+            .populate('participants', 'username avatar')
+        
+        if (!tournament) {
+            return res.status(404).json({ message: 'Tournament not found' })
+        }
+        res.json(tournament)
+    } catch (error) {
+        console.error('Get tournament error:', error)
+        if (error.kind === 'ObjectId') {
+            return res.status(404).json({ message: 'Tournament not found' })
+        }
+        res.status(500).json({ message: 'Server error' })
+    }
+})
+
 // @route   POST /api/tournaments
 // @desc    Create a tournament
 // @access  Private
