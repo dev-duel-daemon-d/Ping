@@ -1003,11 +1003,11 @@ const TeamHistoryTimeline = ({ teams, isOwnProfile, onEdit, onAdd, onDelete }) =
         )}
       </div>
 
-      <div className="relative group">
+      <div className="relative group overflow-visible">
         {/* Left Arrow */}
         <button
           onClick={scrollLeft}
-          className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 w-10 h-10 rounded-full bg-black/80 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-lime-500 hover:text-black transition-all opacity-0 group-hover:opacity-100"
+          className="absolute -left-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/90 backdrop-blur-md border border-lime-500/30 flex items-center justify-center text-white hover:bg-lime-500 hover:text-black transition-all opacity-0 group-hover:opacity-100 shadow-lg shadow-black/50"
         >
           <ChevronLeft className="w-5 h-5" />
         </button>
@@ -1015,17 +1015,29 @@ const TeamHistoryTimeline = ({ teams, isOwnProfile, onEdit, onAdd, onDelete }) =
         {/* Scrollable Container */}
         <div
           ref={scrollContainerRef}
-          className="flex gap-5 overflow-x-auto pb-4 scrollbar-hide scroll-smooth px-2"
+          className="flex gap-5 overflow-x-auto overflow-y-visible pt-4 pb-4 scrollbar-hide scroll-smooth px-6 mx-4"
         >
           {teams.length > 0 ? (
             teams.map((team) => (
               <div key={team._id || team.id} className="relative min-w-[220px] max-w-[220px] group/card flex-shrink-0">
-                {/* Glowing lime aura effect */}
-                <div className="absolute inset-0 bg-lime-500/20 blur-xl rounded-2xl opacity-40 group-hover/card:opacity-70 transition-opacity duration-300" />
-                <div className="absolute inset-0 bg-lime-400/10 blur-2xl rounded-2xl opacity-30 group-hover/card:opacity-50 transition-opacity duration-500 scale-110" />
+                {/* Animated Green Flame Effect */}
+                <div className="flame-container">
+                  <div className="flame-layer-1" />
+                  <div className="flame-layer-2" />
+                  <div className="flame-layer-3" />
+                  {/* Ember particles */}
+                  <div className="ember-particle" />
+                  <div className="ember-particle" />
+                  <div className="ember-particle" />
+                  <div className="ember-particle" />
+                  <div className="ember-particle" />
+                </div>
+
+                {/* Animated glowing border */}
+                <div className="flame-glow-border" />
 
                 {/* Card content */}
-                <div className="relative bg-[#1b1f23] border border-lime-500/30 group-hover/card:border-lime-500/60 rounded-2xl p-5 transition-all duration-300 h-full">
+                <div className="relative bg-[#1b1f23] border border-lime-500/30 group-hover/card:border-lime-500/60 rounded-2xl p-5 transition-all duration-300 h-full z-10">
                   <div className="flex items-center gap-3 mb-3">
                     {/* Team Logo */}
                     <div className="w-12 h-12 rounded-full bg-gradient-to-br from-slate-700 to-slate-900 border-2 border-lime-500/40 flex items-center justify-center overflow-hidden">
@@ -1085,7 +1097,7 @@ const TeamHistoryTimeline = ({ teams, isOwnProfile, onEdit, onAdd, onDelete }) =
         {/* Right Arrow */}
         <button
           onClick={scrollRight}
-          className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 w-10 h-10 rounded-full bg-black/80 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-lime-500 hover:text-black transition-all opacity-0 group-hover:opacity-100"
+          className="absolute -right-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/90 backdrop-blur-md border border-lime-500/30 flex items-center justify-center text-white hover:bg-lime-500 hover:text-black transition-all opacity-0 group-hover:opacity-100 shadow-lg shadow-black/50"
         >
           <ChevronRight className="w-5 h-5" />
         </button>
