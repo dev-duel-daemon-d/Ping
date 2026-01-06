@@ -438,10 +438,15 @@ const ChatModal = ({ open, onClose, recipient, currentUser }) => {
   );
 };
 
-const FindModal = ({ open, onClose, onConnect }) => {
+const FindModal = ({ open, onClose, onConnect, connections = [] }) => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  // Get the IDs of all connections to filter them out
+  const connectionIds = React.useMemo(() => {
+    return connections.map(conn => conn._id || conn.id);
+  }, [connections]);
 
   useEffect(() => {
     if (open) {
@@ -453,7 +458,10 @@ const FindModal = ({ open, onClose, onConnect }) => {
     setLoading(true);
     try {
       const response = await userService.search(q);
-      setResults(response.data.users || []);
+      const allUsers = response.data.users || [];
+      // Filter out users who are already connections
+      const filteredUsers = allUsers.filter(user => !connectionIds.includes(user._id));
+      setResults(filteredUsers);
     } catch (error) {
       console.error("Search failed", error);
     }
@@ -2224,6 +2232,7 @@ const Dashboard = () => {
           open={showFindModal}
           onClose={() => setShowFindModal(false)}
           onConnect={handleConnect}
+          connections={connections}
         />
 
         {/* Chat Modal */}
