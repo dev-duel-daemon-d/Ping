@@ -5,12 +5,12 @@ import { protect } from '../middleware/auth.js'
 const router = express.Router()
 
 // @route   GET /api/profile/data
-// @desc    Get user's profile data (team history, tournaments, setup)
+// @desc    Get user's profile data (team history, tournaments, setup, socials, game experiences)
 // @access  Private
 router.get('/data', protect, async (req, res) => {
     try {
         const user = await User.findById(req.user._id)
-            .select('teamHistory tournamentExperience gamingSetup')
+            .select('teamHistory tournamentExperience gamingSetup socials gameExperiences')
         res.json(user)
     } catch (error) {
         console.error('Get profile data error:', error)
@@ -24,13 +24,164 @@ router.get('/data', protect, async (req, res) => {
 router.get('/data/:username', async (req, res) => {
     try {
         const user = await User.findOne({ username: req.params.username })
-            .select('teamHistory tournamentExperience gamingSetup')
+            .select('teamHistory tournamentExperience gamingSetup socials gameExperiences')
         if (!user) {
             return res.status(404).json({ message: 'User not found' })
         }
         res.json(user)
     } catch (error) {
         console.error('Get profile data error:', error)
+        res.status(500).json({ message: 'Server error' })
+    }
+})
+
+// ==================== GAME EXPERIENCES ====================
+
+// @route   POST /api/profile/games
+// @desc    Add new game experience
+// @access  Private
+router.post('/games', protect, async (req, res) => {
+    try {
+        const { game, genre, role, rank, peakRank, isPrimary } = req.body
+
+        if (!game || !role || !rank) {
+            return res.status(400).json({ message: 'Game, role, and rank are required' })
+        }
+
+        const user = await User.findById(req.user._id)
+
+        // Check for duplicates (case-insensitive)
+        const exists = user.gameExperiences.some(
+            g => g.game.toLowerCase() === game.trim().toLowerCase()
+        )
+        if (exists) {
+            return res.status(400).json({ message: 'This game is already in your experience list' })
+        }
+
+        // If this is set as primary, unset others
+        if (isPrimary) {
+            user.gameExperiences.forEach(g => g.isPrimary = false)
+        }
+
+        user.gameExperiences.push({ 
+            game: game.trim(), 
+            genre: genre || '',
+            role, 
+            rank, 
+            peakRank, 
+            isPrimary: isPrimary || user.gameExperiences.length === 0 
+        })
+        
+        await user.save()
+
+        res.status(201).json(user.gameExperiences)
+    } catch (error) {
+        console.error('Add game experience error:', error)
+        res.status(500).json({ message: 'Server error' })
+    }
+})
+
+// @route   PUT /api/profile/games/:id
+// @desc    Update a game experience
+// @access  Private
+router.put('/games/:id', protect, async (req, res) => {
+    try {
+        const { game, genre, role, rank, peakRank, isPrimary } = req.body
+        const user = await User.findById(req.user._id)
+
+        const gameIndex = user.gameExperiences.findIndex(
+            g => g._id.toString() === req.params.id
+        )
+
+        if (gameIndex === -1) {
+            return res.status(404).json({ message: 'Game not found' })
+        }
+
+        // Check for duplicates if game name is being changed
+        if (game && game.trim().toLowerCase() !== user.gameExperiences[gameIndex].game.toLowerCase()) {
+            const exists = user.gameExperiences.some(
+                g => g.game.toLowerCase() === game.trim().toLowerCase()
+            )
+            if (exists) {
+                return res.status(400).json({ message: 'This game is already in your experience list' })
+            }
+        }
+
+        // If setting as primary, unset others
+        if (isPrimary) {
+            user.gameExperiences.forEach(g => g.isPrimary = false)
+        }
+
+        user.gameExperiences[gameIndex] = {
+            ...user.gameExperiences[gameIndex].toObject(),
+            game: game ? game.trim() : user.gameExperiences[gameIndex].game,
+            genre: genre !== undefined ? genre : user.gameExperiences[gameIndex].genre,
+            role: role || user.gameExperiences[gameIndex].role,
+            rank: rank || user.gameExperiences[gameIndex].rank,
+            peakRank: peakRank !== undefined ? peakRank : user.gameExperiences[gameIndex].peakRank,
+            isPrimary: isPrimary !== undefined ? isPrimary : user.gameExperiences[gameIndex].isPrimary
+        }
+
+        await user.save()
+        res.json(user.gameExperiences)
+    } catch (error) {
+        console.error('Update game experience error:', error)
+        res.status(500).json({ message: 'Server error' })
+    }
+})
+
+// @route   DELETE /api/profile/games/:id
+// @desc    Remove game from experience
+// @access  Private
+router.delete('/games/:id', protect, async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id)
+        
+        // Check if deleting primary game
+        const gameToDelete = user.gameExperiences.find(g => g._id.toString() === req.params.id)
+        const wasPrimary = gameToDelete?.isPrimary
+
+        user.gameExperiences = user.gameExperiences.filter(
+            g => g._id.toString() !== req.params.id
+        )
+
+        // If we deleted the primary game and there are others left, make the first one primary
+        if (wasPrimary && user.gameExperiences.length > 0) {
+            user.gameExperiences[0].isPrimary = true
+        }
+
+        await user.save()
+
+        res.json(user.gameExperiences)
+    } catch (error) {
+        console.error('Delete game experience error:', error)
+        res.status(500).json({ message: 'Server error' })
+    }
+})
+
+// ==================== SOCIALS ====================
+
+// @route   PUT /api/profile/socials
+// @desc    Update social media handles
+// @access  Private
+router.put('/socials', protect, async (req, res) => {
+    try {
+        const { twitter, instagram, twitch, youtube, tiktok, discord } = req.body
+        const user = await User.findById(req.user._id)
+
+        user.socials = {
+            twitter: twitter !== undefined ? twitter : user.socials?.twitter || '',
+            instagram: instagram !== undefined ? instagram : user.socials?.instagram || '',
+            twitch: twitch !== undefined ? twitch : user.socials?.twitch || '',
+            youtube: youtube !== undefined ? youtube : user.socials?.youtube || '',
+            tiktok: tiktok !== undefined ? tiktok : user.socials?.tiktok || '',
+            discord: discord !== undefined ? discord : user.socials?.discord || ''
+        }
+
+        await user.save()
+        res.json(user.socials)
+    } catch (error) {
+        console.error('Update socials error:', error)
         res.status(500).json({ message: 'Server error' })
     }
 })
