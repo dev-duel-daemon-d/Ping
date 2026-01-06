@@ -39,38 +39,70 @@ import {
   Link as LinkIcon,
   Crown,
   ChevronUp,
-  ChevronDown
+  ChevronDown,
 } from "lucide-react";
-import { Avatar, Modal, Box, IconButton, InputBase, Badge, Menu, MenuItem, Typography, Button, TextField } from "@mui/material";
+import {
+  Avatar,
+  Modal,
+  Box,
+  IconButton,
+  InputBase,
+  Badge,
+  Menu,
+  MenuItem,
+  Typography,
+  Button,
+  TextField,
+} from "@mui/material";
 import { X, Check } from "lucide-react";
-import { userService, notificationService, connectionService, messageService, uploadService, profileService, gameService } from "../services/api";
+import {
+  userService,
+  notificationService,
+  connectionService,
+  messageService,
+  uploadService,
+  profileService,
+  gameService,
+} from "../services/api";
 
 // --- Custom Icons for Socials ---
 const DiscordIcon = ({ className }) => (
-  <svg className={className} fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+  <svg
+    className={className}
+    fill="currentColor"
+    viewBox="0 0 24 24"
+    xmlns="http://www.w3.org/2000/svg"
+  >
     <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037 13.46 13.46 0 0 0-1.063 2.193 18.068 18.068 0 0 0-4.57 0 13.513 13.513 0 0 0-1.07-2.193.076.076 0 0 0-.078-.037 19.736 19.736 0 0 0-4.885 1.515.077.077 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" />
   </svg>
 );
 
 const TikTokIcon = ({ className }) => (
-  <svg className={className} fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+  <svg
+    className={className}
+    fill="currentColor"
+    viewBox="0 0 24 24"
+    xmlns="http://www.w3.org/2000/svg"
+  >
     <path d="M19.589 6.686a4.793 4.793 0 0 1-3.77-4.245V2h-3.445v13.672a2.896 2.896 0 0 1-5.201 1.743l-.002-.001.002.001a2.895 2.895 0 0 1 3.183-4.51v-3.5a6.394 6.394 0 0 0-5.394 9.365 6.394 6.394 0 0 0 10.964-2.413V6.659c.82 1.124 2.154 1.814 3.67 1.818h.035v-3.44h-.034c-.876.002-1.685-.303-2.316-.788l-.001.002z" />
   </svg>
 );
 
 // --- Game Logo Helper ---
 const GameLogo = ({ gameName, supportedGames, className }) => {
-  const game = supportedGames.find(g => g.name.toLowerCase() === gameName?.toLowerCase());
-  
+  const game = supportedGames.find(
+    (g) => g.name.toLowerCase() === gameName?.toLowerCase(),
+  );
+
   if (game?.logo) {
     return (
-      <img 
-        src={game.logo} 
-        alt={gameName} 
+      <img
+        src={game.logo}
+        alt={gameName}
         className={`${className} object-contain`}
         onError={(e) => {
-          e.target.style.display = 'none';
-          e.target.nextSibling.style.display = 'block';
+          e.target.style.display = "none";
+          e.target.nextSibling.style.display = "block";
         }}
       />
     );
@@ -83,15 +115,69 @@ const GameLogo = ({ gameName, supportedGames, className }) => {
 // --- Socials Display Component ---
 const SocialsDisplay = ({ socials, isOwnProfile, onEdit }) => {
   const socialConfig = [
-    { key: 'twitter', icon: Twitter, color: 'text-sky-400', bg: 'bg-sky-400/10', border: 'border-sky-400/20', hover: 'hover:bg-sky-400/20', label: 'Twitter', urlPrefix: 'https://twitter.com/' },
-    { key: 'instagram', icon: Instagram, color: 'text-pink-500', bg: 'bg-pink-500/10', border: 'border-pink-500/20', hover: 'hover:bg-pink-500/20', label: 'Instagram', urlPrefix: 'https://instagram.com/' },
-    { key: 'twitch', icon: Twitch, color: 'text-purple-400', bg: 'bg-purple-400/10', border: 'border-purple-400/20', hover: 'hover:bg-purple-400/20', label: 'Twitch', urlPrefix: 'https://twitch.tv/' },
-    { key: 'youtube', icon: Youtube, color: 'text-red-500', bg: 'bg-red-500/10', border: 'border-red-500/20', hover: 'hover:bg-red-500/20', label: 'YouTube', urlPrefix: 'https://youtube.com/' },
-    { key: 'tiktok', icon: TikTokIcon, color: 'text-[#ff0050]', bg: 'bg-[#ff0050]/10', border: 'border-[#ff0050]/20', hover: 'hover:bg-[#ff0050]/20', label: 'TikTok', urlPrefix: 'https://tiktok.com/@' },
-    { key: 'discord', icon: DiscordIcon, color: 'text-indigo-400', bg: 'bg-indigo-400/10', border: 'border-indigo-400/20', hover: 'hover:bg-indigo-400/20', label: 'Discord', isCopy: true },
+    {
+      key: "twitter",
+      icon: Twitter,
+      color: "text-sky-400",
+      bg: "bg-sky-400/10",
+      border: "border-sky-400/20",
+      hover: "hover:bg-sky-400/20",
+      label: "Twitter",
+      urlPrefix: "https://twitter.com/",
+    },
+    {
+      key: "instagram",
+      icon: Instagram,
+      color: "text-pink-500",
+      bg: "bg-pink-500/10",
+      border: "border-pink-500/20",
+      hover: "hover:bg-pink-500/20",
+      label: "Instagram",
+      urlPrefix: "https://instagram.com/",
+    },
+    {
+      key: "twitch",
+      icon: Twitch,
+      color: "text-purple-400",
+      bg: "bg-purple-400/10",
+      border: "border-purple-400/20",
+      hover: "hover:bg-purple-400/20",
+      label: "Twitch",
+      urlPrefix: "https://twitch.tv/",
+    },
+    {
+      key: "youtube",
+      icon: Youtube,
+      color: "text-red-500",
+      bg: "bg-red-500/10",
+      border: "border-red-500/20",
+      hover: "hover:bg-red-500/20",
+      label: "YouTube",
+      urlPrefix: "https://youtube.com/",
+    },
+    {
+      key: "tiktok",
+      icon: TikTokIcon,
+      color: "text-[#ff0050]",
+      bg: "bg-[#ff0050]/10",
+      border: "border-[#ff0050]/20",
+      hover: "hover:bg-[#ff0050]/20",
+      label: "TikTok",
+      urlPrefix: "https://tiktok.com/@",
+    },
+    {
+      key: "discord",
+      icon: DiscordIcon,
+      color: "text-indigo-400",
+      bg: "bg-indigo-400/10",
+      border: "border-indigo-400/20",
+      hover: "hover:bg-indigo-400/20",
+      label: "Discord",
+      isCopy: true,
+    },
   ];
 
-  const hasSocials = socialConfig.some(s => socials?.[s.key]);
+  const hasSocials = socialConfig.some((s) => socials?.[s.key]);
 
   if (!hasSocials && !isOwnProfile) return null;
 
@@ -102,22 +188,22 @@ const SocialsDisplay = ({ socials, isOwnProfile, onEdit }) => {
         if (!handle) return null;
 
         const Icon = social.icon;
-        
+
         if (social.isCopy) {
-           return (
-             <div
-               key={social.key}
-               onClick={() => {
-                 navigator.clipboard.writeText(handle);
-                 // Could add a toast here
-                 alert(`Copied ${handle} to clipboard!`); 
-               }}
-               className={`flex items-center gap-2 px-3 py-1.5 rounded-full border ${social.bg} ${social.border} ${social.color} ${social.hover} transition-all cursor-pointer group`}
-             >
-               <Icon className="w-3.5 h-3.5" />
-               <span className="text-xs font-bold">{handle}</span>
-             </div>
-           )
+          return (
+            <div
+              key={social.key}
+              onClick={() => {
+                navigator.clipboard.writeText(handle);
+                // Could add a toast here
+                alert(`Copied ${handle} to clipboard!`);
+              }}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-full border ${social.bg} ${social.border} ${social.color} ${social.hover} transition-all cursor-pointer group`}
+            >
+              <Icon className="w-3.5 h-3.5" />
+              <span className="text-xs font-bold">{handle}</span>
+            </div>
+          );
         }
 
         return (
@@ -148,13 +234,19 @@ const SocialsDisplay = ({ socials, isOwnProfile, onEdit }) => {
 };
 
 // --- Game Edit Modal ---
-const GameEditModal = ({ open, onClose, onSave, editingGame, supportedGames }) => {
+const GameEditModal = ({
+  open,
+  onClose,
+  onSave,
+  editingGame,
+  supportedGames,
+}) => {
   const [formData, setFormData] = useState({
-    game: '',
-    genre: '',
-    role: '',
-    rank: '',
-    peakRank: '',
+    game: "",
+    genre: "",
+    role: "",
+    rank: "",
+    peakRank: "",
     isPrimary: false,
   });
   const [isOther, setIsOther] = useState(false);
@@ -169,99 +261,136 @@ const GameEditModal = ({ open, onClose, onSave, editingGame, supportedGames }) =
     "Sports Games (Simulation)",
     "Racing Games (Sim Racing)",
     "Digital Card Games (CCG/TCG)",
-    "Auto-Battlers (Auto Chess)"
+    "Auto-Battlers (Auto Chess)",
   ];
 
   useEffect(() => {
     if (editingGame) {
-      const isKnown = supportedGames.some(g => g.name === editingGame.game);
+      const isKnown = supportedGames.some((g) => g.name === editingGame.game);
       setFormData({
-        game: editingGame.game || '',
-        genre: editingGame.genre || '',
-        role: editingGame.role || '',
-        rank: editingGame.rank || '',
-        peakRank: editingGame.peakRank || '',
+        game: editingGame.game || "",
+        genre: editingGame.genre || "",
+        role: editingGame.role || "",
+        rank: editingGame.rank || "",
+        peakRank: editingGame.peakRank || "",
         isPrimary: editingGame.isPrimary || false,
       });
       setIsOther(!isKnown && !!editingGame.game);
     } else {
-      setFormData({ game: '', genre: '', role: '', rank: '', peakRank: '', isPrimary: false });
+      setFormData({
+        game: "",
+        genre: "",
+        role: "",
+        rank: "",
+        peakRank: "",
+        isPrimary: false,
+      });
       setIsOther(false);
     }
   }, [editingGame, open, supportedGames]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.game.trim() || !formData.role.trim() || !formData.rank.trim()) return;
+    if (!formData.game.trim() || !formData.role.trim() || !formData.rank.trim())
+      return;
 
     setSaving(true);
     try {
       await onSave(formData, editingGame?._id);
       onClose();
     } catch (err) {
-      console.error('Failed to save game:', err);
+      console.error("Failed to save game:", err);
     }
     setSaving(false);
   };
 
   return (
-    <EditModal open={open} onClose={onClose} title={editingGame ? "Edit Game Experience" : "Add Game Experience"}>
+    <EditModal
+      open={open}
+      onClose={onClose}
+      title={editingGame ? "Edit Game Experience" : "Add Game Experience"}
+    >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-slate-400 mb-2">Game *</label>
+          <label className="block text-sm font-medium text-slate-400 mb-2">
+            Game *
+          </label>
           {isOther ? (
-             <div className="space-y-4">
-               <div className="flex gap-2">
-                 <input
-                   type="text"
-                   value={formData.game}
-                   onChange={(e) => setFormData({ ...formData, game: e.target.value })}
-                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50"
-                   placeholder="Enter game name"
-                   required
-                 />
-                 <button
-                   type="button"
-                   onClick={() => { setIsOther(false); setFormData({ ...formData, game: '', genre: '' }); }}
-                   className="px-3 bg-white/10 rounded-xl text-slate-400 hover:text-white hover:bg-white/20"
-                 >
-                   <X className="w-4 h-4" />
-                 </button>
-               </div>
-               
-               <div>
-                 <label className="block text-sm font-medium text-slate-400 mb-2">Genre *</label>
-                 <select
-                   value={formData.genre}
-                   onChange={(e) => setFormData({ ...formData, genre: e.target.value })}
-                   className="w-full bg-[#1b1f23] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-lime-500/50 appearance-none"
-                   required
-                 >
-                   <option value="" disabled>Select a genre</option>
-                   {GENRES.map(genre => (
-                     <option key={genre} value={genre}>{genre}</option>
-                   ))}
-                 </select>
-               </div>
-             </div>
+            <div className="space-y-4">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={formData.game}
+                  onChange={(e) =>
+                    setFormData({ ...formData, game: e.target.value })
+                  }
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50"
+                  placeholder="Enter game name"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsOther(false);
+                    setFormData({ ...formData, game: "", genre: "" });
+                  }}
+                  className="px-3 bg-white/10 rounded-xl text-slate-400 hover:text-white hover:bg-white/20"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-400 mb-2">
+                  Genre *
+                </label>
+                <select
+                  value={formData.genre}
+                  onChange={(e) =>
+                    setFormData({ ...formData, genre: e.target.value })
+                  }
+                  className="w-full bg-[#1b1f23] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-lime-500/50 appearance-none"
+                  required
+                >
+                  <option value="" disabled>
+                    Select a genre
+                  </option>
+                  {GENRES.map((genre) => (
+                    <option key={genre} value={genre}>
+                      {genre}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
           ) : (
             <select
               value={formData.game}
               onChange={(e) => {
-                if (e.target.value === 'Other') {
+                if (e.target.value === "Other") {
                   setIsOther(true);
-                  setFormData({ ...formData, game: '', genre: '' });
+                  setFormData({ ...formData, game: "", genre: "" });
                 } else {
-                  const selectedGame = supportedGames.find(g => g.name === e.target.value);
-                  setFormData({ ...formData, game: e.target.value, genre: selectedGame?.genre || '' });
+                  const selectedGame = supportedGames.find(
+                    (g) => g.name === e.target.value,
+                  );
+                  setFormData({
+                    ...formData,
+                    game: e.target.value,
+                    genre: selectedGame?.genre || "",
+                  });
                 }
               }}
               className="w-full bg-[#1b1f23] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-lime-500/50 appearance-none"
               required
             >
-              <option value="" disabled>Select a game</option>
-              {supportedGames.map(game => (
-                <option key={game._id} value={game.name}>{game.name}</option>
+              <option value="" disabled>
+                Select a game
+              </option>
+              {supportedGames.map((game) => (
+                <option key={game._id} value={game.name}>
+                  {game.name}
+                </option>
               ))}
               <option value="Other">Other...</option>
             </select>
@@ -269,22 +398,30 @@ const GameEditModal = ({ open, onClose, onSave, editingGame, supportedGames }) =
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-slate-400 mb-2">Role *</label>
+            <label className="block text-sm font-medium text-slate-400 mb-2">
+              Role *
+            </label>
             <input
               type="text"
               value={formData.role}
-              onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, role: e.target.value })
+              }
               className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50"
               placeholder="e.g. Duelist"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-400 mb-2">Current Rank *</label>
+            <label className="block text-sm font-medium text-slate-400 mb-2">
+              Current Rank *
+            </label>
             <input
               type="text"
               value={formData.rank}
-              onChange={(e) => setFormData({ ...formData, rank: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, rank: e.target.value })
+              }
               className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50"
               placeholder="e.g. Ascendant 2"
               required
@@ -293,21 +430,34 @@ const GameEditModal = ({ open, onClose, onSave, editingGame, supportedGames }) =
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-400 mb-2">Peak Rank (Optional)</label>
+          <label className="block text-sm font-medium text-slate-400 mb-2">
+            Peak Rank (Optional)
+          </label>
           <input
             type="text"
             value={formData.peakRank}
-            onChange={(e) => setFormData({ ...formData, peakRank: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, peakRank: e.target.value })
+            }
             className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50"
             placeholder="e.g. Immortal 3"
           />
         </div>
 
-        <div className="flex items-center gap-3 p-3 bg-white/5 rounded-xl border border-white/10 cursor-pointer" onClick={() => setFormData(prev => ({ ...prev, isPrimary: !prev.isPrimary }))}>
-          <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${formData.isPrimary ? 'bg-lime-500 border-lime-500' : 'border-slate-500'}`}>
+        <div
+          className="flex items-center gap-3 p-3 bg-white/5 rounded-xl border border-white/10 cursor-pointer"
+          onClick={() =>
+            setFormData((prev) => ({ ...prev, isPrimary: !prev.isPrimary }))
+          }
+        >
+          <div
+            className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${formData.isPrimary ? "bg-lime-500 border-lime-500" : "border-slate-500"}`}
+          >
             {formData.isPrimary && <Check className="w-3.5 h-3.5 text-black" />}
           </div>
-          <span className="text-sm font-medium text-slate-200">Set as Primary Game</span>
+          <span className="text-sm font-medium text-slate-200">
+            Set as Primary Game
+          </span>
         </div>
 
         <div className="flex gap-3 justify-end pt-4">
@@ -323,7 +473,7 @@ const GameEditModal = ({ open, onClose, onSave, editingGame, supportedGames }) =
             disabled={saving || !formData.game.trim()}
             className="px-5 py-2.5 bg-gradient-to-r from-lime-500 to-green-500 text-black rounded-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg hover:shadow-lime-500/30 transition-all"
           >
-            {saving ? 'Saving...' : (editingGame ? 'Update' : 'Add Game')}
+            {saving ? "Saving..." : editingGame ? "Update" : "Add Game"}
           </button>
         </div>
       </form>
@@ -334,24 +484,24 @@ const GameEditModal = ({ open, onClose, onSave, editingGame, supportedGames }) =
 // --- Socials Edit Modal ---
 const SocialsEditModal = ({ open, onClose, onSave, currentSocials }) => {
   const [formData, setFormData] = useState({
-    twitter: '',
-    instagram: '',
-    twitch: '',
-    youtube: '',
-    tiktok: '',
-    discord: '',
+    twitter: "",
+    instagram: "",
+    twitch: "",
+    youtube: "",
+    tiktok: "",
+    discord: "",
   });
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (currentSocials) {
       setFormData({
-        twitter: currentSocials.twitter || '',
-        instagram: currentSocials.instagram || '',
-        twitch: currentSocials.twitch || '',
-        youtube: currentSocials.youtube || '',
-        tiktok: currentSocials.tiktok || '',
-        discord: currentSocials.discord || '',
+        twitter: currentSocials.twitter || "",
+        instagram: currentSocials.instagram || "",
+        twitch: currentSocials.twitch || "",
+        youtube: currentSocials.youtube || "",
+        tiktok: currentSocials.tiktok || "",
+        discord: currentSocials.discord || "",
       });
     }
   }, [currentSocials, open]);
@@ -363,18 +513,48 @@ const SocialsEditModal = ({ open, onClose, onSave, currentSocials }) => {
       await onSave(formData);
       onClose();
     } catch (err) {
-      console.error('Failed to save socials:', err);
+      console.error("Failed to save socials:", err);
     }
     setSaving(false);
   };
 
   const socialInputs = [
-    { key: 'twitter', label: 'Twitter Handle', icon: Twitter, placeholder: '@username' },
-    { key: 'instagram', label: 'Instagram Handle', icon: Instagram, placeholder: '@username' },
-    { key: 'twitch', label: 'Twitch Channel', icon: Twitch, placeholder: 'username' },
-    { key: 'youtube', label: 'YouTube Channel', icon: Youtube, placeholder: '@channel' },
-    { key: 'tiktok', label: 'TikTok Handle', icon: TikTokIcon, placeholder: '@username' },
-    { key: 'discord', label: 'Discord Username', icon: DiscordIcon, placeholder: 'username#0000' },
+    {
+      key: "twitter",
+      label: "Twitter Handle",
+      icon: Twitter,
+      placeholder: "@username",
+    },
+    {
+      key: "instagram",
+      label: "Instagram Handle",
+      icon: Instagram,
+      placeholder: "@username",
+    },
+    {
+      key: "twitch",
+      label: "Twitch Channel",
+      icon: Twitch,
+      placeholder: "username",
+    },
+    {
+      key: "youtube",
+      label: "YouTube Channel",
+      icon: Youtube,
+      placeholder: "@channel",
+    },
+    {
+      key: "tiktok",
+      label: "TikTok Handle",
+      icon: TikTokIcon,
+      placeholder: "@username",
+    },
+    {
+      key: "discord",
+      label: "Discord Username",
+      icon: DiscordIcon,
+      placeholder: "username#0000",
+    },
   ];
 
   return (
@@ -389,7 +569,9 @@ const SocialsEditModal = ({ open, onClose, onSave, currentSocials }) => {
               <input
                 type="text"
                 value={formData[key]}
-                onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, [key]: e.target.value })
+                }
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:border-lime-500/50"
                 placeholder={placeholder}
               />
@@ -410,7 +592,7 @@ const SocialsEditModal = ({ open, onClose, onSave, currentSocials }) => {
             disabled={saving}
             className="px-5 py-2.5 bg-gradient-to-r from-lime-500 to-green-500 text-black rounded-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg hover:shadow-lime-500/30 transition-all"
           >
-            {saving ? 'Saving...' : 'Save Socials'}
+            {saving ? "Saving..." : "Save Socials"}
           </button>
         </div>
       </form>
@@ -418,20 +600,26 @@ const SocialsEditModal = ({ open, onClose, onSave, currentSocials }) => {
   );
 };
 
-
-
 // --- Helper Components ---
-const NotificationMenu = ({ anchorEl, open, onClose, notifications, onAccept, onMarkRead, onOpenChat }) => {
+const NotificationMenu = ({
+  anchorEl,
+  open,
+  onClose,
+  notifications,
+  onAccept,
+  onMarkRead,
+  onOpenChat,
+}) => {
   // Group message notifications by sender - only show unread
   const groupedNotifications = React.useMemo(() => {
     const messagesByUser = new Map();
     const otherNotifs = [];
 
-    notifications.forEach(notif => {
+    notifications.forEach((notif) => {
       // Skip read notifications
       if (notif.isRead) return;
 
-      if (notif.type === 'message') {
+      if (notif.type === "message") {
         const senderId = notif.sender?._id || notif.sender;
         if (messagesByUser.has(senderId)) {
           const existing = messagesByUser.get(senderId);
@@ -455,7 +643,7 @@ const NotificationMenu = ({ anchorEl, open, onClose, notifications, onAccept, on
   }, [notifications]);
 
   const handleGroupMarkRead = (ids) => {
-    ids.forEach(id => onMarkRead(id));
+    ids.forEach((id) => onMarkRead(id));
   };
 
   return (
@@ -467,13 +655,16 @@ const NotificationMenu = ({ anchorEl, open, onClose, notifications, onAccept, on
         style: {
           maxHeight: 400,
           width: 350,
-          backgroundColor: '#1b1f23',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          color: 'white',
+          backgroundColor: "#1b1f23",
+          border: "1px solid rgba(255, 255, 255, 0.1)",
+          color: "white",
         },
       }}
     >
-      <Typography variant="h6" className="p-4 border-b border-white/10 text-slate-200">
+      <Typography
+        variant="h6"
+        className="p-4 border-b border-white/10 text-slate-200"
+      >
         Notifications
       </Typography>
       {groupedNotifications.length === 0 ? (
@@ -484,9 +675,9 @@ const NotificationMenu = ({ anchorEl, open, onClose, notifications, onAccept, on
         groupedNotifications.map((notif) => (
           <MenuItem
             key={notif._id}
-            className={`flex flex-col items-start gap-2 border-b border-white/5 p-4 ${notif.hasUnread || !notif.isRead ? 'bg-white/5' : ''}`}
+            className={`flex flex-col items-start gap-2 border-b border-white/5 p-4 ${notif.hasUnread || !notif.isRead ? "bg-white/5" : ""}`}
             onClick={() => {
-              if (notif.type === 'message') {
+              if (notif.type === "message") {
                 // Open chat with this sender
                 if (onOpenChat) onOpenChat(notif.sender);
                 onClose();
@@ -500,32 +691,41 @@ const NotificationMenu = ({ anchorEl, open, onClose, notifications, onAccept, on
           >
             <div className="flex items-center gap-3 w-full">
               <div className="relative">
-                <Avatar src={notif.sender?.avatar} className="w-10 h-10 border border-lime-500/30">
+                <Avatar
+                  src={notif.sender?.avatar}
+                  className="w-10 h-10 border border-lime-500/30"
+                >
                   {notif.sender?.username?.[0]}
                 </Avatar>
                 {notif.isGrouped && notif.count > 1 && (
                   <div className="absolute -top-1 -right-1 w-5 h-5 bg-lime-500 rounded-full flex items-center justify-center">
-                    <span className="text-[10px] font-bold text-black">{notif.count}</span>
+                    <span className="text-[10px] font-bold text-black">
+                      {notif.count}
+                    </span>
                   </div>
                 )}
               </div>
               <div className="flex-1 overflow-hidden">
-                <Typography variant="subtitle2" className="text-slate-200 font-bold truncate">
+                <Typography
+                  variant="subtitle2"
+                  className="text-slate-200 font-bold truncate"
+                >
                   {notif.sender?.username}
                 </Typography>
                 <Typography variant="body2" className="text-slate-400 text-xs">
-                  {notif.type === 'connection_request' && 'sent you a connection request'}
-                  {notif.type === 'connection_accepted' && 'accepted your connection request'}
-                  {notif.type === 'message' && (
-                    notif.count > 1
+                  {notif.type === "connection_request" &&
+                    "sent you a connection request"}
+                  {notif.type === "connection_accepted" &&
+                    "accepted your connection request"}
+                  {notif.type === "message" &&
+                    (notif.count > 1
                       ? `sent you ${notif.count} messages`
-                      : 'sent you a message'
-                  )}
+                      : "sent you a message")}
                 </Typography>
               </div>
             </div>
 
-            {notif.type === 'connection_request' && !notif.isRead && (
+            {notif.type === "connection_request" && !notif.isRead && (
               <div className="flex gap-2 w-full mt-2 pl-12">
                 <Button
                   size="small"
@@ -536,7 +736,11 @@ const NotificationMenu = ({ anchorEl, open, onClose, notifications, onAccept, on
                     e.stopPropagation();
                     onAccept(notif.relatedId, notif._id);
                   }}
-                  sx={{ bgcolor: '#84cc16', color: 'black', '&:hover': { bgcolor: '#65a30d' } }}
+                  sx={{
+                    bgcolor: "#84cc16",
+                    color: "black",
+                    "&:hover": { bgcolor: "#65a30d" },
+                  }}
                 >
                   Accept
                 </Button>
@@ -570,12 +774,13 @@ const ChatModal = ({ open, onClose, recipient, currentUser }) => {
   useEffect(() => {
     if (open && recipientId) {
       setLoading(true);
-      messageService.getHistory(recipientId)
-        .then(res => {
+      messageService
+        .getHistory(recipientId)
+        .then((res) => {
           setMessages(res.data);
           setLoading(false);
         })
-        .catch(err => {
+        .catch((err) => {
           console.error("Failed to fetch messages", err);
           setLoading(false);
         });
@@ -592,23 +797,29 @@ const ChatModal = ({ open, onClose, recipient, currentUser }) => {
     if (socket && open) {
       const handleReceive = (data) => {
         if (data.senderId === recipientId) {
-          setMessages(prev => [...prev, {
-            _id: data._id,
-            sender: { _id: data.senderId, username: data.senderName },
-            content: data.content,
-            createdAt: data.createdAt,
-          }]);
+          setMessages((prev) => [
+            ...prev,
+            {
+              _id: data._id,
+              sender: { _id: data.senderId, username: data.senderName },
+              content: data.content,
+              createdAt: data.createdAt,
+            },
+          ]);
         }
       };
 
       const handleSent = (data) => {
         if (data.recipientId === recipientId) {
-          setMessages(prev => [...prev, {
-            _id: data._id,
-            sender: { _id: currentUser?._id || currentUser?.id },
-            content: data.content,
-            createdAt: data.createdAt,
-          }]);
+          setMessages((prev) => [
+            ...prev,
+            {
+              _id: data._id,
+              sender: { _id: currentUser?._id || currentUser?.id },
+              content: data.content,
+              createdAt: data.createdAt,
+            },
+          ]);
         }
       };
 
@@ -618,14 +829,14 @@ const ChatModal = ({ open, onClose, recipient, currentUser }) => {
         }
       };
 
-      socket.on('message:receive', handleReceive);
-      socket.on('message:sent', handleSent);
-      socket.on('typing:indicator', handleTyping);
+      socket.on("message:receive", handleReceive);
+      socket.on("message:sent", handleSent);
+      socket.on("typing:indicator", handleTyping);
 
       return () => {
-        socket.off('message:receive', handleReceive);
-        socket.off('message:sent', handleSent);
-        socket.off('typing:indicator', handleTyping);
+        socket.off("message:receive", handleReceive);
+        socket.off("message:sent", handleSent);
+        socket.off("typing:indicator", handleTyping);
       };
     }
   }, [socket, open, recipientId, currentUser]);
@@ -633,17 +844,17 @@ const ChatModal = ({ open, onClose, recipient, currentUser }) => {
   const handleSend = () => {
     if (!newMessage.trim() || !socket) return;
 
-    socket.emit('message:private', {
+    socket.emit("message:private", {
       recipientId,
       content: newMessage.trim(),
     });
 
     setNewMessage("");
-    socket.emit('typing:stop', { recipientId });
+    socket.emit("typing:stop", { recipientId });
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
@@ -653,13 +864,13 @@ const ChatModal = ({ open, onClose, recipient, currentUser }) => {
     setNewMessage(e.target.value);
 
     if (socket && recipientId) {
-      socket.emit('typing:start', { recipientId });
+      socket.emit("typing:start", { recipientId });
 
       if (typingTimeoutRef.current) {
         clearTimeout(typingTimeoutRef.current);
       }
       typingTimeoutRef.current = setTimeout(() => {
-        socket.emit('typing:stop', { recipientId });
+        socket.emit("typing:stop", { recipientId });
       }, 1500);
     }
   };
@@ -686,14 +897,14 @@ const ChatModal = ({ open, onClose, recipient, currentUser }) => {
         stiffness: 400,
         damping: 15,
         mass: 0.8,
-      }
+      },
     },
     exit: {
       opacity: 0,
       scale: 0.5,
       y: 30,
-      transition: { duration: 0.2 }
-    }
+      transition: { duration: 0.2 },
+    },
   };
 
   return (
@@ -721,13 +932,20 @@ const ChatModal = ({ open, onClose, recipient, currentUser }) => {
             {/* Header */}
             <div className="p-4 border-b border-white/10 flex items-center gap-3 bg-black/30">
               <div className="relative">
-                <Avatar src={recipient?.avatar} className="w-12 h-12 border-2 border-lime-500/50">
+                <Avatar
+                  src={recipient?.avatar}
+                  className="w-12 h-12 border-2 border-lime-500/50"
+                >
                   {recipient?.username?.[0]?.toUpperCase()}
                 </Avatar>
-                <div className={`absolute bottom-0 right-0 w-3 h-3 ${recipient?.status === 'online' ? 'bg-green-500' : 'bg-slate-600'} rounded-full border-2 border-[#1a1e22]`} />
+                <div
+                  className={`absolute bottom-0 right-0 w-3 h-3 ${recipient?.status === "online" ? "bg-green-500" : "bg-slate-600"} rounded-full border-2 border-[#1a1e22]`}
+                />
               </div>
               <div className="flex-1">
-                <h3 className="font-bold text-white text-lg">{recipient?.username}</h3>
+                <h3 className="font-bold text-white text-lg">
+                  {recipient?.username}
+                </h3>
                 <p className="text-xs text-slate-400">
                   {isTyping ? (
                     <span className="text-lime-400 flex items-center gap-1">
@@ -738,12 +956,17 @@ const ChatModal = ({ open, onClose, recipient, currentUser }) => {
                         typing...
                       </motion.span>
                     </span>
+                  ) : recipient?.status === "online" ? (
+                    "Online"
                   ) : (
-                    recipient?.status === 'online' ? 'Online' : 'Offline'
+                    "Offline"
                   )}
                 </p>
               </div>
-              <IconButton onClick={onClose} className="text-slate-400 hover:text-white">
+              <IconButton
+                onClick={onClose}
+                className="text-slate-400 hover:text-white"
+              >
                 <X className="w-5 h-5" />
               </IconButton>
             </div>
@@ -754,7 +977,11 @@ const ChatModal = ({ open, onClose, recipient, currentUser }) => {
                 <div className="flex items-center justify-center h-full">
                   <motion.div
                     animate={{ rotate: 360 }}
-                    transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                    transition={{
+                      repeat: Infinity,
+                      duration: 1,
+                      ease: "linear",
+                    }}
                     className="w-8 h-8 border-2 border-lime-500 border-t-transparent rounded-full"
                   />
                 </div>
@@ -771,17 +998,23 @@ const ChatModal = ({ open, onClose, recipient, currentUser }) => {
                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                    className={`flex ${isMine(msg) ? 'justify-end' : 'justify-start'}`}
+                    className={`flex ${isMine(msg) ? "justify-end" : "justify-start"}`}
                   >
                     <div
-                      className={`max-w-[75%] px-4 py-2.5 rounded-2xl ${isMine(msg)
-                        ? 'bg-gradient-to-r from-lime-500 to-green-500 text-black rounded-br-md'
-                        : 'bg-white/10 text-white rounded-bl-md'
-                        }`}
+                      className={`max-w-[75%] px-4 py-2.5 rounded-2xl ${
+                        isMine(msg)
+                          ? "bg-gradient-to-r from-lime-500 to-green-500 text-black rounded-br-md"
+                          : "bg-white/10 text-white rounded-bl-md"
+                      }`}
                     >
                       <p className="text-sm leading-relaxed">{msg.content}</p>
-                      <p className={`text-[10px] mt-1 ${isMine(msg) ? 'text-black/60' : 'text-slate-500'}`}>
-                        {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      <p
+                        className={`text-[10px] mt-1 ${isMine(msg) ? "text-black/60" : "text-slate-500"}`}
+                      >
+                        {new Date(msg.createdAt).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
                       </p>
                     </div>
                   </motion.div>
@@ -808,8 +1041,18 @@ const ChatModal = ({ open, onClose, recipient, currentUser }) => {
                   disabled={!newMessage.trim()}
                   className="w-12 h-12 rounded-full bg-gradient-to-r from-lime-500 to-green-500 flex items-center justify-center text-black disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-lime-500/30 hover:shadow-lime-500/50 transition-shadow"
                 >
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                    />
                   </svg>
                 </motion.button>
               </div>
@@ -828,7 +1071,7 @@ const FindModal = ({ open, onClose, onConnect, connections = [] }) => {
 
   // Get the IDs of all connections to filter them out
   const connectionIds = React.useMemo(() => {
-    return connections.map(conn => conn._id || conn.id);
+    return connections.map((conn) => conn._id || conn.id);
   }, [connections]);
 
   useEffect(() => {
@@ -843,7 +1086,9 @@ const FindModal = ({ open, onClose, onConnect, connections = [] }) => {
       const response = await userService.search(q);
       const allUsers = response.data.users || [];
       // Filter out users who are already connections
-      const filteredUsers = allUsers.filter(user => !connectionIds.includes(user._id));
+      const filteredUsers = allUsers.filter(
+        (user) => !connectionIds.includes(user._id),
+      );
       setResults(filteredUsers);
     } catch (error) {
       console.error("Search failed", error);
@@ -864,8 +1109,8 @@ const FindModal = ({ open, onClose, onConnect, connections = [] }) => {
       slotProps={{
         backdrop: {
           sx: {
-            backgroundColor: 'rgba(0, 0, 0, 0.6)',
-            backdropFilter: 'blur(8px)',
+            backgroundColor: "rgba(0, 0, 0, 0.6)",
+            backdropFilter: "blur(8px)",
           },
         },
       }}
@@ -873,7 +1118,10 @@ const FindModal = ({ open, onClose, onConnect, connections = [] }) => {
       <Box className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-[#1b1f23] border border-white/10 rounded-2xl p-6 shadow-2xl outline-none">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-white">Find Players</h2>
-          <IconButton onClick={onClose} className="text-slate-400 hover:text-white">
+          <IconButton
+            onClick={onClose}
+            className="text-slate-400 hover:text-white"
+          >
             <X />
           </IconButton>
         </div>
@@ -885,20 +1133,27 @@ const FindModal = ({ open, onClose, onConnect, connections = [] }) => {
             value={query}
             onChange={handleSearch}
             className="w-full text-slate-200"
-            sx={{ color: 'inherit' }}
+            sx={{ color: "inherit" }}
           />
         </div>
 
         <div className="max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
           {results.map((user) => (
-            <div key={user._id} className="flex items-center justify-between p-3 hover:bg-white/5 rounded-xl transition-colors">
+            <div
+              key={user._id}
+              className="flex items-center justify-between p-3 hover:bg-white/5 rounded-xl transition-colors"
+            >
               <div className="flex items-center gap-3">
                 <Avatar src={user.avatar} className="border border-lime-500/30">
                   {user.username[0]}
                 </Avatar>
                 <div>
-                  <h4 className="font-bold text-slate-200 text-sm">{user.username}</h4>
-                  <p className="text-xs text-slate-500">{user.bio || "No bio available"}</p>
+                  <h4 className="font-bold text-slate-200 text-sm">
+                    {user.username}
+                  </h4>
+                  <p className="text-xs text-slate-500">
+                    {user.bio || "No bio available"}
+                  </p>
                 </div>
               </div>
               <button
@@ -910,7 +1165,9 @@ const FindModal = ({ open, onClose, onConnect, connections = [] }) => {
             </div>
           ))}
           {results.length === 0 && !loading && (
-            <div className="text-center text-slate-500 py-8">No players found</div>
+            <div className="text-center text-slate-500 py-8">
+              No players found
+            </div>
           )}
         </div>
       </Box>
@@ -950,7 +1207,10 @@ const NavigationDialog = ({ open, onClose }) => {
           >
             <div className="flex justify-between items-center mb-8">
               <h2 className="text-2xl font-bold text-white">Menu</h2>
-              <IconButton onClick={onClose} className="text-slate-400 hover:text-white">
+              <IconButton
+                onClick={onClose}
+                className="text-slate-400 hover:text-white"
+              >
                 <X className="w-5 h-5" />
               </IconButton>
             </div>
@@ -979,9 +1239,28 @@ const ProfileMenu = ({ anchorEl, open, onClose, onLogout }) => {
   const navigate = useNavigate();
 
   const menuItems = [
-    { icon: <Settings className="w-4 h-4" />, label: "Settings", action: () => { navigate('/settings'); onClose(); } },
-    { icon: <Users className="w-4 h-4" />, label: "Edit Profile", action: () => { navigate('/edit-profile'); onClose(); } },
-    { icon: <LogOut className="w-4 h-4" />, label: "Logout", action: onLogout, danger: true },
+    {
+      icon: <Settings className="w-4 h-4" />,
+      label: "Settings",
+      action: () => {
+        navigate("/settings");
+        onClose();
+      },
+    },
+    {
+      icon: <Users className="w-4 h-4" />,
+      label: "Edit Profile",
+      action: () => {
+        navigate("/edit-profile");
+        onClose();
+      },
+    },
+    {
+      icon: <LogOut className="w-4 h-4" />,
+      label: "Logout",
+      action: onLogout,
+      danger: true,
+    },
   ];
 
   return (
@@ -989,16 +1268,16 @@ const ProfileMenu = ({ anchorEl, open, onClose, onLogout }) => {
       anchorEl={anchorEl}
       open={open}
       onClose={onClose}
-      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+      anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      transformOrigin={{ vertical: "top", horizontal: "right" }}
       PaperProps={{
         style: {
-          backgroundColor: '#1b1f23',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          color: 'white',
-          borderRadius: '12px',
-          minWidth: '180px',
-          marginTop: '8px',
+          backgroundColor: "#1b1f23",
+          border: "1px solid rgba(255, 255, 255, 0.1)",
+          color: "white",
+          borderRadius: "12px",
+          minWidth: "180px",
+          marginTop: "8px",
         },
       }}
     >
@@ -1006,7 +1285,7 @@ const ProfileMenu = ({ anchorEl, open, onClose, onLogout }) => {
         <MenuItem
           key={item.label}
           onClick={item.action}
-          className={`flex items-center gap-3 px-4 py-3 ${item.danger ? 'hover:bg-red-500/10 text-red-400' : 'hover:bg-white/10 text-slate-300'}`}
+          className={`flex items-center gap-3 px-4 py-3 ${item.danger ? "hover:bg-red-500/10 text-red-400" : "hover:bg-white/10 text-slate-300"}`}
         >
           {item.icon}
           <span className="font-medium">{item.label}</span>
@@ -1028,7 +1307,7 @@ const Navbar = ({ user, logout, onConnectionUpdate, onOpenChat }) => {
   const navigate = useNavigate();
   const searchRef = React.useRef(null);
 
-  const unreadCount = notifications.filter(n => !n.isRead).length;
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   // Search users
   useEffect(() => {
@@ -1073,10 +1352,10 @@ const Navbar = ({ user, logout, onConnectionUpdate, onOpenChat }) => {
 
   useEffect(() => {
     if (socket) {
-      socket.on('notification:new', (newNotif) => {
-        setNotifications(prev => [newNotif, ...prev]);
+      socket.on("notification:new", (newNotif) => {
+        setNotifications((prev) => [newNotif, ...prev]);
       });
-      return () => socket.off('notification:new');
+      return () => socket.off("notification:new");
     }
   }, [socket]);
 
@@ -1094,12 +1373,11 @@ const Navbar = ({ user, logout, onConnectionUpdate, onOpenChat }) => {
       await connectionService.acceptRequest(requestId);
       await notificationService.markRead(notifId);
 
-      setNotifications(prev =>
-        prev.map(n => n._id === notifId ? { ...n, isRead: true } : n)
+      setNotifications((prev) =>
+        prev.map((n) => (n._id === notifId ? { ...n, isRead: true } : n)),
       );
 
       if (onConnectionUpdate) onConnectionUpdate();
-
     } catch (error) {
       console.error("Failed to accept request", error);
     }
@@ -1108,8 +1386,8 @@ const Navbar = ({ user, logout, onConnectionUpdate, onOpenChat }) => {
   const handleMarkRead = async (id) => {
     try {
       await notificationService.markRead(id);
-      setNotifications(prev =>
-        prev.map(n => n._id === id ? { ...n, isRead: true } : n)
+      setNotifications((prev) =>
+        prev.map((n) => (n._id === id ? { ...n, isRead: true } : n)),
       );
     } catch (error) {
       console.error("Failed to mark read", error);
@@ -1119,7 +1397,7 @@ const Navbar = ({ user, logout, onConnectionUpdate, onOpenChat }) => {
   const handleLogout = () => {
     setProfileAnchorEl(null);
     logout();
-    navigate('/');
+    navigate("/");
   };
 
   return (
@@ -1159,7 +1437,9 @@ const Navbar = ({ user, logout, onConnectionUpdate, onOpenChat }) => {
                   placeholder="Search players..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  onFocus={() => searchResults.length > 0 && setShowSearchDropdown(true)}
+                  onFocus={() =>
+                    searchResults.length > 0 && setShowSearchDropdown(true)
+                  }
                   className="bg-transparent border-none focus:outline-none text-sm text-slate-200 placeholder:text-slate-500 w-64"
                 />
               </div>
@@ -1172,14 +1452,23 @@ const Navbar = ({ user, logout, onConnectionUpdate, onOpenChat }) => {
                       onClick={() => handleUserSelect(result.username)}
                       className="flex items-center gap-3 p-3 hover:bg-white/5 cursor-pointer transition-colors border-b border-white/5 last:border-0"
                     >
-                      <Avatar src={result.avatar} className="w-9 h-9 border border-lime-500/30">
+                      <Avatar
+                        src={result.avatar}
+                        className="w-9 h-9 border border-lime-500/30"
+                      >
                         {result.username?.[0]?.toUpperCase()}
                       </Avatar>
                       <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-slate-200 text-sm truncate">{result.username}</p>
-                        <p className="text-xs text-slate-500 truncate">{result.bio || "No bio"}</p>
+                        <p className="font-semibold text-slate-200 text-sm truncate">
+                          {result.username}
+                        </p>
+                        <p className="text-xs text-slate-500 truncate">
+                          {result.bio || "No bio"}
+                        </p>
                       </div>
-                      <div className={`w-2 h-2 rounded-full ${result.status === 'online' ? 'bg-green-500' : 'bg-slate-600'}`} />
+                      <div
+                        className={`w-2 h-2 rounded-full ${result.status === "online" ? "bg-green-500" : "bg-slate-600"}`}
+                      />
                     </div>
                   ))}
                 </div>
@@ -1241,7 +1530,6 @@ const Navbar = ({ user, logout, onConnectionUpdate, onOpenChat }) => {
     </>
   );
 };
-
 
 const StatBar = ({ label, value, color = "bg-lime-500" }) => (
   <div className="mb-3">
@@ -1339,9 +1627,15 @@ const TeamHistoryCard = ({ team }) => (
         {/* Team Logo */}
         <div className="w-12 h-12 rounded-full bg-gradient-to-br from-slate-700 to-slate-900 border-2 border-lime-500/40 flex items-center justify-center overflow-hidden">
           {team.logo ? (
-            <img src={team.logo} alt={team.name} className="w-full h-full object-cover" />
+            <img
+              src={team.logo}
+              alt={team.name}
+              className="w-full h-full object-cover"
+            />
           ) : (
-            <span className="text-lime-500 font-bold text-lg">{team.name?.[0]}</span>
+            <span className="text-lime-500 font-bold text-lg">
+              {team.name?.[0]}
+            </span>
           )}
         </div>
         {/* Team Name */}
@@ -1357,18 +1651,24 @@ const TeamHistoryCard = ({ team }) => (
 );
 
 // --- Team History Timeline ---
-const TeamHistoryTimeline = ({ teams, isOwnProfile, onEdit, onAdd, onDelete }) => {
+const TeamHistoryTimeline = ({
+  teams,
+  isOwnProfile,
+  onEdit,
+  onAdd,
+  onDelete,
+}) => {
   const scrollContainerRef = React.useRef(null);
 
   const scrollLeft = () => {
     if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({ left: -240, behavior: 'smooth' });
+      scrollContainerRef.current.scrollBy({ left: -240, behavior: "smooth" });
     }
   };
 
   const scrollRight = () => {
     if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({ left: 240, behavior: 'smooth' });
+      scrollContainerRef.current.scrollBy({ left: 240, behavior: "smooth" });
     }
   };
 
@@ -1382,7 +1682,9 @@ const TeamHistoryTimeline = ({ teams, isOwnProfile, onEdit, onAdd, onDelete }) =
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
           <History className="w-5 h-5 text-lime-500" />
-          <h3 className="font-bold text-lg text-white">Team History Timeline</h3>
+          <h3 className="font-bold text-lg text-white">
+            Team History Timeline
+          </h3>
         </div>
         {isOwnProfile && (
           <button
@@ -1410,7 +1712,10 @@ const TeamHistoryTimeline = ({ teams, isOwnProfile, onEdit, onAdd, onDelete }) =
         >
           {teams.length > 0 ? (
             teams.map((team) => (
-              <div key={team._id || team.id} className="relative min-w-[220px] max-w-[220px] group/card flex-shrink-0">
+              <div
+                key={team._id || team.id}
+                className="relative min-w-[220px] max-w-[220px] group/card flex-shrink-0"
+              >
                 {/* Animated Green Flame Effect */}
                 <div className="flame-container">
                   <div className="flame-layer-1" />
@@ -1433,13 +1738,21 @@ const TeamHistoryTimeline = ({ teams, isOwnProfile, onEdit, onAdd, onDelete }) =
                     {/* Team Logo */}
                     <div className="w-12 h-12 rounded-full bg-gradient-to-br from-slate-700 to-slate-900 border-2 border-lime-500/40 flex items-center justify-center overflow-hidden">
                       {team.logo ? (
-                        <img src={team.logo} alt={team.name} className="w-full h-full object-cover" />
+                        <img
+                          src={team.logo}
+                          alt={team.name}
+                          className="w-full h-full object-cover"
+                        />
                       ) : (
-                        <span className="text-lime-500 font-bold text-lg">{team.name?.[0]}</span>
+                        <span className="text-lime-500 font-bold text-lg">
+                          {team.name?.[0]}
+                        </span>
                       )}
                     </div>
                     {/* Team Name */}
-                    <h4 className="font-bold text-white text-sm flex-1">{team.name}</h4>
+                    <h4 className="font-bold text-white text-sm flex-1">
+                      {team.name}
+                    </h4>
 
                     {/* Edit/Delete buttons */}
                     {isOwnProfile && (
@@ -1468,7 +1781,9 @@ const TeamHistoryTimeline = ({ teams, isOwnProfile, onEdit, onAdd, onDelete }) =
               </div>
             ))
           ) : (
-            <div className="text-slate-500 text-sm px-4 py-8">No team history yet.</div>
+            <div className="text-slate-500 text-sm px-4 py-8">
+              No team history yet.
+            </div>
           )}
 
           {/* Add Team Card - only show for own profile */}
@@ -1498,7 +1813,13 @@ const TeamHistoryTimeline = ({ teams, isOwnProfile, onEdit, onAdd, onDelete }) =
 };
 
 // --- Experience and Tournaments ---
-const ExperienceTournaments = ({ tournaments, isOwnProfile, onEdit, onAdd, onDelete }) => (
+const ExperienceTournaments = ({
+  tournaments,
+  isOwnProfile,
+  onEdit,
+  onAdd,
+  onDelete,
+}) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
@@ -1508,7 +1829,9 @@ const ExperienceTournaments = ({ tournaments, isOwnProfile, onEdit, onAdd, onDel
     <div className="flex items-center justify-between mb-6">
       <div className="flex items-center gap-2">
         <Medal className="w-5 h-5 text-lime-500" />
-        <h3 className="font-bold text-lg text-white">Experience and Tournaments</h3>
+        <h3 className="font-bold text-lg text-white">
+          Experience and Tournaments
+        </h3>
       </div>
       {isOwnProfile && (
         <button
@@ -1530,7 +1853,9 @@ const ExperienceTournaments = ({ tournaments, isOwnProfile, onEdit, onAdd, onDel
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Trophy className="w-5 h-5 text-lime-500 opacity-60 group-hover:opacity-100 transition-opacity" />
-                <span className="font-medium text-slate-200">{tournament.name}</span>
+                <span className="font-medium text-slate-200">
+                  {tournament.name}
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 {tournament.placement && (
@@ -1559,7 +1884,9 @@ const ExperienceTournaments = ({ tournaments, isOwnProfile, onEdit, onAdd, onDel
           </div>
         ))
       ) : (
-        <div className="text-slate-500 text-sm px-4 py-4">No tournament experience yet.</div>
+        <div className="text-slate-500 text-sm px-4 py-4">
+          No tournament experience yet.
+        </div>
       )}
 
       {/* Add More Placeholder - only show for own profile */}
@@ -1603,14 +1930,23 @@ const SetupConfig = ({ setup, isOwnProfile, onEdit, onCopy, copiedField }) => (
         <div className="flex items-center gap-3">
           <Target className="w-5 h-5 text-lime-500 opacity-60 group-hover:opacity-100 transition-opacity" />
           <div className="flex-1">
-            <span className="font-medium text-slate-200 block">DPI + Game sens</span>
-            <span className="text-xs text-slate-500">{setup?.dpi || 800} DPI • {setup?.sensitivity || 0.35} sens</span>
+            <span className="font-medium text-slate-200 block">
+              DPI + Game sens
+            </span>
+            <span className="text-xs text-slate-500">
+              {setup?.dpi || 800} DPI • {setup?.sensitivity || 0.35} sens
+            </span>
           </div>
           <button
-            onClick={() => onCopy(`${setup?.dpi || 800} DPI, ${setup?.sensitivity || 0.35} sens`, 'dpi')}
+            onClick={() =>
+              onCopy(
+                `${setup?.dpi || 800} DPI, ${setup?.sensitivity || 0.35} sens`,
+                "dpi",
+              )
+            }
             className="p-1.5 hover:bg-white/10 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
           >
-            {copiedField === 'dpi' ? (
+            {copiedField === "dpi" ? (
               <Check className="w-4 h-4 text-lime-500" />
             ) : (
               <Copy className="w-4 h-4 text-slate-400 hover:text-lime-500" />
@@ -1623,14 +1959,24 @@ const SetupConfig = ({ setup, isOwnProfile, onEdit, onCopy, copiedField }) => (
         <div className="flex items-center gap-3">
           <Monitor className="w-5 h-5 text-lime-500 opacity-60 group-hover:opacity-100 transition-opacity" />
           <div className="flex-1">
-            <span className="font-medium text-slate-200 block">Aspect ratio</span>
-            <span className="text-xs text-slate-500">{setup?.aspectRatio || '16:9'} • {setup?.resolution || '1920x1080'}</span>
+            <span className="font-medium text-slate-200 block">
+              Aspect ratio
+            </span>
+            <span className="text-xs text-slate-500">
+              {setup?.aspectRatio || "16:9"} •{" "}
+              {setup?.resolution || "1920x1080"}
+            </span>
           </div>
           <button
-            onClick={() => onCopy(`${setup?.aspectRatio || '16:9'}, ${setup?.resolution || '1920x1080'}`, 'aspect')}
+            onClick={() =>
+              onCopy(
+                `${setup?.aspectRatio || "16:9"}, ${setup?.resolution || "1920x1080"}`,
+                "aspect",
+              )
+            }
             className="p-1.5 hover:bg-white/10 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
           >
-            {copiedField === 'aspect' ? (
+            {copiedField === "aspect" ? (
               <Check className="w-4 h-4 text-lime-500" />
             ) : (
               <Copy className="w-4 h-4 text-slate-400 hover:text-lime-500" />
@@ -1644,16 +1990,19 @@ const SetupConfig = ({ setup, isOwnProfile, onEdit, onCopy, copiedField }) => (
       <div className="flex items-center gap-3">
         <Mouse className="w-5 h-5 text-lime-500 opacity-60 group-hover:opacity-100 transition-opacity" />
         <div className="flex-1 min-w-0">
-          <span className="font-medium text-slate-200 block">Preferred Mouse and crosshair code</span>
+          <span className="font-medium text-slate-200 block">
+            Preferred Mouse and crosshair code
+          </span>
           <span className="text-xs text-slate-500 truncate block">
-            {setup?.mouse || 'Not set'} {setup?.crosshairCode ? `• ${setup.crosshairCode}` : ''}
+            {setup?.mouse || "Not set"}{" "}
+            {setup?.crosshairCode ? `• ${setup.crosshairCode}` : ""}
           </span>
         </div>
         <button
-          onClick={() => onCopy(setup?.crosshairCode || '', 'crosshair')}
+          onClick={() => onCopy(setup?.crosshairCode || "", "crosshair")}
           className="p-1.5 hover:bg-white/10 rounded-lg transition-colors opacity-0 group-hover:opacity-100 flex-shrink-0"
         >
-          {copiedField === 'crosshair' ? (
+          {copiedField === "crosshair" ? (
             <Check className="w-4 h-4 text-lime-500" />
           ) : (
             <Copy className="w-4 h-4 text-slate-400 hover:text-lime-500" />
@@ -1701,7 +2050,10 @@ const EditModal = ({ open, onClose, title, children }) => (
         >
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-bold text-white">{title}</h2>
-            <IconButton onClick={onClose} className="text-slate-400 hover:text-white">
+            <IconButton
+              onClick={onClose}
+              className="text-slate-400 hover:text-white"
+            >
               <X className="w-5 h-5" />
             </IconButton>
           </div>
@@ -1715,21 +2067,21 @@ const EditModal = ({ open, onClose, title, children }) => (
 // --- Team Edit Modal ---
 const TeamEditModal = ({ open, onClose, onSave, editingTeam }) => {
   const [formData, setFormData] = useState({
-    name: '',
-    logo: '',
-    details: '',
+    name: "",
+    logo: "",
+    details: "",
   });
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (editingTeam) {
       setFormData({
-        name: editingTeam.name || '',
-        logo: editingTeam.logo || '',
-        details: editingTeam.details || '',
+        name: editingTeam.name || "",
+        logo: editingTeam.logo || "",
+        details: editingTeam.details || "",
       });
     } else {
-      setFormData({ name: '', logo: '', details: '' });
+      setFormData({ name: "", logo: "", details: "" });
     }
   }, [editingTeam, open]);
 
@@ -1742,16 +2094,22 @@ const TeamEditModal = ({ open, onClose, onSave, editingTeam }) => {
       await onSave(formData, editingTeam?._id);
       onClose();
     } catch (err) {
-      console.error('Failed to save team:', err);
+      console.error("Failed to save team:", err);
     }
     setSaving(false);
   };
 
   return (
-    <EditModal open={open} onClose={onClose} title={editingTeam ? "Edit Team" : "Add Team"}>
+    <EditModal
+      open={open}
+      onClose={onClose}
+      title={editingTeam ? "Edit Team" : "Add Team"}
+    >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-slate-400 mb-2">Team Name *</label>
+          <label className="block text-sm font-medium text-slate-400 mb-2">
+            Team Name *
+          </label>
           <input
             type="text"
             value={formData.name}
@@ -1763,7 +2121,9 @@ const TeamEditModal = ({ open, onClose, onSave, editingTeam }) => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-400 mb-2">Logo URL</label>
+          <label className="block text-sm font-medium text-slate-400 mb-2">
+            Logo URL
+          </label>
           <input
             type="text"
             value={formData.logo}
@@ -1774,10 +2134,14 @@ const TeamEditModal = ({ open, onClose, onSave, editingTeam }) => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-400 mb-2">Details / Experience</label>
+          <label className="block text-sm font-medium text-slate-400 mb-2">
+            Details / Experience
+          </label>
           <textarea
             value={formData.details}
-            onChange={(e) => setFormData({ ...formData, details: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, details: e.target.value })
+            }
             rows={3}
             className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50 resize-none"
             placeholder="Describe your role and experience with this team..."
@@ -1797,7 +2161,7 @@ const TeamEditModal = ({ open, onClose, onSave, editingTeam }) => {
             disabled={saving || !formData.name.trim()}
             className="px-5 py-2.5 bg-gradient-to-r from-lime-500 to-green-500 text-black rounded-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg hover:shadow-lime-500/30 transition-all"
           >
-            {saving ? 'Saving...' : (editingTeam ? 'Update' : 'Add Team')}
+            {saving ? "Saving..." : editingTeam ? "Update" : "Add Team"}
           </button>
         </div>
       </form>
@@ -1808,19 +2172,19 @@ const TeamEditModal = ({ open, onClose, onSave, editingTeam }) => {
 // --- Tournament Edit Modal ---
 const TournamentEditModal = ({ open, onClose, onSave, editingTournament }) => {
   const [formData, setFormData] = useState({
-    name: '',
-    placement: '',
+    name: "",
+    placement: "",
   });
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (editingTournament) {
       setFormData({
-        name: editingTournament.name || '',
-        placement: editingTournament.placement || '',
+        name: editingTournament.name || "",
+        placement: editingTournament.placement || "",
       });
     } else {
-      setFormData({ name: '', placement: '' });
+      setFormData({ name: "", placement: "" });
     }
   }, [editingTournament, open]);
 
@@ -1833,16 +2197,22 @@ const TournamentEditModal = ({ open, onClose, onSave, editingTournament }) => {
       await onSave(formData, editingTournament?._id);
       onClose();
     } catch (err) {
-      console.error('Failed to save tournament:', err);
+      console.error("Failed to save tournament:", err);
     }
     setSaving(false);
   };
 
   return (
-    <EditModal open={open} onClose={onClose} title={editingTournament ? "Edit Tournament" : "Add Tournament"}>
+    <EditModal
+      open={open}
+      onClose={onClose}
+      title={editingTournament ? "Edit Tournament" : "Add Tournament"}
+    >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-slate-400 mb-2">Tournament Name *</label>
+          <label className="block text-sm font-medium text-slate-400 mb-2">
+            Tournament Name *
+          </label>
           <input
             type="text"
             value={formData.name}
@@ -1854,11 +2224,15 @@ const TournamentEditModal = ({ open, onClose, onSave, editingTournament }) => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-400 mb-2">Placement / Result</label>
+          <label className="block text-sm font-medium text-slate-400 mb-2">
+            Placement / Result
+          </label>
           <input
             type="text"
             value={formData.placement}
-            onChange={(e) => setFormData({ ...formData, placement: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, placement: e.target.value })
+            }
             className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50"
             placeholder="e.g., 1st Place, Top 8, etc."
           />
@@ -1877,7 +2251,11 @@ const TournamentEditModal = ({ open, onClose, onSave, editingTournament }) => {
             disabled={saving || !formData.name.trim()}
             className="px-5 py-2.5 bg-gradient-to-r from-lime-500 to-green-500 text-black rounded-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg hover:shadow-lime-500/30 transition-all"
           >
-            {saving ? 'Saving...' : (editingTournament ? 'Update' : 'Add Tournament')}
+            {saving
+              ? "Saving..."
+              : editingTournament
+                ? "Update"
+                : "Add Tournament"}
           </button>
         </div>
       </form>
@@ -1890,10 +2268,10 @@ const SetupEditModal = ({ open, onClose, onSave, currentSetup }) => {
   const [formData, setFormData] = useState({
     dpi: 800,
     sensitivity: 0.35,
-    aspectRatio: '16:9',
-    resolution: '1920x1080',
-    mouse: '',
-    crosshairCode: '',
+    aspectRatio: "16:9",
+    resolution: "1920x1080",
+    mouse: "",
+    crosshairCode: "",
   });
   const [saving, setSaving] = useState(false);
 
@@ -1902,10 +2280,10 @@ const SetupEditModal = ({ open, onClose, onSave, currentSetup }) => {
       setFormData({
         dpi: currentSetup.dpi || 800,
         sensitivity: currentSetup.sensitivity || 0.35,
-        aspectRatio: currentSetup.aspectRatio || '16:9',
-        resolution: currentSetup.resolution || '1920x1080',
-        mouse: currentSetup.mouse || '',
-        crosshairCode: currentSetup.crosshairCode || '',
+        aspectRatio: currentSetup.aspectRatio || "16:9",
+        resolution: currentSetup.resolution || "1920x1080",
+        mouse: currentSetup.mouse || "",
+        crosshairCode: currentSetup.crosshairCode || "",
       });
     }
   }, [currentSetup, open]);
@@ -1917,7 +2295,7 @@ const SetupEditModal = ({ open, onClose, onSave, currentSetup }) => {
       await onSave(formData);
       onClose();
     } catch (err) {
-      console.error('Failed to save setup:', err);
+      console.error("Failed to save setup:", err);
     }
     setSaving(false);
   };
@@ -1927,23 +2305,34 @@ const SetupEditModal = ({ open, onClose, onSave, currentSetup }) => {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-slate-400 mb-2">DPI</label>
+            <label className="block text-sm font-medium text-slate-400 mb-2">
+              DPI
+            </label>
             <input
               type="number"
               value={formData.dpi}
-              onChange={(e) => setFormData({ ...formData, dpi: Number(e.target.value) })}
+              onChange={(e) =>
+                setFormData({ ...formData, dpi: Number(e.target.value) })
+              }
               className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50"
               placeholder="800"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-400 mb-2">Sensitivity</label>
+            <label className="block text-sm font-medium text-slate-400 mb-2">
+              Sensitivity
+            </label>
             <input
               type="number"
               step="0.01"
               value={formData.sensitivity}
-              onChange={(e) => setFormData({ ...formData, sensitivity: Number(e.target.value) })}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  sensitivity: Number(e.target.value),
+                })
+              }
               className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50"
               placeholder="0.35"
             />
@@ -1952,22 +2341,30 @@ const SetupEditModal = ({ open, onClose, onSave, currentSetup }) => {
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-slate-400 mb-2">Aspect Ratio</label>
+            <label className="block text-sm font-medium text-slate-400 mb-2">
+              Aspect Ratio
+            </label>
             <input
               type="text"
               value={formData.aspectRatio}
-              onChange={(e) => setFormData({ ...formData, aspectRatio: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, aspectRatio: e.target.value })
+              }
               className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50"
               placeholder="16:9"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-400 mb-2">Resolution</label>
+            <label className="block text-sm font-medium text-slate-400 mb-2">
+              Resolution
+            </label>
             <input
               type="text"
               value={formData.resolution}
-              onChange={(e) => setFormData({ ...formData, resolution: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, resolution: e.target.value })
+              }
               className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50"
               placeholder="1920x1080"
             />
@@ -1975,22 +2372,30 @@ const SetupEditModal = ({ open, onClose, onSave, currentSetup }) => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-400 mb-2">Mouse</label>
+          <label className="block text-sm font-medium text-slate-400 mb-2">
+            Mouse
+          </label>
           <input
             type="text"
             value={formData.mouse}
-            onChange={(e) => setFormData({ ...formData, mouse: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, mouse: e.target.value })
+            }
             className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50"
             placeholder="e.g., Logitech G Pro X Superlight"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-400 mb-2">Crosshair Code</label>
+          <label className="block text-sm font-medium text-slate-400 mb-2">
+            Crosshair Code
+          </label>
           <input
             type="text"
             value={formData.crosshairCode}
-            onChange={(e) => setFormData({ ...formData, crosshairCode: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, crosshairCode: e.target.value })
+            }
             className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50"
             placeholder="0;P;c;5;h;0;m;1;0l;4;0o;2;0a;1;0f;0;1b;0"
           />
@@ -2009,7 +2414,7 @@ const SetupEditModal = ({ open, onClose, onSave, currentSetup }) => {
             disabled={saving}
             className="px-5 py-2.5 bg-gradient-to-r from-lime-500 to-green-500 text-black rounded-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg hover:shadow-lime-500/30 transition-all"
           >
-            {saving ? 'Saving...' : 'Save Setup'}
+            {saving ? "Saving..." : "Save Setup"}
           </button>
         </div>
       </form>
@@ -2021,7 +2426,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { username: viewedUsername } = useParams();
   const { user, logout, loading } = useAuth();
-  const [postTab, setPostTab] = useState('professional');
+  const [postTab, setPostTab] = useState("professional");
   const [currentPostIndex, setCurrentPostIndex] = useState(0);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [connections, setConnections] = useState([]);
@@ -2041,18 +2446,18 @@ const Dashboard = () => {
   const [gamingSetup, setGamingSetup] = useState({
     dpi: 800,
     sensitivity: 0.35,
-    aspectRatio: '16:9',
-    resolution: '1920x1080',
-    mouse: '',
-    crosshairCode: ''
+    aspectRatio: "16:9",
+    resolution: "1920x1080",
+    mouse: "",
+    crosshairCode: "",
   });
   const [socials, setSocials] = useState({
-    twitter: '',
-    instagram: '',
-    twitch: '',
-    youtube: '',
-    tiktok: '',
-    discord: ''
+    twitter: "",
+    instagram: "",
+    twitch: "",
+    youtube: "",
+    tiktok: "",
+    discord: "",
   });
 
   // Modal state
@@ -2076,8 +2481,10 @@ const Dashboard = () => {
   const isConnected = React.useMemo(() => {
     if (isOwnProfile || !viewedUser) return false;
     const viewedId = viewedUser._id || viewedUser.id;
-    return connections.some(conn =>
-      (conn._id || conn.id) === viewedId || conn.username === viewedUser.username
+    return connections.some(
+      (conn) =>
+        (conn._id || conn.id) === viewedId ||
+        conn.username === viewedUser.username,
     );
   }, [connections, viewedUser, isOwnProfile]);
 
@@ -2161,22 +2568,26 @@ const Dashboard = () => {
         setTeams(res.data.teamHistory || []);
         setTournaments(res.data.tournamentExperience || []);
         setGameExperiences(res.data.gameExperiences || []);
-        setGamingSetup(res.data.gamingSetup || {
-          dpi: 800,
-          sensitivity: 0.35,
-          aspectRatio: '16:9',
-          resolution: '1920x1080',
-          mouse: '',
-          crosshairCode: ''
-        });
-        setSocials(res.data.socials || {
-            twitter: '',
-            instagram: '',
-            twitch: '',
-            youtube: '',
-            tiktok: '',
-            discord: ''
-        });
+        setGamingSetup(
+          res.data.gamingSetup || {
+            dpi: 800,
+            sensitivity: 0.35,
+            aspectRatio: "16:9",
+            resolution: "1920x1080",
+            mouse: "",
+            crosshairCode: "",
+          },
+        );
+        setSocials(
+          res.data.socials || {
+            twitter: "",
+            instagram: "",
+            twitch: "",
+            youtube: "",
+            tiktok: "",
+            discord: "",
+          },
+        );
       }
     } catch (error) {
       console.error("Failed to fetch profile data", error);
@@ -2243,7 +2654,10 @@ const Dashboard = () => {
   const handleSaveTournament = async (formData, tournamentId) => {
     try {
       if (tournamentId) {
-        const res = await profileService.updateTournament(tournamentId, formData);
+        const res = await profileService.updateTournament(
+          tournamentId,
+          formData,
+        );
         setTournaments(res.data);
       } else {
         const res = await profileService.addTournament(formData);
@@ -2305,30 +2719,29 @@ const Dashboard = () => {
     if (!file) return;
 
     const formData = new FormData();
-    formData.append('image', file);
+    formData.append("image", file);
 
     try {
-      if (type === 'avatar') setUploadingAvatar(true);
-      if (type === 'banner') setUploadingBanner(true);
+      if (type === "avatar") setUploadingAvatar(true);
+      if (type === "banner") setUploadingBanner(true);
 
       const response = await uploadService.uploadImage(formData);
       const imageUrl = response.data.url;
 
       // Update user profile
-      const updateData = type === 'avatar'
-        ? { avatar: imageUrl }
-        : { bannerImage: imageUrl };
+      const updateData =
+        type === "avatar" ? { avatar: imageUrl } : { bannerImage: imageUrl };
 
       await userService.updateProfile(updateData);
 
       // Refetch user data
       window.location.reload();
     } catch (error) {
-      console.error('Upload failed:', error);
-      alert('Failed to upload image. Please try again.');
+      console.error("Upload failed:", error);
+      alert("Failed to upload image. Please try again.");
     } finally {
-      if (type === 'avatar') setUploadingAvatar(false);
-      if (type === 'banner') setUploadingBanner(false);
+      if (type === "avatar") setUploadingAvatar(false);
+      if (type === "banner") setUploadingBanner(false);
     }
   };
 
@@ -2405,7 +2818,7 @@ const Dashboard = () => {
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">User not found</h1>
           <button
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate("/dashboard")}
             className="px-6 py-2 bg-lime-500 text-black rounded-full font-bold hover:bg-lime-400 transition-colors"
           >
             Back to Dashboard
@@ -2416,8 +2829,8 @@ const Dashboard = () => {
   }
 
   // --- Filter Games ---
-  const primaryGame = gameExperiences.find(g => g.isPrimary);
-  const secondaryGames = gameExperiences.filter(g => !g.isPrimary);
+  const primaryGame = gameExperiences.find((g) => g.isPrimary);
+  const secondaryGames = gameExperiences.filter((g) => !g.isPrimary);
 
   return (
     <div className="min-h-screen bg-black text-slate-200 font-sans selection:bg-lime-500/30 overflow-hidden relative">
@@ -2431,7 +2844,10 @@ const Dashboard = () => {
       />
       <Navbar
         user={user}
-        logout={() => { logout(); navigate('/'); }}
+        logout={() => {
+          logout();
+          navigate("/");
+        }}
         onConnectionUpdate={fetchConnections}
         onOpenChat={openChatWithUser}
       />
@@ -2443,7 +2859,10 @@ const Dashboard = () => {
           <div className="h-64 rounded-3xl overflow-hidden relative group">
             <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 z-10" />
             <img
-              src={displayUser?.bannerImage || "https://images.unsplash.com/photo-1533134486753-c833f0ed4866?w=1600&q=80"}
+              src={
+                displayUser?.bannerImage ||
+                "https://images.unsplash.com/photo-1533134486753-c833f0ed4866?w=1600&q=80"
+              }
               alt="Banner"
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
             />
@@ -2453,7 +2872,9 @@ const Dashboard = () => {
                 <input
                   type="file"
                   accept="image/*"
-                  onChange={(e) => handleImageUpload(e.target.files[0], 'banner')}
+                  onChange={(e) =>
+                    handleImageUpload(e.target.files[0], "banner")
+                  }
                   className="hidden"
                   id="banner-upload"
                 />
@@ -2464,13 +2885,19 @@ const Dashboard = () => {
                   {uploadingBanner ? (
                     <motion.div
                       animate={{ rotate: 360 }}
-                      transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                      transition={{
+                        repeat: Infinity,
+                        duration: 1,
+                        ease: "linear",
+                      }}
                       className="w-4 h-4 border-2 border-lime-500 border-t-transparent rounded-full"
                     />
                   ) : (
                     <Camera className="w-4 h-4 text-white" />
                   )}
-                  <span className="text-white text-sm font-medium">Change Banner</span>
+                  <span className="text-white text-sm font-medium">
+                    Change Banner
+                  </span>
                 </label>
               </div>
             )}
@@ -2493,7 +2920,9 @@ const Dashboard = () => {
                     <input
                       type="file"
                       accept="image/*"
-                      onChange={(e) => handleImageUpload(e.target.files[0], 'avatar')}
+                      onChange={(e) =>
+                        handleImageUpload(e.target.files[0], "avatar")
+                      }
                       className="hidden"
                       id="avatar-upload"
                     />
@@ -2504,7 +2933,11 @@ const Dashboard = () => {
                       {uploadingAvatar ? (
                         <motion.div
                           animate={{ rotate: 360 }}
-                          transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                          transition={{
+                            repeat: Infinity,
+                            duration: 1,
+                            ease: "linear",
+                          }}
                           className="w-8 h-8 border-2 border-lime-500 border-t-transparent rounded-full"
                         />
                       ) : (
@@ -2517,7 +2950,9 @@ const Dashboard = () => {
                   </div>
                 )}
               </div>
-              <div className={`absolute bottom-2 right-2 w-6 h-6 ${displayUser?.status === 'online' ? 'bg-green-500' : 'bg-slate-600'} border-4 border-black rounded-full`} />
+              <div
+                className={`absolute bottom-2 right-2 w-6 h-6 ${displayUser?.status === "online" ? "bg-green-500" : "bg-slate-600"} border-4 border-black rounded-full`}
+              />
             </div>
 
             <div className="mt-4 text-center">
@@ -2526,14 +2961,15 @@ const Dashboard = () => {
                 <Zap className="w-5 h-5 text-lime-500 fill-lime-500" />
               </h1>
               <p className="text-slate-400 font-medium mt-1">
-                {displayUser?.bio || "Professional FPS Player | Content Creator"}
+                {displayUser?.bio ||
+                  "Professional FPS Player | Content Creator"}
               </p>
-              
+
               {/* --- Socials Display --- */}
-              <SocialsDisplay 
-                socials={socials} 
-                isOwnProfile={isOwnProfile} 
-                onEdit={() => setShowSocialsModal(true)} 
+              <SocialsDisplay
+                socials={socials}
+                isOwnProfile={isOwnProfile}
+                onEdit={() => setShowSocialsModal(true)}
               />
 
               {/* Message, Connect, and Back buttons for viewing other profiles */}
@@ -2551,14 +2987,16 @@ const Dashboard = () => {
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.9 }}
-                      onClick={() => handleConnect(viewedUser?._id || viewedUser?.id)}
+                      onClick={() =>
+                        handleConnect(viewedUser?._id || viewedUser?.id)
+                      }
                       className="px-6 py-2 bg-white/10 text-lime-400 rounded-full font-bold hover:bg-lime-500/20 transition-all flex items-center gap-2 border border-lime-500/50"
                     >
                       <Users className="w-4 h-4" /> +Connect
                     </motion.button>
                   )}
                   <button
-                    onClick={() => navigate('/dashboard')}
+                    onClick={() => navigate("/dashboard")}
                     className="px-6 py-2 bg-white/10 text-white rounded-full font-bold hover:bg-white/20 transition-colors border border-white/20"
                   >
                     Back
@@ -2568,7 +3006,7 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-        <div className="h-60" /> {/* Spacer for profile overlap */}
+        <div className="h-[12rem]" /> {/* Spacer for profile overlap */}
         {/* --- Grid Section --- */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           {/* Focus Game & Experience */}
@@ -2586,7 +3024,10 @@ const Dashboard = () => {
               </div>
               {isOwnProfile && (
                 <button
-                  onClick={() => { setEditingGame(null); setShowGameModal(true); }}
+                  onClick={() => {
+                    setEditingGame(null);
+                    setShowGameModal(true);
+                  }}
                   className="p-2 hover:bg-white/10 rounded-lg transition-colors text-lime-500"
                 >
                   <Plus className="w-5 h-5" />
@@ -2603,36 +3044,51 @@ const Dashboard = () => {
                       <Crown className="w-5 h-5 text-yellow-500 fill-yellow-500" />
                     </div>
                     {isOwnProfile && (
-                       <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-black/50 rounded-lg p-1 backdrop-blur-sm z-10">
-                         <button
-                           onClick={() => { setEditingGame(primaryGame); setShowGameModal(true); }}
-                           className="p-1 hover:bg-white/20 rounded-md transition-colors"
-                         >
-                           <Pencil className="w-3.5 h-3.5 text-lime-400" />
-                         </button>
-                         <button
-                           onClick={() => handleDeleteGame(primaryGame._id)}
-                           className="p-1 hover:bg-red-500/20 rounded-md transition-colors"
-                         >
-                           <Trash2 className="w-3.5 h-3.5 text-red-400" />
-                         </button>
-                       </div>
+                      <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-black/50 rounded-lg p-1 backdrop-blur-sm z-10">
+                        <button
+                          onClick={() => {
+                            setEditingGame(primaryGame);
+                            setShowGameModal(true);
+                          }}
+                          className="p-1 hover:bg-white/20 rounded-md transition-colors"
+                        >
+                          <Pencil className="w-3.5 h-3.5 text-lime-400" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteGame(primaryGame._id)}
+                          className="p-1 hover:bg-red-500/20 rounded-md transition-colors"
+                        >
+                          <Trash2 className="w-3.5 h-3.5 text-red-400" />
+                        </button>
+                      </div>
                     )}
-                    
+
                     <div className="w-16 h-16 rounded-xl bg-black border-2 border-lime-500/30 flex items-center justify-center shadow-lg shadow-lime-500/10 overflow-hidden">
-                      <GameLogo gameName={primaryGame.game} supportedGames={supportedGames} className="w-full h-full p-2" />
+                      <GameLogo
+                        gameName={primaryGame.game}
+                        supportedGames={supportedGames}
+                        className="w-full h-full p-2"
+                      />
                     </div>
                     <div>
-                      <h4 className="text-xl font-bold text-white">{primaryGame.game}</h4>
-                      <p className="text-sm text-lime-400 font-medium mb-1">{primaryGame.role}</p>
+                      <h4 className="text-xl font-bold text-white">
+                        {primaryGame.game}
+                      </h4>
+                      <p className="text-sm text-lime-400 font-medium mb-1">
+                        {primaryGame.role}
+                      </p>
                       <div className="flex items-center gap-2 text-xs text-slate-400">
-                         <span className="bg-white/10 px-2 py-0.5 rounded text-white border border-white/10">{primaryGame.rank}</span>
-                         {primaryGame.peakRank && (
-                           <>
-                             <span>•</span>
-                             <span className="text-slate-500">Peak: {primaryGame.peakRank}</span>
-                           </>
-                         )}
+                        <span className="bg-white/10 px-2 py-0.5 rounded text-white border border-white/10">
+                          {primaryGame.rank}
+                        </span>
+                        {primaryGame.peakRank && (
+                          <>
+                            <span>•</span>
+                            <span className="text-slate-500">
+                              Peak: {primaryGame.peakRank}
+                            </span>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -2640,46 +3096,60 @@ const Dashboard = () => {
 
                 {/* Secondary Games List */}
                 <div className="flex-1 overflow-y-auto custom-scrollbar space-y-3 pr-2">
-                  {secondaryGames.length > 0 ? (
-                    secondaryGames.map((game) => (
-                      <div key={game._id} className="bg-white/5 border border-white/5 rounded-xl p-3 flex items-center gap-3 hover:bg-white/10 transition-colors group relative">
-                        {isOwnProfile && (
-                          <div className="absolute right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button
-                              onClick={() => { setEditingGame(game); setShowGameModal(true); }}
-                              className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
-                            >
-                              <Pencil className="w-3.5 h-3.5 text-slate-400 hover:text-white" />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteGame(game._id)}
-                              className="p-1.5 hover:bg-red-500/20 rounded-lg transition-colors"
-                            >
-                              <Trash2 className="w-3.5 h-3.5 text-slate-400 hover:text-red-500" />
-                            </button>
+                  {secondaryGames.length > 0
+                    ? secondaryGames.map((game) => (
+                        <div
+                          key={game._id}
+                          className="bg-white/5 border border-white/5 rounded-xl p-3 flex items-center gap-3 hover:bg-white/10 transition-colors group relative"
+                        >
+                          {isOwnProfile && (
+                            <div className="absolute right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <button
+                                onClick={() => {
+                                  setEditingGame(game);
+                                  setShowGameModal(true);
+                                }}
+                                className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
+                              >
+                                <Pencil className="w-3.5 h-3.5 text-slate-400 hover:text-white" />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteGame(game._id)}
+                                className="p-1.5 hover:bg-red-500/20 rounded-lg transition-colors"
+                              >
+                                <Trash2 className="w-3.5 h-3.5 text-slate-400 hover:text-red-500" />
+                              </button>
+                            </div>
+                          )}
+                          <div className="w-10 h-10 rounded-lg bg-black/40 border border-white/10 flex items-center justify-center shrink-0 overflow-hidden">
+                            <GameLogo
+                              gameName={game.game}
+                              supportedGames={supportedGames}
+                              className="w-full h-full p-1.5"
+                            />
                           </div>
-                        )}
-                        <div className="w-10 h-10 rounded-lg bg-black/40 border border-white/10 flex items-center justify-center shrink-0 overflow-hidden">
-                           <GameLogo gameName={game.game} supportedGames={supportedGames} className="w-full h-full p-1.5" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-bold text-slate-200 text-sm truncate">{game.game}</h4>
-                          <div className="flex items-center gap-2 text-xs text-slate-500">
-                            <span>{game.role}</span>
-                            <span>•</span>
-                            <span className="text-lime-500/80">{game.rank}</span>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-bold text-slate-200 text-sm truncate">
+                              {game.game}
+                            </h4>
+                            <div className="flex items-center gap-2 text-xs text-slate-500">
+                              <span>{game.role}</span>
+                              <span>•</span>
+                              <span className="text-lime-500/80">
+                                {game.rank}
+                              </span>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))
-                  ) : (
-                    !primaryGame && (
-                       <div className="flex flex-col items-center justify-center h-full text-slate-500 text-sm">
-                         <p>No games added yet.</p>
-                         {isOwnProfile && <p>Click the + button to add your experience.</p>}
-                       </div>
-                    )
-                  )}
+                      ))
+                    : !primaryGame && (
+                        <div className="flex flex-col items-center justify-center h-full text-slate-500 text-sm">
+                          <p>No games added yet.</p>
+                          {isOwnProfile && (
+                            <p>Click the + button to add your experience.</p>
+                          )}
+                        </div>
+                      )}
                 </div>
               </div>
             ) : (
@@ -2687,8 +3157,11 @@ const Dashboard = () => {
                 <Gamepad2 className="w-10 h-10 mb-2 opacity-50" />
                 <p>No games added yet</p>
                 {isOwnProfile && (
-                  <button 
-                    onClick={() => { setEditingGame(null); setShowGameModal(true); }}
+                  <button
+                    onClick={() => {
+                      setEditingGame(null);
+                      setShowGameModal(true);
+                    }}
                     className="mt-4 px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm text-lime-500 transition-colors"
                   >
                     Add Your First Game
@@ -2730,7 +3203,10 @@ const Dashboard = () => {
               <Users className="w-5 h-5 text-lime-500" />
               <h3 className="font-bold text-lg text-white">Connections</h3>
             </div>
-            <Link to="/connections" className="text-xs text-lime-500 hover:underline">
+            <Link
+              to="/connections"
+              className="text-xs text-lime-500 hover:underline"
+            >
               View All
             </Link>
           </div>
@@ -2756,12 +3232,14 @@ const Dashboard = () => {
                     {conn.username}
                   </span>
                   <span className="text-[10px] text-slate-600 truncate w-full text-center">
-                    {conn.status === 'online' ? 'Online' : 'Offline'}
+                    {conn.status === "online" ? "Online" : "Offline"}
                   </span>
                 </div>
               ))
             ) : (
-              <div className="text-slate-500 text-sm px-4">No connections yet. Go find some players!</div>
+              <div className="text-slate-500 text-sm px-4">
+                No connections yet. Go find some players!
+              </div>
             )}
             <div
               onClick={() => setShowFindModal(true)}
@@ -2776,14 +3254,12 @@ const Dashboard = () => {
             </div>
           </div>
         </motion.div>
-
         <FindModal
           open={showFindModal}
           onClose={() => setShowFindModal(false)}
           onConnect={handleConnect}
           connections={connections}
         />
-
         {/* Chat Modal */}
         <ChatModal
           open={showChatModal}
@@ -2794,25 +3270,34 @@ const Dashboard = () => {
           recipient={chatRecipient || viewedUser}
           currentUser={user}
         />
-
         {/* --- Team History Timeline --- */}
         <TeamHistoryTimeline
           teams={teams}
           isOwnProfile={isOwnProfile}
-          onEdit={(team) => { setEditingTeam(team); setShowTeamModal(true); }}
-          onAdd={() => { setEditingTeam(null); setShowTeamModal(true); }}
+          onEdit={(team) => {
+            setEditingTeam(team);
+            setShowTeamModal(true);
+          }}
+          onAdd={() => {
+            setEditingTeam(null);
+            setShowTeamModal(true);
+          }}
           onDelete={handleDeleteTeam}
         />
-
         {/* --- Experience and Tournaments --- */}
         <ExperienceTournaments
           tournaments={tournaments}
           isOwnProfile={isOwnProfile}
-          onEdit={(tournament) => { setEditingTournament(tournament); setShowTournamentModal(true); }}
-          onAdd={() => { setEditingTournament(null); setShowTournamentModal(true); }}
+          onEdit={(tournament) => {
+            setEditingTournament(tournament);
+            setShowTournamentModal(true);
+          }}
+          onAdd={() => {
+            setEditingTournament(null);
+            setShowTournamentModal(true);
+          }}
           onDelete={handleDeleteTournament}
         />
-
         {/* --- Setup & Config --- */}
         <SetupConfig
           setup={gamingSetup}
@@ -2821,17 +3306,22 @@ const Dashboard = () => {
           onCopy={handleCopy}
           copiedField={copiedField}
         />
-
         {/* Edit Modals */}
         <TeamEditModal
           open={showTeamModal}
-          onClose={() => { setShowTeamModal(false); setEditingTeam(null); }}
+          onClose={() => {
+            setShowTeamModal(false);
+            setEditingTeam(null);
+          }}
           onSave={handleSaveTeam}
           editingTeam={editingTeam}
         />
         <TournamentEditModal
           open={showTournamentModal}
-          onClose={() => { setShowTournamentModal(false); setEditingTournament(null); }}
+          onClose={() => {
+            setShowTournamentModal(false);
+            setEditingTournament(null);
+          }}
           onSave={handleSaveTournament}
           editingTournament={editingTournament}
         />
@@ -2849,12 +3339,14 @@ const Dashboard = () => {
         />
         <GameEditModal
           open={showGameModal}
-          onClose={() => { setShowGameModal(false); setEditingGame(null); }}
+          onClose={() => {
+            setShowGameModal(false);
+            setEditingGame(null);
+          }}
           onSave={handleSaveGame}
           editingGame={editingGame}
           supportedGames={supportedGames}
         />
-
         {/* --- Posts Section --- */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -2872,10 +3364,11 @@ const Dashboard = () => {
                     setPostTab(tab);
                     setCurrentPostIndex(0);
                   }}
-                  className={`px-6 py-2 rounded-full text-sm font-bold transition-all ${postTab === tab
-                    ? "bg-lime-500 text-black shadow-lg shadow-lime-500/20"
-                    : "text-slate-400 hover:text-white"
-                    }`}
+                  className={`px-6 py-2 rounded-full text-sm font-bold transition-all ${
+                    postTab === tab
+                      ? "bg-lime-500 text-black shadow-lg shadow-lime-500/20"
+                      : "text-slate-400 hover:text-white"
+                  }`}
                 >
                   {tab.charAt(0).toUpperCase() + tab.slice(1)}
                 </button>
@@ -2920,10 +3413,11 @@ const Dashboard = () => {
                 <button
                   key={idx}
                   onClick={() => setCurrentPostIndex(idx)}
-                  className={`w-2 h-2 rounded-full transition-all ${idx === currentPostIndex
-                    ? "bg-lime-500 w-6"
-                    : "bg-slate-700 hover:bg-slate-500"
-                    }`}
+                  className={`w-2 h-2 rounded-full transition-all ${
+                    idx === currentPostIndex
+                      ? "bg-lime-500 w-6"
+                      : "bg-slate-700 hover:bg-slate-500"
+                  }`}
                 />
               ))}
             </div>
