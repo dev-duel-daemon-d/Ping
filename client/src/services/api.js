@@ -109,6 +109,15 @@ export const profileService = {
 
     // Socials
     updateSocials: (data) => api.put('/profile/socials', data),
+
+    // Game Experience
+    addGame: (data) => api.post('/profile/games', data),
+    updateGame: (id, data) => api.put(`/profile/games/${id}`, data),
+    deleteGame: (id) => api.delete(`/profile/games/${id}`),
+}
+
+export const gameService = {
+    getAll: () => api.get('/games'),
 }
 
 export default api

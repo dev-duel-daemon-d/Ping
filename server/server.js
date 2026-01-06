@@ -16,6 +16,7 @@ import teamRoutes from './routes/teams.js'
 import searchRoutes from './routes/search.js'
 import uploadRoutes from './routes/upload.js'
 import profileRoutes from './routes/profile.js'
+import gameRoutes from './routes/games.js'
 import { initSocket } from './socket/index.js'
 
 // Setup __dirname for ES modules
@@ -62,6 +63,7 @@ app.use('/api/teams', teamRoutes)
 app.use('/api/search', searchRoutes)
 app.use('/api/upload', uploadRoutes)
 app.use('/api/profile', profileRoutes)
+app.use('/api/games', gameRoutes)
 
 // Static folder for uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')))

@@ -84,6 +84,14 @@ const userSchema = new mongoose.Schema(
             tiktok: { type: String, default: '' },
             discord: { type: String, default: '' },
         },
+        // Game Experiences
+        gameExperiences: [{
+            game: { type: String, required: true },
+            role: { type: String, required: true },
+            rank: { type: String, required: true },
+            peakRank: { type: String, default: '' },
+            isPrimary: { type: Boolean, default: false }
+        }],
         status: {
             type: String,
             enum: ['online', 'offline', 'away', 'busy'],

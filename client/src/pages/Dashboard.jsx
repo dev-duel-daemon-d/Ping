@@ -37,10 +37,13 @@ import {
   Youtube,
   Twitch,
   Link as LinkIcon,
+  Crown,
+  ChevronUp,
+  ChevronDown
 } from "lucide-react";
 import { Avatar, Modal, Box, IconButton, InputBase, Badge, Menu, MenuItem, Typography, Button, TextField } from "@mui/material";
 import { X, Check } from "lucide-react";
-import { userService, notificationService, connectionService, messageService, uploadService, profileService } from "../services/api";
+import { userService, notificationService, connectionService, messageService, uploadService, profileService, gameService } from "../services/api";
 
 // --- Custom Icons for Socials ---
 const DiscordIcon = ({ className }) => (
@@ -54,6 +57,28 @@ const TikTokIcon = ({ className }) => (
     <path d="M19.589 6.686a4.793 4.793 0 0 1-3.77-4.245V2h-3.445v13.672a2.896 2.896 0 0 1-5.201 1.743l-.002-.001.002.001a2.895 2.895 0 0 1 3.183-4.51v-3.5a6.394 6.394 0 0 0-5.394 9.365 6.394 6.394 0 0 0 10.964-2.413V6.659c.82 1.124 2.154 1.814 3.67 1.818h.035v-3.44h-.034c-.876.002-1.685-.303-2.316-.788l-.001.002z" />
   </svg>
 );
+
+// --- Game Logo Helper ---
+const GameLogo = ({ gameName, supportedGames, className }) => {
+  const game = supportedGames.find(g => g.name.toLowerCase() === gameName?.toLowerCase());
+  
+  if (game?.logo) {
+    return (
+      <img 
+        src={game.logo} 
+        alt={gameName} 
+        className={`${className} object-contain`}
+        onError={(e) => {
+          e.target.style.display = 'none';
+          e.target.nextSibling.style.display = 'block';
+        }}
+      />
+    );
+  }
+
+  // Fallback icon logic if needed, or simply render the fallback immediately if no logo found
+  return <Gamepad2 className={`${className} text-slate-500`} />;
+};
 
 // --- Socials Display Component ---
 const SocialsDisplay = ({ socials, isOwnProfile, onEdit }) => {
@@ -119,6 +144,159 @@ const SocialsDisplay = ({ socials, isOwnProfile, onEdit }) => {
         </button>
       )}
     </div>
+  );
+};
+
+// --- Game Edit Modal ---
+const GameEditModal = ({ open, onClose, onSave, editingGame, supportedGames }) => {
+  const [formData, setFormData] = useState({
+    game: '',
+    role: '',
+    rank: '',
+    peakRank: '',
+    isPrimary: false,
+  });
+  const [isOther, setIsOther] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (editingGame) {
+      const isKnown = supportedGames.some(g => g.name === editingGame.game);
+      setFormData({
+        game: editingGame.game || '',
+        role: editingGame.role || '',
+        rank: editingGame.rank || '',
+        peakRank: editingGame.peakRank || '',
+        isPrimary: editingGame.isPrimary || false,
+      });
+      setIsOther(!isKnown && !!editingGame.game);
+    } else {
+      setFormData({ game: '', role: '', rank: '', peakRank: '', isPrimary: false });
+      setIsOther(false);
+    }
+  }, [editingGame, open, supportedGames]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!formData.game.trim() || !formData.role.trim() || !formData.rank.trim()) return;
+
+    setSaving(true);
+    try {
+      await onSave(formData, editingGame?._id);
+      onClose();
+    } catch (err) {
+      console.error('Failed to save game:', err);
+    }
+    setSaving(false);
+  };
+
+  return (
+    <EditModal open={open} onClose={onClose} title={editingGame ? "Edit Game Experience" : "Add Game Experience"}>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-slate-400 mb-2">Game *</label>
+          {isOther ? (
+             <div className="flex gap-2">
+               <input
+                 type="text"
+                 value={formData.game}
+                 onChange={(e) => setFormData({ ...formData, game: e.target.value })}
+                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50"
+                 placeholder="Enter game name"
+                 required
+               />
+               <button
+                 type="button"
+                 onClick={() => { setIsOther(false); setFormData({ ...formData, game: '' }); }}
+                 className="px-3 bg-white/10 rounded-xl text-slate-400 hover:text-white hover:bg-white/20"
+               >
+                 <X className="w-4 h-4" />
+               </button>
+             </div>
+          ) : (
+            <select
+              value={formData.game}
+              onChange={(e) => {
+                if (e.target.value === 'Other') {
+                  setIsOther(true);
+                  setFormData({ ...formData, game: '' });
+                } else {
+                  setFormData({ ...formData, game: e.target.value });
+                }
+              }}
+              className="w-full bg-[#1b1f23] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-lime-500/50 appearance-none"
+              required
+            >
+              <option value="" disabled>Select a game</option>
+              {supportedGames.map(game => (
+                <option key={game._id} value={game.name}>{game.name}</option>
+              ))}
+              <option value="Other">Other...</option>
+            </select>
+          )}
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-slate-400 mb-2">Role *</label>
+            <input
+              type="text"
+              value={formData.role}
+              onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50"
+              placeholder="e.g. Duelist"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-400 mb-2">Current Rank *</label>
+            <input
+              type="text"
+              value={formData.rank}
+              onChange={(e) => setFormData({ ...formData, rank: e.target.value })}
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50"
+              placeholder="e.g. Ascendant 2"
+              required
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-400 mb-2">Peak Rank (Optional)</label>
+          <input
+            type="text"
+            value={formData.peakRank}
+            onChange={(e) => setFormData({ ...formData, peakRank: e.target.value })}
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50"
+            placeholder="e.g. Immortal 3"
+          />
+        </div>
+
+        <div className="flex items-center gap-3 p-3 bg-white/5 rounded-xl border border-white/10 cursor-pointer" onClick={() => setFormData(prev => ({ ...prev, isPrimary: !prev.isPrimary }))}>
+          <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${formData.isPrimary ? 'bg-lime-500 border-lime-500' : 'border-slate-500'}`}>
+            {formData.isPrimary && <Check className="w-3.5 h-3.5 text-black" />}
+          </div>
+          <span className="text-sm font-medium text-slate-200">Set as Primary Game</span>
+        </div>
+
+        <div className="flex gap-3 justify-end pt-4">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-5 py-2.5 bg-white/10 text-white rounded-lg font-medium hover:bg-white/20 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={saving || !formData.game.trim()}
+            className="px-5 py-2.5 bg-gradient-to-r from-lime-500 to-green-500 text-black rounded-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg hover:shadow-lime-500/30 transition-all"
+          >
+            {saving ? 'Saving...' : (editingGame ? 'Update' : 'Add Game')}
+          </button>
+        </div>
+      </form>
+    </EditModal>
   );
 };
 
@@ -208,6 +386,7 @@ const SocialsEditModal = ({ open, onClose, onSave, currentSocials }) => {
     </EditModal>
   );
 };
+
 
 
 // --- Helper Components ---
@@ -1826,6 +2005,8 @@ const Dashboard = () => {
   // Profile data state
   const [teams, setTeams] = useState([]);
   const [tournaments, setTournaments] = useState([]);
+  const [gameExperiences, setGameExperiences] = useState([]);
+  const [supportedGames, setSupportedGames] = useState([]);
   const [gamingSetup, setGamingSetup] = useState({
     dpi: 800,
     sensitivity: 0.35,
@@ -1848,8 +2029,10 @@ const Dashboard = () => {
   const [showTournamentModal, setShowTournamentModal] = useState(false);
   const [showSetupModal, setShowSetupModal] = useState(false);
   const [showSocialsModal, setShowSocialsModal] = useState(false);
+  const [showGameModal, setShowGameModal] = useState(false);
   const [editingTeam, setEditingTeam] = useState(null);
   const [editingTournament, setEditingTournament] = useState(null);
+  const [editingGame, setEditingGame] = useState(null);
 
   // Copy feedback state
   const [copiedField, setCopiedField] = useState(null);
@@ -1876,7 +2059,17 @@ const Dashboard = () => {
     }
   };
 
+  const fetchSupportedGames = async () => {
+    try {
+      const res = await gameService.getAll();
+      setSupportedGames(res.data);
+    } catch (error) {
+      console.error("Failed to fetch supported games", error);
+    }
+  };
+
   React.useEffect(() => {
+    fetchSupportedGames();
     const handleMouseMove = (e) => {
       setMousePos({ x: e.clientX, y: e.clientY });
     };
@@ -1936,6 +2129,7 @@ const Dashboard = () => {
       if (res.data) {
         setTeams(res.data.teamHistory || []);
         setTournaments(res.data.tournamentExperience || []);
+        setGameExperiences(res.data.gameExperiences || []);
         setGamingSetup(res.data.gamingSetup || {
           dpi: 800,
           sensitivity: 0.35,
@@ -1986,6 +2180,31 @@ const Dashboard = () => {
       setTeams(res.data);
     } catch (error) {
       console.error("Failed to delete team", error);
+    }
+  };
+
+  // Game handlers
+  const handleSaveGame = async (formData, gameId) => {
+    try {
+      if (gameId) {
+        const res = await profileService.updateGame(gameId, formData);
+        setGameExperiences(res.data);
+      } else {
+        const res = await profileService.addGame(formData);
+        setGameExperiences(res.data);
+      }
+    } catch (error) {
+      console.error("Failed to save game", error);
+      throw error;
+    }
+  };
+
+  const handleDeleteGame = async (gameId) => {
+    try {
+      const res = await profileService.deleteGame(gameId);
+      setGameExperiences(res.data);
+    } catch (error) {
+      console.error("Failed to delete game", error);
     }
   };
 
@@ -2082,22 +2301,7 @@ const Dashboard = () => {
     }
   };
 
-  // --- Mock Data ---
-  const games = [
-    { game: "Valorant", role: "Duelist", rank: "Radiant", icon: Crosshair },
-    {
-      game: "League of Legends",
-      role: "Mid Laner",
-      rank: "Challenger",
-      icon: Swords,
-    },
-    {
-      game: "Counter-Strike 2",
-      role: "AWPer",
-      rank: "Global Elite",
-      icon: Target,
-    },
-  ];
+  // --- Mock Data --- (REMOVED: games array)
 
   const posts = {
     professional: [
@@ -2180,6 +2384,10 @@ const Dashboard = () => {
     );
   }
 
+  // --- Filter Games ---
+  const primaryGame = gameExperiences.find(g => g.isPrimary);
+  const secondaryGames = gameExperiences.filter(g => !g.isPrimary);
+
   return (
     <div className="min-h-screen bg-black text-slate-200 font-sans selection:bg-lime-500/30 overflow-hidden relative">
       {/* Mouse Glow Effect */}
@@ -2238,7 +2446,7 @@ const Dashboard = () => {
           </div>
 
           {/* Avatar & Info */}
-          <div className="absolute -bottom-16 left-0 right-0 flex flex-col items-center z-20">
+          <div className="absolute -bottom-48 left-0 right-0 flex flex-col items-center z-20">
             <div className="relative">
               <div className="w-32 h-32 rounded-full p-1 bg-black relative group">
                 <Avatar
@@ -2329,33 +2537,134 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-        <div className="h-20" /> {/* Spacer for profile overlap */}
+        <div className="h-60" /> {/* Spacer for profile overlap */}
         {/* --- Grid Section --- */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           {/* Focus Game & Experience */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="md:col-span-2 bg-[#1b1f23] border border-white/5 rounded-2xl p-6"
+            className="md:col-span-2 bg-[#1b1f23] border border-white/5 rounded-2xl p-6 h-[400px] flex flex-col"
           >
-            <div className="flex items-center gap-2 mb-6">
-              <Gamepad2 className="w-5 h-5 text-lime-500" />
-              <h3 className="font-bold text-lg text-white">
-                Focus Game & Experience
-              </h3>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Gamepad2 className="w-5 h-5 text-lime-500" />
+                <h3 className="font-bold text-lg text-white">
+                  Focus Game & Experience
+                </h3>
+              </div>
+              {isOwnProfile && (
+                <button
+                  onClick={() => { setEditingGame(null); setShowGameModal(true); }}
+                  className="p-2 hover:bg-white/10 rounded-lg transition-colors text-lime-500"
+                >
+                  <Plus className="w-5 h-5" />
+                </button>
+              )}
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {games.map((game, i) => (
-                <GameCard key={i} {...game} />
-              ))}
-              <div className="border-2 border-dashed border-white/10 rounded-xl p-4 flex flex-col items-center justify-center text-slate-500 hover:border-lime-500/50 hover:text-lime-500 transition-all cursor-pointer group h-full min-h-[80px]">
-                <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center mb-2 group-hover:bg-lime-500/20 transition-colors">
-                  <span className="text-lg">+</span>
+            {gameExperiences.length > 0 ? (
+              <div className="flex flex-col h-full gap-4 overflow-hidden">
+                {/* Primary Game Box - Highlighted */}
+                {primaryGame && (
+                  <div className="bg-gradient-to-br from-lime-500/10 to-transparent border border-lime-500/50 rounded-xl p-4 flex items-center gap-4 relative group shrink-0">
+                    <div className="absolute top-2 right-2 opacity-100">
+                      <Crown className="w-5 h-5 text-yellow-500 fill-yellow-500" />
+                    </div>
+                    {isOwnProfile && (
+                       <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-black/50 rounded-lg p-1 backdrop-blur-sm z-10">
+                         <button
+                           onClick={() => { setEditingGame(primaryGame); setShowGameModal(true); }}
+                           className="p-1 hover:bg-white/20 rounded-md transition-colors"
+                         >
+                           <Pencil className="w-3.5 h-3.5 text-lime-400" />
+                         </button>
+                         <button
+                           onClick={() => handleDeleteGame(primaryGame._id)}
+                           className="p-1 hover:bg-red-500/20 rounded-md transition-colors"
+                         >
+                           <Trash2 className="w-3.5 h-3.5 text-red-400" />
+                         </button>
+                       </div>
+                    )}
+                    
+                    <div className="w-16 h-16 rounded-xl bg-black border-2 border-lime-500/30 flex items-center justify-center shadow-lg shadow-lime-500/10 overflow-hidden">
+                      <GameLogo gameName={primaryGame.game} supportedGames={supportedGames} className="w-full h-full p-2" />
+                    </div>
+                    <div>
+                      <h4 className="text-xl font-bold text-white">{primaryGame.game}</h4>
+                      <p className="text-sm text-lime-400 font-medium mb-1">{primaryGame.role}</p>
+                      <div className="flex items-center gap-2 text-xs text-slate-400">
+                         <span className="bg-white/10 px-2 py-0.5 rounded text-white border border-white/10">{primaryGame.rank}</span>
+                         {primaryGame.peakRank && (
+                           <>
+                             <span>•</span>
+                             <span className="text-slate-500">Peak: {primaryGame.peakRank}</span>
+                           </>
+                         )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Secondary Games List */}
+                <div className="flex-1 overflow-y-auto custom-scrollbar space-y-3 pr-2">
+                  {secondaryGames.length > 0 ? (
+                    secondaryGames.map((game) => (
+                      <div key={game._id} className="bg-white/5 border border-white/5 rounded-xl p-3 flex items-center gap-3 hover:bg-white/10 transition-colors group relative">
+                        {isOwnProfile && (
+                          <div className="absolute right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button
+                              onClick={() => { setEditingGame(game); setShowGameModal(true); }}
+                              className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
+                            >
+                              <Pencil className="w-3.5 h-3.5 text-slate-400 hover:text-white" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteGame(game._id)}
+                              className="p-1.5 hover:bg-red-500/20 rounded-lg transition-colors"
+                            >
+                              <Trash2 className="w-3.5 h-3.5 text-slate-400 hover:text-red-500" />
+                            </button>
+                          </div>
+                        )}
+                        <div className="w-10 h-10 rounded-lg bg-black/40 border border-white/10 flex items-center justify-center shrink-0 overflow-hidden">
+                           <GameLogo gameName={game.game} supportedGames={supportedGames} className="w-full h-full p-1.5" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-bold text-slate-200 text-sm truncate">{game.game}</h4>
+                          <div className="flex items-center gap-2 text-xs text-slate-500">
+                            <span>{game.role}</span>
+                            <span>•</span>
+                            <span className="text-lime-500/80">{game.rank}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    !primaryGame && (
+                       <div className="flex flex-col items-center justify-center h-full text-slate-500 text-sm">
+                         <p>No games added yet.</p>
+                         {isOwnProfile && <p>Click the + button to add your experience.</p>}
+                       </div>
+                    )
+                  )}
                 </div>
-                <span className="text-xs font-medium">Add Game</span>
               </div>
-            </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center h-full border-2 border-dashed border-white/10 rounded-xl text-slate-500">
+                <Gamepad2 className="w-10 h-10 mb-2 opacity-50" />
+                <p>No games added yet</p>
+                {isOwnProfile && (
+                  <button 
+                    onClick={() => { setEditingGame(null); setShowGameModal(true); }}
+                    className="mt-4 px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm text-lime-500 transition-colors"
+                  >
+                    Add Your First Game
+                  </button>
+                )}
+              </div>
+            )}
           </motion.div>
 
           {/* Stat Graphs */}
@@ -2363,14 +2672,14 @@ const Dashboard = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-[#1b1f23] border border-white/5 rounded-2xl p-6"
+            className="bg-[#1b1f23] border border-white/5 rounded-2xl p-6 h-[400px] flex flex-col"
           >
             <div className="flex items-center gap-2 mb-6">
               <Brain className="w-5 h-5 text-lime-500" />
               <h3 className="font-bold text-lg text-white">Stats Graph</h3>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-4 flex-1 overflow-y-auto custom-scrollbar pr-2">
               <StatBar label="Aim / Accuracy" value={92} color="bg-red-500" />
               <StatBar label="Game Sense" value={85} color="bg-blue-500" />
               <StatBar label="Teamwork" value={88} color="bg-green-500" />
@@ -2506,6 +2815,13 @@ const Dashboard = () => {
           onClose={() => setShowSocialsModal(false)}
           onSave={handleSaveSocials}
           currentSocials={socials}
+        />
+        <GameEditModal
+          open={showGameModal}
+          onClose={() => { setShowGameModal(false); setEditingGame(null); }}
+          onSave={handleSaveGame}
+          editingGame={editingGame}
+          supportedGames={supportedGames}
         />
 
         {/* --- Posts Section --- */}
