@@ -42,7 +42,7 @@ router.get('/data/:username', async (req, res) => {
 // @access  Private
 router.post('/games', protect, async (req, res) => {
     try {
-        const { game, role, rank, peakRank, isPrimary } = req.body
+        const { game, genre, role, rank, peakRank, isPrimary } = req.body
 
         if (!game || !role || !rank) {
             return res.status(400).json({ message: 'Game, role, and rank are required' })
@@ -65,6 +65,7 @@ router.post('/games', protect, async (req, res) => {
 
         user.gameExperiences.push({ 
             game: game.trim(), 
+            genre: genre || '',
             role, 
             rank, 
             peakRank, 
@@ -85,7 +86,7 @@ router.post('/games', protect, async (req, res) => {
 // @access  Private
 router.put('/games/:id', protect, async (req, res) => {
     try {
-        const { game, role, rank, peakRank, isPrimary } = req.body
+        const { game, genre, role, rank, peakRank, isPrimary } = req.body
         const user = await User.findById(req.user._id)
 
         const gameIndex = user.gameExperiences.findIndex(
@@ -114,6 +115,7 @@ router.put('/games/:id', protect, async (req, res) => {
         user.gameExperiences[gameIndex] = {
             ...user.gameExperiences[gameIndex].toObject(),
             game: game ? game.trim() : user.gameExperiences[gameIndex].game,
+            genre: genre !== undefined ? genre : user.gameExperiences[gameIndex].genre,
             role: role || user.gameExperiences[gameIndex].role,
             rank: rank || user.gameExperiences[gameIndex].rank,
             peakRank: peakRank !== undefined ? peakRank : user.gameExperiences[gameIndex].peakRank,

@@ -151,6 +151,7 @@ const SocialsDisplay = ({ socials, isOwnProfile, onEdit }) => {
 const GameEditModal = ({ open, onClose, onSave, editingGame, supportedGames }) => {
   const [formData, setFormData] = useState({
     game: '',
+    genre: '',
     role: '',
     rank: '',
     peakRank: '',
@@ -159,11 +160,24 @@ const GameEditModal = ({ open, onClose, onSave, editingGame, supportedGames }) =
   const [isOther, setIsOther] = useState(false);
   const [saving, setSaving] = useState(false);
 
+  const GENRES = [
+    "First-Person Shooter (FPS)",
+    "Battle Royale",
+    "Multiplayer Online Battle Arena (MOBA)",
+    "Real-Time Strategy (RTS)",
+    "Fighting Games",
+    "Sports Games (Simulation)",
+    "Racing Games (Sim Racing)",
+    "Digital Card Games (CCG/TCG)",
+    "Auto-Battlers (Auto Chess)"
+  ];
+
   useEffect(() => {
     if (editingGame) {
       const isKnown = supportedGames.some(g => g.name === editingGame.game);
       setFormData({
         game: editingGame.game || '',
+        genre: editingGame.genre || '',
         role: editingGame.role || '',
         rank: editingGame.rank || '',
         peakRank: editingGame.peakRank || '',
@@ -171,7 +185,7 @@ const GameEditModal = ({ open, onClose, onSave, editingGame, supportedGames }) =
       });
       setIsOther(!isKnown && !!editingGame.game);
     } else {
-      setFormData({ game: '', role: '', rank: '', peakRank: '', isPrimary: false });
+      setFormData({ game: '', genre: '', role: '', rank: '', peakRank: '', isPrimary: false });
       setIsOther(false);
     }
   }, [editingGame, open, supportedGames]);
@@ -196,22 +210,39 @@ const GameEditModal = ({ open, onClose, onSave, editingGame, supportedGames }) =
         <div>
           <label className="block text-sm font-medium text-slate-400 mb-2">Game *</label>
           {isOther ? (
-             <div className="flex gap-2">
-               <input
-                 type="text"
-                 value={formData.game}
-                 onChange={(e) => setFormData({ ...formData, game: e.target.value })}
-                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50"
-                 placeholder="Enter game name"
-                 required
-               />
-               <button
-                 type="button"
-                 onClick={() => { setIsOther(false); setFormData({ ...formData, game: '' }); }}
-                 className="px-3 bg-white/10 rounded-xl text-slate-400 hover:text-white hover:bg-white/20"
-               >
-                 <X className="w-4 h-4" />
-               </button>
+             <div className="space-y-4">
+               <div className="flex gap-2">
+                 <input
+                   type="text"
+                   value={formData.game}
+                   onChange={(e) => setFormData({ ...formData, game: e.target.value })}
+                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50"
+                   placeholder="Enter game name"
+                   required
+                 />
+                 <button
+                   type="button"
+                   onClick={() => { setIsOther(false); setFormData({ ...formData, game: '', genre: '' }); }}
+                   className="px-3 bg-white/10 rounded-xl text-slate-400 hover:text-white hover:bg-white/20"
+                 >
+                   <X className="w-4 h-4" />
+                 </button>
+               </div>
+               
+               <div>
+                 <label className="block text-sm font-medium text-slate-400 mb-2">Genre *</label>
+                 <select
+                   value={formData.genre}
+                   onChange={(e) => setFormData({ ...formData, genre: e.target.value })}
+                   className="w-full bg-[#1b1f23] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-lime-500/50 appearance-none"
+                   required
+                 >
+                   <option value="" disabled>Select a genre</option>
+                   {GENRES.map(genre => (
+                     <option key={genre} value={genre}>{genre}</option>
+                   ))}
+                 </select>
+               </div>
              </div>
           ) : (
             <select
@@ -219,9 +250,10 @@ const GameEditModal = ({ open, onClose, onSave, editingGame, supportedGames }) =
               onChange={(e) => {
                 if (e.target.value === 'Other') {
                   setIsOther(true);
-                  setFormData({ ...formData, game: '' });
+                  setFormData({ ...formData, game: '', genre: '' });
                 } else {
-                  setFormData({ ...formData, game: e.target.value });
+                  const selectedGame = supportedGames.find(g => g.name === e.target.value);
+                  setFormData({ ...formData, game: e.target.value, genre: selectedGame?.genre || '' });
                 }
               }}
               className="w-full bg-[#1b1f23] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-lime-500/50 appearance-none"
@@ -235,7 +267,6 @@ const GameEditModal = ({ open, onClose, onSave, editingGame, supportedGames }) =
             </select>
           )}
         </div>
-
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-slate-400 mb-2">Role *</label>

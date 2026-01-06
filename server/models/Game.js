@@ -12,6 +12,10 @@ const gameSchema = new mongoose.Schema(
             type: String,
             required: true
         },
+        genre: {
+            type: String,
+            required: true
+        },
         theme: {
             type: String, // Hex color code
             default: '#84cc16' // Default lime green

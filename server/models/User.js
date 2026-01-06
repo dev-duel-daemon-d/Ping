@@ -87,6 +87,7 @@ const userSchema = new mongoose.Schema(
         // Game Experiences
         gameExperiences: [{
             game: { type: String, required: true },
+            genre: { type: String, default: '' },
             role: { type: String, required: true },
             rank: { type: String, required: true },
             peakRank: { type: String, default: '' },
