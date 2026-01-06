@@ -106,6 +106,9 @@ export const profileService = {
 
     // Gaming Setup
     updateSetup: (data) => api.put('/profile/setup', data),
+
+    // Socials
+    updateSocials: (data) => api.put('/profile/socials', data),
 }
 
 export default api

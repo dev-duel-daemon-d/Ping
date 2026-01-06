@@ -5,12 +5,12 @@ import { protect } from '../middleware/auth.js'
 const router = express.Router()
 
 // @route   GET /api/profile/data
-// @desc    Get user's profile data (team history, tournaments, setup)
+// @desc    Get user's profile data (team history, tournaments, setup, socials)
 // @access  Private
 router.get('/data', protect, async (req, res) => {
     try {
         const user = await User.findById(req.user._id)
-            .select('teamHistory tournamentExperience gamingSetup')
+            .select('teamHistory tournamentExperience gamingSetup socials')
         res.json(user)
     } catch (error) {
         console.error('Get profile data error:', error)
@@ -24,13 +24,40 @@ router.get('/data', protect, async (req, res) => {
 router.get('/data/:username', async (req, res) => {
     try {
         const user = await User.findOne({ username: req.params.username })
-            .select('teamHistory tournamentExperience gamingSetup')
+            .select('teamHistory tournamentExperience gamingSetup socials')
         if (!user) {
             return res.status(404).json({ message: 'User not found' })
         }
         res.json(user)
     } catch (error) {
         console.error('Get profile data error:', error)
+        res.status(500).json({ message: 'Server error' })
+    }
+})
+
+// ==================== SOCIALS ====================
+
+// @route   PUT /api/profile/socials
+// @desc    Update social media handles
+// @access  Private
+router.put('/socials', protect, async (req, res) => {
+    try {
+        const { twitter, instagram, twitch, youtube, tiktok, discord } = req.body
+        const user = await User.findById(req.user._id)
+
+        user.socials = {
+            twitter: twitter !== undefined ? twitter : user.socials?.twitter || '',
+            instagram: instagram !== undefined ? instagram : user.socials?.instagram || '',
+            twitch: twitch !== undefined ? twitch : user.socials?.twitch || '',
+            youtube: youtube !== undefined ? youtube : user.socials?.youtube || '',
+            tiktok: tiktok !== undefined ? tiktok : user.socials?.tiktok || '',
+            discord: discord !== undefined ? discord : user.socials?.discord || ''
+        }
+
+        await user.save()
+        res.json(user.socials)
+    } catch (error) {
+        console.error('Update socials error:', error)
         res.status(500).json({ message: 'Server error' })
     }
 })

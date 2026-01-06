@@ -76,6 +76,14 @@ const userSchema = new mongoose.Schema(
             mouse: { type: String, default: '' },
             crosshairCode: { type: String, default: '' }
         },
+        socials: {
+            twitter: { type: String, default: '' },
+            instagram: { type: String, default: '' },
+            twitch: { type: String, default: '' },
+            youtube: { type: String, default: '' },
+            tiktok: { type: String, default: '' },
+            discord: { type: String, default: '' },
+        },
         status: {
             type: String,
             enum: ['online', 'offline', 'away', 'busy'],

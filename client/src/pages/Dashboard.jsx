@@ -32,10 +32,183 @@ import {
   Copy,
   Trash2,
   Plus,
+  Twitter,
+  Instagram,
+  Youtube,
+  Twitch,
+  Link as LinkIcon,
 } from "lucide-react";
 import { Avatar, Modal, Box, IconButton, InputBase, Badge, Menu, MenuItem, Typography, Button, TextField } from "@mui/material";
 import { X, Check } from "lucide-react";
 import { userService, notificationService, connectionService, messageService, uploadService, profileService } from "../services/api";
+
+// --- Custom Icons for Socials ---
+const DiscordIcon = ({ className }) => (
+  <svg className={className} fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037 13.46 13.46 0 0 0-1.063 2.193 18.068 18.068 0 0 0-4.57 0 13.513 13.513 0 0 0-1.07-2.193.076.076 0 0 0-.078-.037 19.736 19.736 0 0 0-4.885 1.515.077.077 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" />
+  </svg>
+);
+
+const TikTokIcon = ({ className }) => (
+  <svg className={className} fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M19.589 6.686a4.793 4.793 0 0 1-3.77-4.245V2h-3.445v13.672a2.896 2.896 0 0 1-5.201 1.743l-.002-.001.002.001a2.895 2.895 0 0 1 3.183-4.51v-3.5a6.394 6.394 0 0 0-5.394 9.365 6.394 6.394 0 0 0 10.964-2.413V6.659c.82 1.124 2.154 1.814 3.67 1.818h.035v-3.44h-.034c-.876.002-1.685-.303-2.316-.788l-.001.002z" />
+  </svg>
+);
+
+// --- Socials Display Component ---
+const SocialsDisplay = ({ socials, isOwnProfile, onEdit }) => {
+  const socialConfig = [
+    { key: 'twitter', icon: Twitter, color: 'text-sky-400', bg: 'bg-sky-400/10', border: 'border-sky-400/20', hover: 'hover:bg-sky-400/20', label: 'Twitter', urlPrefix: 'https://twitter.com/' },
+    { key: 'instagram', icon: Instagram, color: 'text-pink-500', bg: 'bg-pink-500/10', border: 'border-pink-500/20', hover: 'hover:bg-pink-500/20', label: 'Instagram', urlPrefix: 'https://instagram.com/' },
+    { key: 'twitch', icon: Twitch, color: 'text-purple-400', bg: 'bg-purple-400/10', border: 'border-purple-400/20', hover: 'hover:bg-purple-400/20', label: 'Twitch', urlPrefix: 'https://twitch.tv/' },
+    { key: 'youtube', icon: Youtube, color: 'text-red-500', bg: 'bg-red-500/10', border: 'border-red-500/20', hover: 'hover:bg-red-500/20', label: 'YouTube', urlPrefix: 'https://youtube.com/' },
+    { key: 'tiktok', icon: TikTokIcon, color: 'text-[#ff0050]', bg: 'bg-[#ff0050]/10', border: 'border-[#ff0050]/20', hover: 'hover:bg-[#ff0050]/20', label: 'TikTok', urlPrefix: 'https://tiktok.com/@' },
+    { key: 'discord', icon: DiscordIcon, color: 'text-indigo-400', bg: 'bg-indigo-400/10', border: 'border-indigo-400/20', hover: 'hover:bg-indigo-400/20', label: 'Discord', isCopy: true },
+  ];
+
+  const hasSocials = socialConfig.some(s => socials?.[s.key]);
+
+  if (!hasSocials && !isOwnProfile) return null;
+
+  return (
+    <div className="flex flex-wrap items-center justify-center gap-3 mt-6 mb-8 relative">
+      {socialConfig.map((social) => {
+        const handle = socials?.[social.key];
+        if (!handle) return null;
+
+        const Icon = social.icon;
+        
+        if (social.isCopy) {
+           return (
+             <div
+               key={social.key}
+               onClick={() => {
+                 navigator.clipboard.writeText(handle);
+                 // Could add a toast here
+                 alert(`Copied ${handle} to clipboard!`); 
+               }}
+               className={`flex items-center gap-2 px-3 py-1.5 rounded-full border ${social.bg} ${social.border} ${social.color} ${social.hover} transition-all cursor-pointer group`}
+             >
+               <Icon className="w-3.5 h-3.5" />
+               <span className="text-xs font-bold">{handle}</span>
+             </div>
+           )
+        }
+
+        return (
+          <a
+            key={social.key}
+            href={`${social.urlPrefix}${handle}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-full border ${social.bg} ${social.border} ${social.color} ${social.hover} transition-all cursor-pointer group no-underline`}
+          >
+            <Icon className="w-3.5 h-3.5" />
+            <span className="text-xs font-bold">{handle}</span>
+          </a>
+        );
+      })}
+
+      {isOwnProfile && (
+        <button
+          onClick={onEdit}
+          className="ml-2 p-1.5 hover:bg-white/10 rounded-full text-slate-400 hover:text-white transition-colors"
+          title="Edit Socials"
+        >
+          <Pencil className="w-3.5 h-3.5" />
+        </button>
+      )}
+    </div>
+  );
+};
+
+// --- Socials Edit Modal ---
+const SocialsEditModal = ({ open, onClose, onSave, currentSocials }) => {
+  const [formData, setFormData] = useState({
+    twitter: '',
+    instagram: '',
+    twitch: '',
+    youtube: '',
+    tiktok: '',
+    discord: '',
+  });
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (currentSocials) {
+      setFormData({
+        twitter: currentSocials.twitter || '',
+        instagram: currentSocials.instagram || '',
+        twitch: currentSocials.twitch || '',
+        youtube: currentSocials.youtube || '',
+        tiktok: currentSocials.tiktok || '',
+        discord: currentSocials.discord || '',
+      });
+    }
+  }, [currentSocials, open]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      await onSave(formData);
+      onClose();
+    } catch (err) {
+      console.error('Failed to save socials:', err);
+    }
+    setSaving(false);
+  };
+
+  const socialInputs = [
+    { key: 'twitter', label: 'Twitter Handle', icon: Twitter, placeholder: '@username' },
+    { key: 'instagram', label: 'Instagram Handle', icon: Instagram, placeholder: '@username' },
+    { key: 'twitch', label: 'Twitch Channel', icon: Twitch, placeholder: 'username' },
+    { key: 'youtube', label: 'YouTube Channel', icon: Youtube, placeholder: '@channel' },
+    { key: 'tiktok', label: 'TikTok Handle', icon: TikTokIcon, placeholder: '@username' },
+    { key: 'discord', label: 'Discord Username', icon: DiscordIcon, placeholder: 'username#0000' },
+  ];
+
+  return (
+    <EditModal open={open} onClose={onClose} title="Edit Social Links">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {socialInputs.map(({ key, label, icon: Icon, placeholder }) => (
+            <div key={key}>
+              <label className="flex items-center gap-2 text-sm font-medium text-slate-400 mb-2">
+                <Icon className="w-4 h-4" /> {label}
+              </label>
+              <input
+                type="text"
+                value={formData[key]}
+                onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:border-lime-500/50"
+                placeholder={placeholder}
+              />
+            </div>
+          ))}
+        </div>
+
+        <div className="flex gap-3 justify-end pt-4 border-t border-white/10 mt-6">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-5 py-2.5 bg-white/10 text-white rounded-lg font-medium hover:bg-white/20 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={saving}
+            className="px-5 py-2.5 bg-gradient-to-r from-lime-500 to-green-500 text-black rounded-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg hover:shadow-lime-500/30 transition-all"
+          >
+            {saving ? 'Saving...' : 'Save Socials'}
+          </button>
+        </div>
+      </form>
+    </EditModal>
+  );
+};
+
 
 // --- Helper Components ---
 const NotificationMenu = ({ anchorEl, open, onClose, notifications, onAccept, onMarkRead, onOpenChat }) => {
@@ -1661,11 +1834,20 @@ const Dashboard = () => {
     mouse: '',
     crosshairCode: ''
   });
+  const [socials, setSocials] = useState({
+    twitter: '',
+    instagram: '',
+    twitch: '',
+    youtube: '',
+    tiktok: '',
+    discord: ''
+  });
 
   // Modal state
   const [showTeamModal, setShowTeamModal] = useState(false);
   const [showTournamentModal, setShowTournamentModal] = useState(false);
   const [showSetupModal, setShowSetupModal] = useState(false);
+  const [showSocialsModal, setShowSocialsModal] = useState(false);
   const [editingTeam, setEditingTeam] = useState(null);
   const [editingTournament, setEditingTournament] = useState(null);
 
@@ -1762,6 +1944,14 @@ const Dashboard = () => {
           mouse: '',
           crosshairCode: ''
         });
+        setSocials(res.data.socials || {
+            twitter: '',
+            instagram: '',
+            twitch: '',
+            youtube: '',
+            tiktok: '',
+            discord: ''
+        });
       }
     } catch (error) {
       console.error("Failed to fetch profile data", error);
@@ -1831,6 +2021,17 @@ const Dashboard = () => {
       setGamingSetup(res.data);
     } catch (error) {
       console.error("Failed to save setup", error);
+      throw error;
+    }
+  };
+
+  // Socials handler
+  const handleSaveSocials = async (formData) => {
+    try {
+      const res = await profileService.updateSocials(formData);
+      setSocials(res.data);
+    } catch (error) {
+      console.error("Failed to save socials", error);
       throw error;
     }
   };
@@ -2088,6 +2289,14 @@ const Dashboard = () => {
               <p className="text-slate-400 font-medium mt-1">
                 {displayUser?.bio || "Professional FPS Player | Content Creator"}
               </p>
+              
+              {/* --- Socials Display --- */}
+              <SocialsDisplay 
+                socials={socials} 
+                isOwnProfile={isOwnProfile} 
+                onEdit={() => setShowSocialsModal(true)} 
+              />
+
               {/* Message, Connect, and Back buttons for viewing other profiles */}
               {!isOwnProfile && (
                 <div className="mt-4 flex gap-3 justify-center flex-wrap">
@@ -2291,6 +2500,12 @@ const Dashboard = () => {
           onClose={() => setShowSetupModal(false)}
           onSave={handleSaveSetup}
           currentSetup={gamingSetup}
+        />
+        <SocialsEditModal
+          open={showSocialsModal}
+          onClose={() => setShowSocialsModal(false)}
+          onSave={handleSaveSocials}
+          currentSocials={socials}
         />
 
         {/* --- Posts Section --- */}
