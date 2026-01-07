@@ -8,13 +8,15 @@ import {
   Send,
   Loader2,
   Trophy,
-  Gamepad2
+  Gamepad2,
+  X
 } from 'lucide-react';
 import { Avatar, Menu, MenuItem } from '@mui/material';
 import { postService } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import ImageModal from './ImageModal';
 
 const PostCard = ({ post, onDelete }) => {
   const { user } = useAuth();
@@ -24,6 +26,7 @@ const PostCard = ({ post, onDelete }) => {
   const [newComment, setNewComment] = useState('');
   const [commenting, setCommenting] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [showImageModal, setShowImageModal] = useState(false);
 
   const isLiked = user && likes.includes(user._id || user.id);
   const isAuthor = user && (post.author._id === user._id || post.author._id === user.id);
@@ -169,7 +172,10 @@ const PostCard = ({ post, onDelete }) => {
       </div>
 
       {/* Media - Fixed aspect ratio area */}
-      <div className="flex-1 bg-black/40 relative overflow-hidden flex items-center justify-center border-y border-white/5">
+      <div 
+        className="flex-1 bg-black/40 relative overflow-hidden flex items-center justify-center border-y border-white/5 cursor-pointer"
+        onClick={() => post.media && setShowImageModal(true)}
+      >
         {post.media ? (
           <>
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-10" />
@@ -186,6 +192,12 @@ const PostCard = ({ post, onDelete }) => {
           </div>
         )}
       </div>
+
+      <ImageModal 
+        isOpen={showImageModal} 
+        onClose={() => setShowImageModal(false)} 
+        imageSrc={post.media} 
+      />
 
       {/* Post Actions */}
       <div className="px-5 py-4 flex items-center justify-between shrink-0">
@@ -304,8 +316,5 @@ const PostCard = ({ post, onDelete }) => {
     </div>
   );
 };
-
-// Add missing X import
-import { X } from 'lucide-react';
 
 export default PostCard;
