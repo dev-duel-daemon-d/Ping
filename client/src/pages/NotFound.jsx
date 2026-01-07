@@ -37,7 +37,7 @@ const NotFound = () => {
           <Ghost className="w-24 h-24 text-lime-500 animate-float" />
         </div>
 
-        <h1 className="text-9xl font-extrabold bg-gradient-to-r from-lime-400 via-lime-500 to-lime-600 bg-clip-text text-transparent mb-2">
+        <h1 className=" text-5xl lg:text-9xl font-extrabold bg-gradient-to-r from-lime-400 via-lime-500 to-lime-600 bg-clip-text text-transparent mb-2">
           404
         </h1>
 
@@ -46,7 +46,8 @@ const NotFound = () => {
         </h2>
 
         <p className="text-gray-400 mb-8 text-lg">
-          The map you are trying to access does not exist. You might have lagged out or the server is down.
+          The map you are trying to access does not exist. You might have lagged
+          out or the server is down.
         </p>
 
         <Link to="/" className="inline-block">
@@ -61,3 +62,4 @@ const NotFound = () => {
 };
 
 export default NotFound;
+
