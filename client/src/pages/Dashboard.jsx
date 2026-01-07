@@ -3,6 +3,8 @@ import { useNavigate, Link, useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useSocket } from "../context/SocketContext";
 import { motion, AnimatePresence } from "framer-motion";
+import CreatePost from "../components/CreatePost";
+import PostCard from "../components/PostCard"; // Importing the new PostCard component
 import {
   Gamepad2,
   Trophy,
@@ -40,6 +42,7 @@ import {
   Crown,
   ChevronUp,
   ChevronDown,
+  Loader2,
 } from "lucide-react";
 import {
   Avatar,
@@ -63,6 +66,7 @@ import {
   uploadService,
   profileService,
   gameService,
+  postService, // Add postService
 } from "../services/api";
 
 // --- Custom Icons for Socials ---
@@ -1562,58 +1566,6 @@ const GameCard = ({ game, role, rank, icon: Icon }) => (
   </div>
 );
 
-const PostCard = ({ post }) => (
-  <div className="bg-[#1b1f23] rounded-2xl border border-white/10 overflow-hidden h-full flex flex-col">
-    {/* Post Header */}
-    <div className="p-4 flex items-center gap-3 border-b border-white/5">
-      <Avatar className="w-10 h-10 border border-lime-500/20">
-        {post.author[0]}
-      </Avatar>
-      <div>
-        <h4 className="font-bold text-slate-200 text-sm">{post.author}</h4>
-        <p className="text-xs text-slate-500">{post.time}</p>
-      </div>
-    </div>
-
-    {/* Post Content */}
-    <div className="flex-1 p-6 flex flex-col justify-center items-center text-center bg-gradient-to-b from-black/50 to-transparent relative group">
-      {post.image && (
-        <div className="absolute inset-0 z-0 opacity-20 group-hover:opacity-30 transition-opacity">
-          <img
-            src={post.image}
-            alt="Post bg"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#1b1f23] via-transparent to-transparent" />
-        </div>
-      )}
-      <div className="relative z-10">
-        <h3 className="text-xl md:text-2xl font-bold text-white mb-2">
-          {post.title}
-        </h3>
-        <p className="text-slate-300 leading-relaxed max-w-lg mx-auto">
-          {post.content}
-        </p>
-      </div>
-    </div>
-
-    {/* Post Footer */}
-    <div className="p-4 border-t border-white/5 flex items-center justify-between bg-black/20">
-      <div className="flex gap-4">
-        <button className="flex items-center gap-2 text-slate-400 hover:text-red-500 transition-colors text-sm group">
-          <Heart className="w-4 h-4 group-hover:fill-red-500" /> {post.likes}
-        </button>
-        <button className="flex items-center gap-2 text-slate-400 hover:text-lime-500 transition-colors text-sm">
-          <MessageSquare className="w-4 h-4" /> {post.comments}
-        </button>
-      </div>
-      <button className="text-slate-400 hover:text-white transition-colors">
-        <Share2 className="w-4 h-4" />
-      </button>
-    </div>
-  </div>
-);
-
 // --- Team History Card with Glowing Aura ---
 const TeamHistoryCard = ({ team }) => (
   <div className="relative min-w-[220px] max-w-[220px] group flex-shrink-0">
@@ -2427,7 +2379,8 @@ const Dashboard = () => {
   const { username: viewedUsername } = useParams();
   const { user, logout, loading } = useAuth();
   const [postTab, setPostTab] = useState("professional");
-  const [currentPostIndex, setCurrentPostIndex] = useState(0);
+  const [posts, setPosts] = useState([]); // Real posts state
+  const [postsLoading, setPostsLoading] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [connections, setConnections] = useState([]);
   const [showFindModal, setShowFindModal] = useState(false);
@@ -2437,6 +2390,19 @@ const Dashboard = () => {
   const [profileLoading, setProfileLoading] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [uploadingBanner, setUploadingBanner] = useState(false);
+  const postsScrollRef = React.useRef(null);
+
+  const scrollPostsLeft = () => {
+    if (postsScrollRef.current) {
+      postsScrollRef.current.scrollBy({ left: -400, behavior: "smooth" });
+    }
+  };
+
+  const scrollPostsRight = () => {
+    if (postsScrollRef.current) {
+      postsScrollRef.current.scrollBy({ left: 400, behavior: "smooth" });
+    }
+  };
 
   // Profile data state
   const [teams, setTeams] = useState([]);
@@ -2505,6 +2471,26 @@ const Dashboard = () => {
       console.error("Failed to fetch supported games", error);
     }
   };
+
+  const fetchPosts = async () => {
+    setPostsLoading(true);
+    try {
+      // Pass the viewed user's ID to filter posts
+      const userId = displayUser?._id || displayUser?.id;
+      const res = await postService.getAll(postTab, userId);
+      setPosts(res.data);
+    } catch (error) {
+      console.error("Failed to fetch posts", error);
+    } finally {
+      setPostsLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    if (displayUser) {
+      fetchPosts();
+    }
+  }, [postTab, displayUser?._id || displayUser?.id]); // Refetch when tab or user changes
 
   React.useEffect(() => {
     fetchSupportedGames();
@@ -2746,68 +2732,6 @@ const Dashboard = () => {
   };
 
   // --- Mock Data --- (REMOVED: games array)
-
-  const posts = {
-    professional: [
-      {
-        id: 1,
-        author: displayUser?.username || "User",
-        time: "2h ago",
-        title: "Looking for Team",
-        content:
-          "Currently looking for a T1/T2 team for the upcoming season. Main Duelist/Flex. Previous exp in VCT.",
-        likes: 245,
-        comments: 42,
-        image:
-          "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&q=80",
-      },
-      {
-        id: 2,
-        author: displayUser?.username || "User",
-        time: "5h ago",
-        title: "Tournament Win",
-        content:
-          "Just secured 1st place in the Weekly Community Cup! GG to all teams.",
-        likes: 892,
-        comments: 120,
-        image:
-          "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&q=80",
-      },
-    ],
-    casual: [
-      {
-        id: 3,
-        author: displayUser?.username || "User",
-        time: "1d ago",
-        title: "Insane Clutch!",
-        content:
-          "Check out this 1v5 clutch I pulled off yesterday. Still shaking!",
-        likes: 1205,
-        comments: 85,
-      },
-      {
-        id: 4,
-        author: displayUser?.username || "User",
-        time: "2d ago",
-        title: "New Setup Setup",
-        content: "Finally upgraded my rig. Specs in comments.",
-        likes: 450,
-        comments: 67,
-      },
-    ],
-  };
-
-  const currentPosts = posts[postTab];
-
-  const nextPost = () => {
-    setCurrentPostIndex((prev) => (prev + 1) % currentPosts.length);
-  };
-
-  const prevPost = () => {
-    setCurrentPostIndex(
-      (prev) => (prev - 1 + currentPosts.length) % currentPosts.length,
-    );
-  };
 
   if (loading || profileLoading) return null;
 
@@ -3352,74 +3276,111 @@ const Dashboard = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="relative"
+          className="relative mb-12"
         >
-          {/* Tabs */}
-          <div className="flex justify-center mb-6">
-            <div className="bg-[#1b1f23] border border-white/10 rounded-full p-1 flex gap-1">
+          {/* Header Section */}
+          <div className="flex flex-col items-center mb-8">
+            {/* Feed Tabs */}
+            <div className="bg-black/40 backdrop-blur-md border border-white/10 rounded-2xl p-1.5 flex gap-1 shadow-2xl mb-8">
               {["professional", "casual"].map((tab) => (
                 <button
                   key={tab}
-                  onClick={() => {
-                    setPostTab(tab);
-                    setCurrentPostIndex(0);
-                  }}
-                  className={`px-6 py-2 rounded-full text-sm font-bold transition-all ${
+                  onClick={() => setPostTab(tab)}
+                  className={`relative px-8 py-3 rounded-xl text-sm font-bold transition-all duration-300 overflow-hidden ${
                     postTab === tab
-                      ? "bg-lime-500 text-black shadow-lg shadow-lime-500/20"
-                      : "text-slate-400 hover:text-white"
+                      ? "text-black shadow-lg shadow-lime-500/25"
+                      : "text-slate-400 hover:text-white hover:bg-white/5"
                   }`}
                 >
-                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                  {postTab === tab && (
+                    <motion.div
+                      layoutId="activeTab"
+                      className="absolute inset-0 bg-lime-500 rounded-xl"
+                      initial={false}
+                      transition={{
+                        type: "spring",
+                        stiffness: 500,
+                        damping: 30,
+                      }}
+                    />
+                  )}
+                  <span className="relative z-10 flex items-center gap-2">
+                    {tab === "professional" ? (
+                      <Trophy size={16} />
+                    ) : (
+                      <MessageSquare size={16} />
+                    )}
+                    {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                  </span>
                 </button>
               ))}
             </div>
+
+            {/* Create Post (Only on own profile) */}
+            {isOwnProfile && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                key={postTab}
+                className="w-full "
+              >
+                <CreatePost onPostCreated={fetchPosts} type={postTab} />
+              </motion.div>
+            )}
           </div>
 
-          {/* Carousel Container */}
+          {/* Horizontal Posts Slider */}
           <div className="relative group">
-            <div className="overflow-hidden rounded-2xl min-h-[400px]">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={`${postTab}-${currentPostIndex}`}
-                  initial={{ opacity: 0, x: 50 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -50 }}
-                  transition={{ duration: 0.3 }}
-                  className="h-full"
-                >
-                  <PostCard post={currentPosts[currentPostIndex]} />
-                </motion.div>
-              </AnimatePresence>
-            </div>
-
             {/* Navigation Arrows */}
             <button
-              onClick={prevPost}
-              className="absolute top-1/2 -left-4 md:-left-12 -translate-y-1/2 w-10 h-10 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-lime-500 hover:text-black transition-all opacity-0 group-hover:opacity-100 disabled:opacity-0"
+              onClick={scrollPostsLeft}
+              className="absolute -left-2 md:-left-12 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-black/80 backdrop-blur-md border border-white/10 flex items-center justify-center text-white hover:bg-lime-500 hover:text-black transition-all opacity-0 group-hover:opacity-100 shadow-xl shadow-black/50"
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="w-6 h-6" />
             </button>
             <button
-              onClick={nextPost}
-              className="absolute top-1/2 -right-4 md:-right-12 -translate-y-1/2 w-10 h-10 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-lime-500 hover:text-black transition-all opacity-0 group-hover:opacity-100 disabled:opacity-0"
+              onClick={scrollPostsRight}
+              className="absolute -right-2 md:-right-12 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-black/80 backdrop-blur-md border border-white/10 flex items-center justify-center text-white hover:bg-lime-500 hover:text-black transition-all opacity-0 group-hover:opacity-100 shadow-xl shadow-black/50"
             >
-              <ChevronRight className="w-5 h-5" />
+              <ChevronRight className="w-6 h-6" />
             </button>
 
-            {/* Dots Indicator */}
-            <div className="flex justify-center gap-2 mt-4">
-              {currentPosts.map((_, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setCurrentPostIndex(idx)}
-                  className={`w-2 h-2 rounded-full transition-all ${
-                    idx === currentPostIndex
-                      ? "bg-lime-500 w-6"
-                      : "bg-slate-700 hover:bg-slate-500"
-                  }`}
-                />
-              ))}
+            {/* Scroll Container */}
+            <div
+              ref={postsScrollRef}
+              className="flex gap-6 overflow-x-auto pb-8 pt-2 px-4 scrollbar-hide scroll-smooth snap-x"
+            >
+              {postsLoading ? (
+                <div className="w-full flex justify-center py-20">
+                  <Loader2 className="w-10 h-10 text-lime-500 animate-spin" />
+                </div>
+              ) : posts.length > 0 ? (
+                posts.map((post) => (
+                  <div
+                    key={post._id}
+                    className="min-w-[350px] max-w-[350px] md:min-w-[400px] md:max-w-[400px] snap-center h-full"
+                  >
+                    <PostCard
+                      post={post}
+                      onDelete={(id) =>
+                        setPosts((prev) => prev.filter((p) => p._id !== id))
+                      }
+                    />
+                  </div>
+                ))
+              ) : (
+                <div className="w-full text-center py-20 text-slate-500 bg-[#1b1f23] border border-white/5 rounded-2xl mx-auto max-w-4xl">
+                  <MessageSquare className="w-16 h-16 mx-auto mb-4 opacity-20" />
+                  <p className="text-lg font-medium">
+                    No posts yet in {postTab} feed.
+                  </p>
+                  {isOwnProfile && (
+                    <p className="text-sm mt-2 text-slate-400">
+                      Be the first to post!
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </motion.div>

@@ -120,4 +120,14 @@ export const gameService = {
     getAll: () => api.get('/games'),
 }
 
+export const postService = {
+    create: (data) => api.post('/posts', data),
+    getAll: (type, authorId) => api.get('/posts', { params: { type, authorId } }),
+    getById: (id) => api.get(`/posts/${id}`),
+    delete: (id) => api.delete(`/posts/${id}`),
+    like: (id) => api.put(`/posts/${id}/like`),
+    comment: (id, text) => api.post(`/posts/${id}/comment`, { text }),
+    deleteComment: (id, commentId) => api.delete(`/posts/${id}/comment/${commentId}`),
+}
+
 export default api
