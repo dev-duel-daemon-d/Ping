@@ -83,6 +83,9 @@ const userSchema = new mongoose.Schema(
             youtube: { type: String, default: '' },
             tiktok: { type: String, default: '' },
             discord: { type: String, default: '' },
+            steam: { type: String, default: '' },
+            psn: { type: String, default: '' },
+            xbox: { type: String, default: '' },
         },
         // Game Experiences
         gameExperiences: [{

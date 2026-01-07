@@ -166,7 +166,7 @@ router.delete('/games/:id', protect, async (req, res) => {
 // @access  Private
 router.put('/socials', protect, async (req, res) => {
     try {
-        const { twitter, instagram, twitch, youtube, tiktok, discord } = req.body
+        const { twitter, instagram, twitch, youtube, tiktok, discord, steam, psn, xbox } = req.body
         const user = await User.findById(req.user._id)
 
         user.socials = {
@@ -175,7 +175,10 @@ router.put('/socials', protect, async (req, res) => {
             twitch: twitch !== undefined ? twitch : user.socials?.twitch || '',
             youtube: youtube !== undefined ? youtube : user.socials?.youtube || '',
             tiktok: tiktok !== undefined ? tiktok : user.socials?.tiktok || '',
-            discord: discord !== undefined ? discord : user.socials?.discord || ''
+            discord: discord !== undefined ? discord : user.socials?.discord || '',
+            steam: steam !== undefined ? steam : user.socials?.steam || '',
+            psn: psn !== undefined ? psn : user.socials?.psn || '',
+            xbox: xbox !== undefined ? xbox : user.socials?.xbox || ''
         }
 
         await user.save()
