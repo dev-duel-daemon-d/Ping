@@ -5,6 +5,10 @@ import { ThemeProvider, createTheme } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
 import App from './App.jsx'
 import './index.css'
+import { registerServiceWorker } from './utils/pushNotifications.js'
+
+// Register Service Worker
+registerServiceWorker();
 
 // Create a dark theme for Material UI
 const darkTheme = createTheme({

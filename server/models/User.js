@@ -98,6 +98,13 @@ const userSchema = new mongoose.Schema(
             enum: ['online', 'offline', 'away', 'busy'],
             default: 'offline',
         },
+        pushSubscription: {
+            endpoint: { type: String },
+            keys: {
+                p256dh: { type: String },
+                auth: { type: String }
+            }
+        },
         lastSeen: {
             type: Date,
             default: Date.now,

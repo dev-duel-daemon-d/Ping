@@ -68,6 +68,7 @@ import {
   gameService,
   postService, // Add postService
 } from "../services/api";
+import { subscribeUserToPush } from "../utils/pushNotifications";
 
 // --- Custom Icons for Socials ---
 const DiscordIcon = ({ className }) => (
@@ -1256,6 +1257,14 @@ const ProfileMenu = ({ anchorEl, open, onClose, onLogout }) => {
       label: "Edit Profile",
       action: () => {
         navigate("/edit-profile");
+        onClose();
+      },
+    },
+    {
+      icon: <Bell className="w-4 h-4" />,
+      label: "Enable Notifications",
+      action: async () => {
+        await subscribeUserToPush();
         onClose();
       },
     },
@@ -2932,6 +2941,18 @@ const Dashboard = () => {
         </div>
         <div className="h-[12rem]" /> {/* Spacer for profile overlap */}
         {/* --- Grid Section --- */}
+        <div className="mb-6 flex justify-end">
+          {Notification.permission === 'default' && (
+            <motion.button
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              onClick={subscribeUserToPush}
+              className="px-4 py-2 bg-lime-500 text-black font-bold rounded-full flex items-center gap-2 hover:bg-lime-400 transition-colors shadow-lg"
+            >
+              <Bell className="w-4 h-4" /> Enable Push Notifications
+            </motion.button>
+          )}
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           {/* Focus Game & Experience */}
           <motion.div

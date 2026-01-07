@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken'
 import User from '../models/User.js'
 import Message from '../models/Message.js'
 import Notification from '../models/Notification.js'
+import { sendPushNotification } from '../utils/push.js'
 
 // Store connected users
 const connectedUsers = new Map()
@@ -127,6 +128,21 @@ export const initSocket = (io) => {
 
                                 })
 
+                                // Send Push Notification
+                                try {
+                                    const recipientUser = await User.findById(recipientId);
+                                    if (recipientUser?.pushSubscription?.endpoint) {
+                                        sendPushNotification(recipientUser.pushSubscription, {
+                                            title: `New message from ${socket.user.username}`,
+                                            body: content.length > 50 ? content.substring(0, 50) + '...' : content,
+                                            icon: socket.user.avatar || '/pwa-192x192.png',
+                                            url: `/dashboard/${socket.user.username}`,
+                                            tag: 'message'
+                                        });
+                                    }
+                                } catch (pushError) {
+                                    console.error('Push notification error:', pushError);
+                                }
                                 
 
                                 // Also send back the created message to the sender to confirm save and provide ID/timestamp

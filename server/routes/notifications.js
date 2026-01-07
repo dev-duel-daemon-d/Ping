@@ -1,8 +1,27 @@
 import express from 'express'
 import Notification from '../models/Notification.js'
+import User from '../models/User.js'
 import { protect } from '../middleware/auth.js'
 
 const router = express.Router()
+
+// @route   POST /api/notifications/subscribe
+// @desc    Save push subscription
+// @access  Private
+router.post('/subscribe', protect, async (req, res) => {
+    try {
+        const subscription = req.body;
+        const user = await User.findById(req.user._id);
+        
+        user.pushSubscription = subscription;
+        await user.save();
+        
+        res.status(201).json({ message: 'Subscription saved' });
+    } catch (error) {
+        console.error('Subscription error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+})
 
 // @route   GET /api/notifications
 // @desc    Get all notifications for current user
