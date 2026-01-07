@@ -4,6 +4,7 @@ import { body } from 'express-validator'
 import User from '../models/User.js'
 import { protect, generateToken } from '../middleware/auth.js'
 import { validate } from '../middleware/validator.js'
+import { sendEmail } from '../utils/sendEmail.js'
 
 const router = express.Router()
 
@@ -54,18 +55,39 @@ router.post(
             }
 
             // Create user
+            const otp = Math.floor(100000 + Math.random() * 900000).toString()
+            const otpExpires = Date.now() + 10 * 60 * 1000 // 10 minutes
+
             const user = await User.create({
                 username,
                 email,
                 password,
+                otp,
+                otpExpires,
+                isVerified: false
             })
 
-            // Generate token and respond
-            const token = generateToken(user._id)
+            // Send OTP email
+            try {
+                await sendEmail({
+                    email: user.email,
+                    subject: 'Ping - Verify your email',
+                    html: `
+                        <h1>Welcome to Ping!</h1>
+                        <p>Your verification code is:</p>
+                        <h2 style="letter-spacing: 5px; background: #f4f4f4; padding: 10px; display: inline-block;">${otp}</h2>
+                        <p>This code will expire in 10 minutes.</p>
+                    `
+                })
+            } catch (emailError) {
+                // If email fails, we should probably delete the user or allow resend
+                // For now, we'll log it and the user can request resend
+                console.error('Failed to send verification email:', emailError)
+            }
 
             res.status(201).json({
-                token,
-                user: userResponse(user),
+                message: 'Registration successful. Please verify your email.',
+                email: user.email
             })
         } catch (error) {
             console.error('Register error:', error)
@@ -100,6 +122,14 @@ router.post(
                 return res.status(401).json({ message: 'Invalid email or password' })
             }
 
+            if (!user.isVerified) {
+                return res.status(401).json({ 
+                    message: 'Email not verified',
+                    isVerified: false,
+                    email: user.email 
+                })
+            }
+
             // Update status to online
             user.status = 'online'
             user.lastSeen = new Date()
@@ -115,6 +145,114 @@ router.post(
         } catch (error) {
             console.error('Login error:', error)
             res.status(500).json({ message: 'Server error during login' })
+        }
+    }
+)
+
+// @route   POST /api/auth/verify-email
+// @desc    Verify email with OTP
+// @access  Public
+router.post(
+    '/verify-email',
+    [
+        body('email').isEmail().withMessage('Please provide a valid email'),
+        body('otp').isLength({ min: 6, max: 6 }).withMessage('OTP must be 6 digits'),
+        validate,
+    ],
+    async (req, res) => {
+        try {
+            const { email, otp } = req.body
+
+            const user = await User.findOne({ email })
+            if (!user) {
+                return res.status(400).json({ message: 'Invalid email' })
+            }
+
+            if (user.isVerified) {
+                return res.status(400).json({ message: 'Email already verified' })
+            }
+
+            if (user.otp !== otp) {
+                return res.status(400).json({ message: 'Invalid OTP' })
+            }
+
+            if (user.otpExpires < Date.now()) {
+                return res.status(400).json({ message: 'OTP expired' })
+            }
+
+            // Verify user
+            user.isVerified = true
+            user.otp = undefined
+            user.otpExpires = undefined
+            user.status = 'online'
+            user.lastSeen = new Date()
+            await user.save()
+
+            // Generate token
+            const token = generateToken(user._id)
+
+            res.json({
+                token,
+                user: userResponse(user),
+            })
+        } catch (error) {
+            console.error('Verification error:', error)
+            res.status(500).json({ message: 'Server error during verification' })
+        }
+    }
+)
+
+// @route   POST /api/auth/resend-otp
+// @desc    Resend verification OTP
+// @access  Public
+router.post(
+    '/resend-otp',
+    [
+        body('email').isEmail().withMessage('Please provide a valid email'),
+        validate,
+    ],
+    async (req, res) => {
+        try {
+            const { email } = req.body
+
+            const user = await User.findOne({ email })
+            if (!user) {
+                return res.status(404).json({ message: 'User not found' })
+            }
+
+            if (user.isVerified) {
+                return res.status(400).json({ message: 'Email already verified' })
+            }
+
+            // Generate new OTP
+            const otp = Math.floor(100000 + Math.random() * 900000).toString()
+            const otpExpires = Date.now() + 10 * 60 * 1000 // 10 minutes
+
+            user.otp = otp
+            user.otpExpires = otpExpires
+            await user.save()
+
+            // Send OTP email
+            try {
+                await sendEmail({
+                    email: user.email,
+                    subject: 'Ping - Verify your email (Resend)',
+                    html: `
+                        <h1>Welcome back to Ping!</h1>
+                        <p>Your new verification code is:</p>
+                        <h2 style="letter-spacing: 5px; background: #f4f4f4; padding: 10px; display: inline-block;">${otp}</h2>
+                        <p>This code will expire in 10 minutes.</p>
+                    `
+                })
+            } catch (emailError) {
+                console.error('Failed to send verification email:', emailError)
+                return res.status(500).json({ message: 'Failed to send email' })
+            }
+
+            res.json({ message: 'OTP sent successfully' })
+        } catch (error) {
+            console.error('Resend OTP error:', error)
+            res.status(500).json({ message: 'Server error' })
         }
     }
 )

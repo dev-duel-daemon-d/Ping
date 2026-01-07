@@ -46,11 +46,21 @@ export const AuthProvider = ({ children }) => {
 
     const register = async (username, email, password) => {
         const response = await authService.register({ username, email, password })
+        // Don't set token/user yet, wait for verification
+        return response.data
+    }
+
+    const verifyEmail = async (email, otp) => {
+        const response = await authService.verifyEmail({ email, otp })
         const { token: newToken, user: userData } = response.data
         localStorage.setItem('token', newToken)
         setToken(newToken)
         setUser(userData)
         return userData
+    }
+
+    const resendOTP = async (email) => {
+        await authService.resendOTP({ email })
     }
 
     const logout = async () => {
@@ -74,6 +84,8 @@ export const AuthProvider = ({ children }) => {
         loading,
         login,
         register,
+        verifyEmail,
+        resendOTP,
         logout,
         updateUser,
         isAuthenticated: !!user,
