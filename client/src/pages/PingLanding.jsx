@@ -214,7 +214,9 @@ const PingLanding = () => {
       >
         <div
           className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center"
-          style={{ transform: !isMobile ? `translateY(${scrollY * 0.3}px)` : undefined }}
+          style={{
+            transform: !isMobile ? `translateY(${scrollY * 0.3}px)` : undefined,
+          }}
         >
           <div className="space-y-8 animate-slide-in-left">
             <div className="inline-block px-4 py-2 bg-lime-500 bg-opacity-20 rounded-full border border-lime-500 border-opacity-50 animate-pulse-glow">
@@ -230,7 +232,7 @@ const PingLanding = () => {
                 Gaming Career
               </span>
               <br />
-              <span className="text-5xl md:text-6xl  from-lime-400 to-lime-300 bg-clip-text text-transparent">
+              <span className="text-5xl md:text-6xl  from-lime-400 to-lime-300 bg-clip-text">
                 in Real-Time
               </span>
             </h1>
