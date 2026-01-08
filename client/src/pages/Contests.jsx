@@ -38,12 +38,12 @@ const Contests = () => {
     };
 
     return (
-        <div className="min-h-screen bg-black text-slate-200 font-sans selection:bg-lime-500/30">
+        <div className="min-h-screen bg-bg-dark text-slate-200 font-sans selection:bg-primary/30">
             <Navbar user={user} logout={logout} />
             
             <main className="max-w-7xl mx-auto px-4 pt-24 pb-20">
                 <div className="flex items-center gap-3 mb-8">
-                    <Trophy className="w-8 h-8 text-lime-500" />
+                    <Trophy className="w-8 h-8 text-primary" />
                     <h1 className="text-3xl font-bold text-white">Upcoming Tournaments</h1>
                 </div>
 
@@ -58,7 +58,7 @@ const Contests = () => {
                                 key={tournament._id}
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="bg-[#1b1f23] border border-white/10 rounded-2xl overflow-hidden hover:border-lime-500/50 transition-colors group flex flex-col"
+                                className="bg-bg-card border border-white/10 rounded-2xl overflow-hidden hover:border-primary/50 transition-colors group flex flex-col"
                             >
                                 <div className="h-40 bg-gradient-to-br from-slate-800 to-black relative">
                                     {tournament.bannerImage && (
@@ -68,39 +68,39 @@ const Contests = () => {
                                         <div className={`text-xs font-bold px-3 py-1 rounded-full ${getDifficultyColor(tournament.difficulty)}`}>
                                             {tournament.difficulty}
                                         </div>
-                                        <div className="bg-lime-500 text-black text-xs font-bold px-3 py-1 rounded-full">
+                                        <div className="bg-primary text-black text-xs font-bold px-3 py-1 rounded-full">
                                             {tournament.status}
                                         </div>
                                     </div>
                                 </div>
                                 <div className="p-6 flex-1 flex flex-col">
-                                    <h3 className="text-xl font-bold text-white mb-2 group-hover:text-lime-500 transition-colors">{tournament.title}</h3>
+                                    <h3 className="text-xl font-bold text-white mb-2 group-hover:text-primary transition-colors">{tournament.title}</h3>
                                     <p className="text-slate-400 text-sm mb-4 line-clamp-2 flex-1">{tournament.description}</p>
                                     
                                     <div className="space-y-2 text-sm text-slate-300">
                                         <div className="flex items-center gap-2">
-                                            <Gamepad2 className="w-4 h-4 text-lime-500" />
+                                            <Gamepad2 className="w-4 h-4 text-primary" />
                                             <span>{tournament.game}</span>
                                         </div>
                                         <div className="flex items-center gap-2">
-                                            <Swords className="w-4 h-4 text-lime-500" />
+                                            <Swords className="w-4 h-4 text-primary" />
                                             <span>{tournament.difficulty} Level</span>
                                         </div>
                                         <div className="flex items-center gap-2">
-                                            <Calendar className="w-4 h-4 text-lime-500" />
+                                            <Calendar className="w-4 h-4 text-primary" />
                                             <span>{new Date(tournament.startDate).toLocaleDateString()}</span>
                                         </div>
                                         <div className="flex items-center gap-2">
-                                            <Users className="w-4 h-4 text-lime-500" />
+                                            <Users className="w-4 h-4 text-primary" />
                                             <span>{tournament.participants.length} / {tournament.maxParticipants} Participants</span>
                                         </div>
                                     </div>
                                     
                                     <div className="mt-6 pt-4 border-t border-white/5 flex justify-between items-center">
-                                        <span className="text-lime-400 font-bold">{tournament.prizePool}</span>
+                                        <span className="text-primary font-bold">{tournament.prizePool}</span>
                                         <button 
                                             onClick={() => navigate(`/contests/${tournament._id}`)}
-                                            className="px-4 py-2 bg-white/10 hover:bg-lime-500 hover:text-black text-white rounded-lg transition-all text-sm font-bold"
+                                            className="px-4 py-2 bg-white/10 hover:bg-primary hover:text-black text-white rounded-lg transition-all text-sm font-bold"
                                         >
                                             View Details
                                         </button>
