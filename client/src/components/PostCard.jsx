@@ -86,11 +86,11 @@ const PostCard = ({ post, onDelete }) => {
   };
 
   return (
-    <div className="bg-[#1b1f23]/60 backdrop-blur-md rounded-2xl border border-white/5 overflow-hidden mb-6 flex flex-col relative group hover:border-lime-500/20 transition-all duration-300 shadow-xl shadow-black/20">
+    <div className="bg-[#1b1f23]/60 backdrop-blur-md rounded-2xl border border-white/5 overflow-hidden mb-6 flex flex-col relative group hover:border-primary/20 transition-all duration-300 shadow-xl shadow-black/20">
 
       {/* Type Indicator Strip */}
       {post.type === 'professional' && (
-        <div className="absolute top-0 left-0 bottom-0 w-1 bg-gradient-to-b from-lime-500 to-transparent opacity-50" />
+        <div className="absolute top-0 left-0 bottom-0 w-1 bg-gradient-to-b from-primary to-transparent opacity-50" />
       )}
 
       {/* Post Header */}
@@ -100,13 +100,13 @@ const PostCard = ({ post, onDelete }) => {
             <div className="relative">
               <Avatar
                 src={post.author.avatar}
-                className="w-12 h-12 border-2 border-white/10 group-hover:border-lime-500/50 transition-colors shadow-lg"
+                className="w-12 h-12 border-2 border-white/10 group-hover:border-primary/50 transition-colors shadow-lg"
               >
                 {post.author.username?.[0]?.toUpperCase()}
               </Avatar>
               {post.type === 'professional' && (
                 <div className="absolute -bottom-1 -right-1 bg-[#1b1f23] rounded-full p-0.5 border border-white/10">
-                  <div className="bg-lime-500 rounded-full p-0.5">
+                  <div className="bg-primary rounded-full p-0.5">
                     <Trophy size={10} className="text-black" />
                   </div>
                 </div>
@@ -116,7 +116,7 @@ const PostCard = ({ post, onDelete }) => {
 
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <Link to={`/dashboard/${post.author.username}`} className="font-bold text-slate-100 text-base hover:text-lime-400 transition-colors truncate block">
+              <Link to={`/dashboard/${post.author.username}`} className="font-bold text-slate-100 text-base hover:text-primary transition-colors truncate block">
                 {post.author.username}
               </Link>
               {post.game && (
@@ -206,7 +206,7 @@ const PostCard = ({ post, onDelete }) => {
 
           <button
             onClick={() => setShowComments(!showComments)}
-            className={`flex items-center gap-2 text-sm font-medium transition-colors ${showComments ? 'text-lime-500' : 'text-slate-400 hover:text-lime-400'}`}
+            className={`flex items-center gap-2 text-sm font-medium transition-colors ${showComments ? 'text-primary' : 'text-slate-400 hover:text-primary'}`}
           >
             <MessageSquare className="w-5 h-5" strokeWidth={2} />
             <span>{comments.length}</span>
@@ -230,7 +230,7 @@ const PostCard = ({ post, onDelete }) => {
           >
             <div className="p-4 border-b border-white/10 flex items-center justify-between">
               <h4 className="font-bold text-sm text-white flex items-center gap-2">
-                <MessageSquare size={16} className="text-lime-500" />
+                <MessageSquare size={16} className="text-primary" />
                 Comments
               </h4>
               <button onClick={() => setShowComments(false)} className="text-slate-500 hover:text-white transition-colors">
@@ -282,7 +282,7 @@ const PostCard = ({ post, onDelete }) => {
             <form onSubmit={handleComment} className="p-4 border-t border-white/5 bg-black/20 flex gap-3 items-center shrink-0">
               <Avatar
                 src={user?.avatar}
-                className="w-8 h-8 border border-lime-500/20"
+                className="w-8 h-8 border border-primary/20"
               >
                 {user?.username?.[0]?.toUpperCase()}
               </Avatar>
@@ -292,12 +292,12 @@ const PostCard = ({ post, onDelete }) => {
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
                   placeholder="Write a comment..."
-                  className="w-full bg-[#1b1f23] border border-white/10 rounded-xl pl-4 pr-12 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50 transition-all"
+                  className="w-full bg-[#1b1f23] border border-white/10 rounded-xl pl-4 pr-12 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-primary/50 transition-all"
                 />
                 <button
                   type="submit"
                   disabled={!newComment.trim() || commenting}
-                  className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 bg-lime-500 rounded-lg text-black disabled:opacity-50 disabled:bg-transparent disabled:text-slate-600 hover:bg-lime-400 transition-all"
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 bg-primary rounded-lg text-black disabled:opacity-50 disabled:bg-transparent disabled:text-slate-600 hover:opacity-80 transition-all"
                 >
                   {commenting ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} strokeWidth={2.5} />}
                 </button>

@@ -125,7 +125,7 @@ const Settings = () => {
                 {/* Email Section */}
                 <div className="space-y-4">
                   <h3 className="text-lg font-bold text-white">Email Address</h3>
-                  <div className="flex gap-4">
+                  <div className="flex gap-4 flex-wrap">
                     <input 
                       type="email" 
                       value={user?.email || ''} 

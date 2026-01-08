@@ -50,7 +50,7 @@ const NavigationDialog = ({ open, onClose }) => {
                   onClick={onClose}
                   className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-white/10 transition-all group"
                 >
-                  <span className="w-2 h-2 rounded-full bg-lime-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <span className="w-2 h-2 rounded-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity" />
                   <span className="text-lg font-medium">{item.name}</span>
                 </Link>
               ))}

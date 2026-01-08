@@ -65,7 +65,7 @@ const CreatePost = ({ onPostCreated, type = "casual" }) => {
       const postData = {
         content,
         media,
-        type: type, // Use prop directly
+        type: type,
         game: type === "professional" ? selectedGame : null,
       };
 
@@ -88,13 +88,13 @@ const CreatePost = ({ onPostCreated, type = "casual" }) => {
     <div
       className={`
       relative bg-[#1b1f23]/80 backdrop-blur-xl border border-white/5 rounded-2xl p-6 mb-8 transition-all duration-300
-      ${isFocused ? "border-lime-500/30 shadow-[0_0_30px_-10px_rgba(132,204,22,0.15)]" : "hover:border-white/10"}
+      ${isFocused ? "border-primary/30 shadow-[0_0_30px_-10px] shadow-primary/20" : "hover:border-white/10"}
     `}
     >
       <div className="flex gap-5">
         <Avatar
           src={user?.avatar}
-          className="w-12 h-12 border-2 border-lime-500/20 shadow-lg shadow-black/50"
+          className="w-12 h-12 border-2 border-primary/20 shadow-lg shadow-black/50"
         >
           {user?.username?.[0]?.toUpperCase()}
         </Avatar>
@@ -132,8 +132,8 @@ const CreatePost = ({ onPostCreated, type = "casual" }) => {
               {uploading && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm">
                   <div className="bg-black/80 p-4 rounded-2xl flex flex-col items-center gap-2">
-                    <Loader2 className="w-8 h-8 text-lime-500 animate-spin" />
-                    <span className="text-xs font-bold text-lime-500">
+                    <Loader2 className="w-8 h-8 text-primary animate-spin" />
+                    <span className="text-xs font-bold text-primary">
                       Uploading...
                     </span>
                   </div>
@@ -152,7 +152,7 @@ const CreatePost = ({ onPostCreated, type = "casual" }) => {
                   onChange={handleImageChange}
                   disabled={uploading}
                 />
-                <div className="p-2.5 rounded-xl bg-white/5 text-slate-400 group-hover:text-lime-400 group-hover:bg-lime-500/10 transition-all duration-300">
+                <div className="p-2.5 rounded-xl bg-white/5 text-slate-400 group-hover:text-primary group-hover:bg-primary/10 transition-all duration-300">
                   <ImageIcon size={22} />
                 </div>
                 <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
@@ -165,7 +165,7 @@ const CreatePost = ({ onPostCreated, type = "casual" }) => {
                   <select
                     value={selectedGame}
                     onChange={(e) => setSelectedGame(e.target.value)}
-                    className="appearance-none bg-[#1b1f23] text-slate-300 text-sm font-medium py-2.5 pl-10 pr-4 rounded-xl border border-white/10 hover:border-lime-500/30 hover:bg-white/5 focus:outline-none focus:border-lime-500 transition-all cursor-pointer"
+                    className="appearance-none bg-[#1b1f23] text-slate-300 text-sm font-medium py-2.5 pl-10 pr-4 rounded-xl border border-white/10 hover:border-primary/30 hover:bg-white/5 focus:outline-none focus:border-primary transition-all cursor-pointer"
                   >
                     <option value="">Select Game</option>
                     {games.map((g) => (
@@ -174,7 +174,7 @@ const CreatePost = ({ onPostCreated, type = "casual" }) => {
                       </option>
                     ))}
                   </select>
-                  <Gamepad2 className="absolute left-3 top-2.5 w-5 h-5 text-slate-500 group-hover:text-lime-500 transition-colors pointer-events-none" />
+                  <Gamepad2 className="absolute left-3 top-2.5 w-5 h-5 text-slate-500 group-hover:text-primary transition-colors pointer-events-none" />
                 </div>
               )}
             </div>
@@ -182,7 +182,7 @@ const CreatePost = ({ onPostCreated, type = "casual" }) => {
             <button
               onClick={handleSubmit}
               disabled={loading || uploading || (!content.trim() && !media)}
-              className="px-6 py-2.5 bg-gradient-to-r from-lime-500 to-lime-600 hover:from-lime-400 hover:to-lime-500 text-black rounded-xl font-bold text-sm flex items-center gap-2 shadow-lg shadow-lime-500/20 hover:shadow-lime-500/40 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-300"
+              className="px-6 py-2.5 bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-black rounded-xl font-bold text-sm flex items-center gap-2 shadow-lg shadow-primary/20 hover:shadow-primary/40 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-300"
             >
               {loading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -200,4 +200,3 @@ const CreatePost = ({ onPostCreated, type = "casual" }) => {
 };
 
 export default CreatePost;
-
