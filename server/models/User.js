@@ -39,6 +39,11 @@ const userSchema = new mongoose.Schema(
             type: String,
             default: '',
         },
+        tagline: {
+            type: String,
+            default: '',
+            maxlength: [100, 'Tagline cannot exceed 100 characters'],
+        },
         bio: {
             type: String,
             maxlength: [160, 'Bio cannot exceed 160 characters'],

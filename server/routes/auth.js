@@ -16,6 +16,7 @@ const userResponse = (user) => ({
     email: user.email,
     avatar: user.avatar,
     bannerImage: user.bannerImage,
+    tagline: user.tagline,
     bio: user.bio,
     location: user.location,
     skills: user.skills,

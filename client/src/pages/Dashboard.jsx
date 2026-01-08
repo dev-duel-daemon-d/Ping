@@ -1547,7 +1547,7 @@ const NavigationDialog = ({ open, onClose }) => {
   );
 };
 
-const ProfileMenu = ({ anchorEl, open, onClose, onLogout }) => {
+const ProfileMenu = ({ anchorEl, open, onClose, onLogout, onEditProfile }) => {
   const navigate = useNavigate();
 
   const menuItems = [
@@ -1563,7 +1563,7 @@ const ProfileMenu = ({ anchorEl, open, onClose, onLogout }) => {
       icon: <Users className="w-4 h-4" />,
       label: "Edit Profile",
       action: () => {
-        navigate("/edit-profile");
+        if (onEditProfile) onEditProfile();
         onClose();
       },
     },
@@ -1615,7 +1615,7 @@ const ProfileMenu = ({ anchorEl, open, onClose, onLogout }) => {
   );
 };
 
-const Navbar = ({ user, logout, onConnectionUpdate, onOpenChat }) => {
+const Navbar = ({ user, logout, onConnectionUpdate, onOpenChat, onEditProfile }) => {
   const [notifications, setNotifications] = useState([]);
   const [notifAnchorEl, setNotifAnchorEl] = useState(null);
   const [profileAnchorEl, setProfileAnchorEl] = useState(null);
@@ -1840,6 +1840,7 @@ const Navbar = ({ user, logout, onConnectionUpdate, onOpenChat }) => {
         open={Boolean(profileAnchorEl)}
         onClose={() => setProfileAnchorEl(null)}
         onLogout={handleLogout}
+        onEditProfile={onEditProfile}
       />
 
       {/* Navigation Dialog */}
@@ -2862,6 +2863,123 @@ const ConnectionsModal = ({ open, onClose, onMessage, onConnect, currentUser }) 
   );
 };
 
+// --- Edit Profile Modal ---
+const EditProfileModal = ({ open, onClose, user, onSave }) => {
+  const [formData, setFormData] = useState({
+    username: "",
+    tagline: "",
+    bio: "",
+  });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        username: user.username || "",
+        tagline: user.tagline || "",
+        bio: user.bio || "",
+      });
+    }
+  }, [user, open]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    setError("");
+
+    try {
+      await onSave(formData);
+      onClose();
+    } catch (err) {
+      console.error("Failed to update profile:", err);
+      setError(err.response?.data?.message || "Failed to update profile");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <EditModal open={open} onClose={onClose} title="Edit Profile">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {error && (
+          <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-400 rounded-lg text-sm">
+            {error}
+          </div>
+        )}
+        
+        <div>
+          <label className="block text-sm font-medium text-slate-400 mb-2">
+            Username
+          </label>
+          <input
+            type="text"
+            value={formData.username}
+            onChange={(e) =>
+              setFormData({ ...formData, username: e.target.value })
+            }
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50"
+            placeholder="Username"
+            required
+            minLength={3}
+            maxLength={30}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-400 mb-2">
+            Tagline (displayed under username)
+          </label>
+          <input
+            type="text"
+            value={formData.tagline}
+            onChange={(e) =>
+              setFormData({ ...formData, tagline: e.target.value })
+            }
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50"
+            placeholder="e.g. Professional FPS Player | Content Creator"
+            maxLength={100}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-400 mb-2">
+            Bio
+          </label>
+          <textarea
+            value={formData.bio}
+            onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+            rows={4}
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50 resize-none"
+            placeholder="Tell us about yourself..."
+            maxLength={160}
+          />
+          <div className="text-right text-xs text-slate-500 mt-1">
+            {formData.bio.length}/160
+          </div>
+        </div>
+
+        <div className="flex gap-3 justify-end pt-4">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-5 py-2.5 bg-white/10 text-white rounded-lg font-medium hover:bg-white/20 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={saving}
+            className="px-5 py-2.5 bg-gradient-to-r from-lime-500 to-green-500 text-black rounded-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg hover:shadow-lime-500/30 transition-all"
+          >
+            {saving ? "Saving..." : "Save Changes"}
+          </button>
+        </div>
+      </form>
+    </EditModal>
+  );
+};
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const { username: viewedUsername } = useParams();
@@ -2873,6 +2991,7 @@ const Dashboard = () => {
   const [connections, setConnections] = useState([]);
   const [showFindModal, setShowFindModal] = useState(false);
   const [showConnectionsModal, setShowConnectionsModal] = useState(false);
+  const [showEditProfileModal, setShowEditProfileModal] = useState(false);
   const [showChatModal, setShowChatModal] = useState(false);
   const [chatRecipient, setChatRecipient] = useState(null);
   const [viewedUser, setViewedUser] = useState(null);
@@ -3220,6 +3339,22 @@ const Dashboard = () => {
     }
   };
 
+  // Profile Edit Handler
+  const handleSaveProfile = async (formData) => {
+    try {
+      const res = await userService.updateProfile(formData);
+      // Determine if we need to reload or just update local state
+      // Since userService.updateProfile returns the updated user, we should update the auth context if possible
+      // But for now, a reload ensures everything (including token claims if any) matches, 
+      // though typically a reload isn't needed if we update the context.
+      // Assuming useAuth provides a way to update user or we just reload.
+      window.location.reload(); 
+    } catch (error) {
+      console.error("Failed to save profile", error);
+      throw error; // Re-throw for modal to handle
+    }
+  };
+
   // --- Mock Data --- (REMOVED: games array)
 
   if (loading || profileLoading) return null;
@@ -3263,6 +3398,7 @@ const Dashboard = () => {
         }}
         onConnectionUpdate={fetchConnections}
         onOpenChat={openChatWithUser}
+        onEditProfile={() => setShowEditProfileModal(true)}
       />
 
       <main className="max-w-5xl mx-auto px-4 pt-24 pb-20">
@@ -3374,7 +3510,7 @@ const Dashboard = () => {
                 <Zap className="w-5 h-5 text-lime-500 fill-lime-500" />
               </h1>
               <p className="text-slate-400 font-medium mt-1">
-                {displayUser?.bio ||
+                {displayUser?.tagline ||
                   "Professional FPS Player | Content Creator"}
               </p>
 
@@ -3768,6 +3904,12 @@ const Dashboard = () => {
           onClose={() => setShowSocialsModal(false)}
           onSave={handleSaveSocials}
           currentSocials={socials}
+        />
+        <EditProfileModal
+          open={showEditProfileModal}
+          onClose={() => setShowEditProfileModal(false)}
+          user={user}
+          onSave={handleSaveProfile}
         />
         <GameEditModal
           open={showGameModal}

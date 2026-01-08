@@ -13,6 +13,7 @@ const userResponse = (user) => ({
     email: user.email,
     avatar: user.avatar,
     bannerImage: user.bannerImage,
+    tagline: user.tagline,
     bio: user.bio,
     location: user.location,
     skills: user.skills,
@@ -103,6 +104,8 @@ router.put(
     '/profile',
     [
         protect,
+        body('username').optional().trim().isLength({ min: 3, max: 30 }).withMessage('Username must be between 3 and 30 characters'),
+        body('tagline').optional().isLength({ max: 100 }).withMessage('Tagline cannot exceed 100 characters'),
         body('bio').optional().isLength({ max: 160 }).withMessage('Bio cannot exceed 160 characters'),
         body('location').optional().trim(),
         body('skills').optional().isArray().withMessage('Skills must be an array'),
@@ -114,6 +117,16 @@ router.put(
             const user = await User.findById(req.user._id)
 
             if (user) {
+                // Check if username is being updated and if it's available
+                if (req.body.username && req.body.username !== user.username) {
+                    const userExists = await User.findOne({ username: req.body.username })
+                    if (userExists) {
+                        return res.status(400).json({ message: 'Username already taken' })
+                    }
+                    user.username = req.body.username
+                }
+
+                user.tagline = req.body.tagline ?? user.tagline
                 user.bio = req.body.bio ?? user.bio
                 user.location = req.body.location ?? user.location
                 user.skills = req.body.skills ?? user.skills
