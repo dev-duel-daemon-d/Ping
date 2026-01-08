@@ -22,8 +22,14 @@ const userSchema = new mongoose.Schema(
         },
         password: {
             type: String,
-            required: [true, 'Password is required'],
+            // Password is required only if googleId is not present
+            required: function() { return !this.googleId }, 
             minlength: [6, 'Password must be at least 6 characters'],
+        },
+        googleId: {
+            type: String,
+            unique: true,
+            sparse: true, // Allows multiple null values
         },
         avatar: {
             type: String,
@@ -132,8 +138,9 @@ const userSchema = new mongoose.Schema(
 
 // Hash password before saving
 userSchema.pre('save', async function (next) {
-    if (!this.isModified('password')) {
+    if (!this.isModified('password') || !this.password) {
         next()
+        return // Return to ensure next() isn't called twice if logic flows through
     }
     const salt = await bcrypt.genSalt(10)
     this.password = await bcrypt.hash(this.password, salt)

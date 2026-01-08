@@ -9,18 +9,18 @@ export const sendEmail = async ({ email, subject, html }) => {
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST || "smtp.gmail.com",
       port: port,
-      // secure: false, // true for 465, false for other ports
-      //
-      // requireTLS: true,
-      // logger: true,
-      // debug: true,
-      // connectionTimeout: 10000, // 10 seconds
-      // greetingTimeout: 10000, // 10 seconds
-      // socketTimeout: 10000, // 10 seconds
-      // tls: {
-      //   ciphers: "SSLv3",
-      //   rejectUnauthorized: false,
-      // },
+      secure: false, // true for 465, false for other ports
+
+      requireTLS: true,
+      logger: true,
+      debug: true,
+      connectionTimeout: 10000, // 10 seconds
+      greetingTimeout: 10000, // 10 seconds
+      socketTimeout: 10000, // 10 seconds
+      tls: {
+        ciphers: "SSLv3",
+        rejectUnauthorized: false,
+      },
       auth: {
         user: process.env.SMTP_EMAIL,
         pass: process.env.SMTP_PASSWORD,

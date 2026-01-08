@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Gamepad2, AlertCircle, Loader2, Mail, RefreshCw } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { GoogleLogin } from "@react-oauth/google";
 
 const AuthPage = () => {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
@@ -128,6 +129,33 @@ const AuthPage = () => {
   );
 };
 
+const GoogleLoginButton = ({ onError }) => {
+  const { googleLogin } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSuccess = async (credentialResponse) => {
+    try {
+      await googleLogin(credentialResponse);
+      navigate("/dashboard");
+    } catch (err) {
+      console.error("Google login failed", err);
+      onError("Google login failed. Please try again.");
+    }
+  };
+
+  return (
+    <div className="w-full flex justify-center py-2">
+      <GoogleLogin
+        onSuccess={handleSuccess}
+        onError={() => onError("Google login failed.")}
+        theme="filled_black"
+        shape="pill"
+        width="300"
+      />
+    </div>
+  );
+};
+
 const LoginForm = ({ onNeedVerification }) => {
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -151,7 +179,10 @@ const LoginForm = ({ onNeedVerification }) => {
       const msg = err.response?.data?.message || "Login failed.";
 
       // Check if the error indicates unverified email
-      if (err.response?.status === 401 && err.response?.data?.isVerified === false) {
+      if (
+        err.response?.status === 401 &&
+        err.response?.data?.isVerified === false
+      ) {
         onNeedVerification(err.response.data.email || formData.email);
         return;
       }
@@ -164,7 +195,7 @@ const LoginForm = ({ onNeedVerification }) => {
 
   return (
     <>
-      <h2 className="text-4xl font-bold text-center mb-10 text-white">
+      <h2 className="text-4xl font-bold text-center mb-6 text-white">
         Welcome Back
       </h2>
       {error && (
@@ -173,6 +204,21 @@ const LoginForm = ({ onNeedVerification }) => {
           <span>{error}</span>
         </div>
       )}
+
+      {/* Google Login */}
+      <GoogleLoginButton onError={setError} />
+
+      <div className="relative my-6">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-white/10"></div>
+        </div>
+        <div className="relative flex justify-center text-sm">
+          <span className="px-2 bg-[#1a1e22] text-gray-500 rounded-full">
+            Or continue with email
+          </span>
+        </div>
+      </div>
+
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label className="block text-gray-400 text-sm font-medium mb-2">
@@ -249,7 +295,11 @@ const RegisterForm = ({ onSuccess }) => {
       return;
     }
     try {
-      const response = await register(formData.username, formData.email, formData.password);
+      const response = await register(
+        formData.username,
+        formData.email,
+        formData.password,
+      );
 
       // If auto-verified in development, login and redirect
       if (response.autoVerified) {
@@ -279,6 +329,21 @@ const RegisterForm = ({ onSuccess }) => {
           <span>{error}</span>
         </div>
       )}
+
+      {/* Google Login */}
+      <GoogleLoginButton onError={setError} />
+
+      <div className="relative my-6">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-white/10"></div>
+        </div>
+        <div className="relative flex justify-center text-sm">
+          <span className="px-2 bg-[#1a1e22] text-gray-500 rounded-full">
+            Or register with email
+          </span>
+        </div>
+      </div>
+
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
           <label className="block text-gray-400 text-sm font-medium mb-2">
@@ -366,7 +431,7 @@ const VerifyForm = ({ email, onBack }) => {
   useEffect(() => {
     let timer;
     if (resendCooldown > 0) {
-      timer = setInterval(() => setResendCooldown(c => c - 1), 1000);
+      timer = setInterval(() => setResendCooldown((c) => c - 1), 1000);
     }
     return () => clearInterval(timer);
   }, [resendCooldown]);
@@ -380,7 +445,8 @@ const VerifyForm = ({ email, onBack }) => {
       navigate("/dashboard");
     } catch (err) {
       setError(
-        err.response?.data?.message || "Verification failed. Please check your code.",
+        err.response?.data?.message ||
+          "Verification failed. Please check your code.",
       );
     } finally {
       setLoading(false);
@@ -404,11 +470,10 @@ const VerifyForm = ({ email, onBack }) => {
         <div className="mx-auto w-16 h-16 bg-lime-500/10 rounded-full flex items-center justify-center mb-4">
           <Mail className="w-8 h-8 text-lime-400" />
         </div>
-        <h2 className="text-2xl font-bold text-white mb-2">
-          Verify Your Email
-        </h2>
+        <h2 className="text-2xl font-bold text-white mb-2">Verify Your Email</h2>
         <p className="text-gray-400 text-sm">
-          We sent a 6-digit code to <span className="text-lime-400">{email}</span>
+          We sent a 6-digit code to{" "}
+          <span className="text-lime-400">{email}</span>
         </p>
       </div>
 
@@ -427,7 +492,9 @@ const VerifyForm = ({ email, onBack }) => {
           <input
             type="text"
             value={otp}
-            onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+            onChange={(e) =>
+              setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))
+            }
             required
             maxLength={6}
             className="input-field text-center text-2xl tracking-[0.5em] font-mono"
@@ -451,10 +518,16 @@ const VerifyForm = ({ email, onBack }) => {
             type="button"
             onClick={handleResend}
             disabled={resendCooldown > 0}
-            className={`text-sm flex items-center space-x-2 ${resendCooldown > 0 ? 'text-gray-600 cursor-not-allowed' : 'text-lime-400 hover:text-lime-300'}`}
+            className={`text-sm flex items-center space-x-2 ${resendCooldown > 0 ? "text-gray-600 cursor-not-allowed" : "text-lime-400 hover:text-lime-300"}`}
           >
-            <RefreshCw className={`w-4 h-4 ${resendCooldown === 0 ? 'group-hover:rotate-180 transition-transform' : ''}`} />
-            <span>{resendCooldown > 0 ? `Resend code in ${resendCooldown}s` : "Resend Code"}</span>
+            <RefreshCw
+              className={`w-4 h-4 ${resendCooldown === 0 ? "group-hover:rotate-180 transition-transform" : ""}`}
+            />
+            <span>
+              {resendCooldown > 0
+                ? `Resend code in ${resendCooldown}s`
+                : "Resend Code"}
+            </span>
           </button>
 
           <button

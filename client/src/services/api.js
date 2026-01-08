@@ -41,6 +41,7 @@ export const authService = {
     register: (userData) => api.post('/auth/register', userData),
     verifyEmail: (data) => api.post('/auth/verify-email', data),
     resendOTP: (data) => api.post('/auth/resend-otp', data),
+    googleLogin: (token) => api.post('/auth/google', { token }),
     logout: () => api.post('/auth/logout'),
     getMe: () => api.get('/auth/me'),
     forgotPassword: (email) => api.post('/auth/forgotpassword', { email }),

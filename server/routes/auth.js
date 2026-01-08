@@ -5,8 +5,10 @@ import User from '../models/User.js'
 import { protect, generateToken } from '../middleware/auth.js'
 import { validate } from '../middleware/validator.js'
 import { sendEmail } from '../utils/sendEmail.js'
+import { OAuth2Client } from 'google-auth-library'
 
 const router = express.Router()
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
 
 const userResponse = (user) => ({
     id: user._id,
@@ -21,6 +23,79 @@ const userResponse = (user) => ({
     status: user.status,
     lastSeen: user.lastSeen,
 })
+
+// @route   POST /api/auth/google
+// @desc    Login/Register with Google
+// @access  Public
+router.post('/google', async (req, res) => {
+    try {
+        const { token } = req.body;
+        
+        // Verify Google Token
+        const ticket = await googleClient.verifyIdToken({
+            idToken: token,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+        const { name, email, picture, sub: googleId } = ticket.getPayload();
+
+        // Check if user exists
+        let user = await User.findOne({ email });
+
+        if (user) {
+            // User exists - if they don't have googleId linked, link it now
+            if (!user.googleId) {
+                user.googleId = googleId;
+                // If they previously had a different avatar (default), maybe update it? 
+                // Let's keep existing avatar to not override user choice, unless it's empty
+                if (!user.avatar) user.avatar = picture;
+                
+                // Ensure they are verified since Google verified the email
+                user.isVerified = true;
+                user.otp = undefined;
+                user.otpExpires = undefined;
+            }
+        } else {
+            // Create new user
+            // Generate a random password-like string just to satisfy potential internal logic 
+            // (though we made it optional in schema, having a strong random one is safe)
+            // But better: we rely on schema optionality.
+            
+            // Generate a unique username based on Google name
+            let username = name.split(' ').join('').toLowerCase() + Math.floor(Math.random() * 1000);
+            
+            // Ensure username uniqueness (simple check)
+            const usernameExists = await User.findOne({ username });
+            if (usernameExists) {
+                username += Math.floor(Math.random() * 1000);
+            }
+
+            user = await User.create({
+                username,
+                email,
+                avatar: picture,
+                googleId,
+                isVerified: true, // Google emails are verified
+            });
+        }
+
+        // Update status
+        user.status = 'online';
+        user.lastSeen = new Date();
+        await user.save();
+
+        // Generate Token
+        const jwtToken = generateToken(user._id);
+
+        res.json({
+            token: jwtToken,
+            user: userResponse(user),
+        });
+
+    } catch (error) {
+        console.error('Google Auth Error:', error);
+        res.status(401).json({ message: 'Google authentication failed' });
+    }
+});
 
 // @route   POST /api/auth/register
 // @desc    Register a new user

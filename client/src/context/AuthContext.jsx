@@ -73,6 +73,15 @@ export const AuthProvider = ({ children }) => {
         await authService.resendOTP({ email })
     }
 
+    const googleLogin = async (credentialResponse) => {
+        const response = await authService.googleLogin(credentialResponse.credential)
+        const { token: newToken, user: userData } = response.data
+        localStorage.setItem('token', newToken)
+        setToken(newToken)
+        setUser(userData)
+        return userData
+    }
+
     const logout = async () => {
         try {
             await authService.logout()
@@ -96,6 +105,7 @@ export const AuthProvider = ({ children }) => {
         register,
         verifyEmail,
         resendOTP,
+        googleLogin,
         logout,
         updateUser,
         isAuthenticated: !!user,
