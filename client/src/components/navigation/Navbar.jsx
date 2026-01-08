@@ -116,7 +116,7 @@ const Navbar = ({ user, logout, onConnectionUpdate, onOpenChat }) => {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md border-b border-white/10 h-16">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-bg-dark/80 backdrop-blur-md border-b border-white/10 h-16">
         <div className="max-w-7xl mx-auto px-4 h-full flex items-center justify-between">
           <div className="flex items-center gap-4">
             {/* Hamburger Menu Button */}
@@ -133,8 +133,8 @@ const Navbar = ({ user, logout, onConnectionUpdate, onOpenChat }) => {
 
             <Link to="/" className="flex items-center gap-2 group">
               <div className="relative">
-                <Gamepad2 className="w-8 h-8 text-lime-500 transition-transform group-hover:rotate-12" />
-                <div className="absolute inset-0 bg-lime-500 blur-lg opacity-20 group-hover:opacity-40 transition-opacity" />
+                <Gamepad2 className="w-8 h-8 text-primary transition-transform group-hover:rotate-12" />
+                <div className="absolute inset-0 bg-primary blur-lg opacity-20 group-hover:opacity-40 transition-opacity" />
               </div>
               <span className="font-bold text-xl tracking-tight hidden md:block">
                 Ping
@@ -157,14 +157,14 @@ const Navbar = ({ user, logout, onConnectionUpdate, onOpenChat }) => {
               </div>
               {/* Search Results Dropdown */}
               {showSearchDropdown && searchResults.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-[#1b1f23] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50 max-h-80 overflow-y-auto">
+                <div className="absolute top-full left-0 right-0 mt-2 bg-bg-card border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50 max-h-80 overflow-y-auto">
                   {searchResults.map((result) => (
                     <div
                       key={result._id}
                       onClick={() => handleUserSelect(result.username)}
                       className="flex items-center gap-3 p-3 hover:bg-white/5 cursor-pointer transition-colors border-b border-white/5 last:border-0"
                     >
-                      <Avatar src={result.avatar} className="w-9 h-9 border border-lime-500/30">
+                      <Avatar src={result.avatar} className="w-9 h-9 border border-primary/30">
                         {result.username?.[0]?.toUpperCase()}
                       </Avatar>
                       <div className="flex-1 min-w-0">
@@ -196,7 +196,7 @@ const Navbar = ({ user, logout, onConnectionUpdate, onOpenChat }) => {
               >
                 <Avatar
                   src={user?.avatar}
-                  className="w-8 h-8 border border-lime-500/50 cursor-pointer hover:border-lime-500 transition-colors"
+                  className="w-8 h-8 border border-primary/50 cursor-pointer hover:border-primary transition-colors"
                 >
                   {user?.username?.charAt(0).toUpperCase()}
                 </Avatar>

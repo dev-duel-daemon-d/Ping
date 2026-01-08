@@ -25,7 +25,7 @@ html {
 body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   background-color: var(--color-bg-dark);
-  color: #f8fafc;
+  color: var(--color-text-main);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -42,12 +42,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #84cc16;
+  background: var(--color-primary);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #65a30d;
+  background: var(--color-secondary);
 }
 
 /* Animations */
@@ -186,19 +186,19 @@ body {
 /* Utility classes */
 @layer components {
   .glass-card {
-    @apply bg-black/70 backdrop-blur-lg border border-lime-500/30 rounded-2xl;
+    @apply bg-bg-card/70 backdrop-blur-lg border border-primary/30 rounded-2xl;
   }
 
   .glass-card:hover {
-    @apply border-lime-500/60 shadow-lg shadow-lime-500/20;
+    @apply border-primary/60 shadow-lg shadow-primary/20;
   }
 
   .gradient-text {
-    @apply bg-gradient-to-r from-lime-300 via-lime-400 to-lime-500 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent;
   }
 
   .btn-primary {
-    @apply bg-gradient-to-r from-lime-500 to-lime-600 text-black font-bold py-3 px-6 rounded-full hover:shadow-lg hover:shadow-lime-500/50 hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2;
+    @apply bg-gradient-to-r from-primary to-secondary text-black font-bold py-3 px-6 rounded-full hover:shadow-lg hover:shadow-primary/50 hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2;
   }
 
   .btn-primary:disabled {
@@ -206,11 +206,11 @@ body {
   }
 
   .btn-secondary {
-    @apply bg-transparent border-2 border-lime-500 text-lime-400 font-bold py-3 px-6 rounded-full hover:bg-lime-500/10 hover:shadow-lg hover:shadow-lime-500/30 hover:scale-105 transition-all duration-300;
+    @apply bg-transparent border-2 border-primary text-primary font-bold py-3 px-6 rounded-full hover:bg-primary/10 hover:shadow-lg hover:shadow-primary/30 hover:scale-105 transition-all duration-300;
   }
 
   .input-field {
-    @apply w-full bg-black/50 border border-lime-500/30 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-lime-400 focus:ring-2 focus:ring-lime-500/20 transition-all duration-300;
+    @apply w-full bg-bg-dark/50 border border-primary/30 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300;
   }
 }
 
@@ -326,7 +326,7 @@ body {
     position: absolute;
     width: 4px;
     height: 4px;
-    background: radial-gradient(circle, #84cc16 0%, rgba(132, 204, 22, 0) 70%);
+    background: radial-gradient(circle, var(--color-primary) 0%, rgba(0, 0, 0, 0) 70%);
     border-radius: 50%;
     animation: emberFloat 2s ease-out infinite;
     filter: blur(1px);

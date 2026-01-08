@@ -612,7 +612,7 @@ const GameEditModal = ({
                   onChange={(e) =>
                     setFormData({ ...formData, game: e.target.value })
                   }
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-primary/50"
                   placeholder="Enter game name"
                   required
                 />
@@ -637,7 +637,7 @@ const GameEditModal = ({
                   onChange={(e) =>
                     setFormData({ ...formData, genre: e.target.value })
                   }
-                  className="w-full bg-[#1b1f23] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-lime-500/50 appearance-none"
+                  className="w-full bg-bg-card border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 appearance-none"
                   required
                 >
                   <option value="" disabled>
@@ -669,7 +669,7 @@ const GameEditModal = ({
                   });
                 }
               }}
-              className="w-full bg-[#1b1f23] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-lime-500/50 appearance-none"
+              className="w-full bg-bg-card border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 appearance-none"
               required
             >
               <option value="" disabled>
@@ -695,7 +695,7 @@ const GameEditModal = ({
               onChange={(e) =>
                 setFormData({ ...formData, role: e.target.value })
               }
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50"
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-primary/50"
               placeholder="e.g. Duelist"
               required
             />
@@ -710,7 +710,7 @@ const GameEditModal = ({
               onChange={(e) =>
                 setFormData({ ...formData, rank: e.target.value })
               }
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50"
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-primary/50"
               placeholder="e.g. Ascendant 2"
               required
             />
@@ -727,7 +727,7 @@ const GameEditModal = ({
             onChange={(e) =>
               setFormData({ ...formData, peakRank: e.target.value })
             }
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50"
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-primary/50"
             placeholder="e.g. Immortal 3"
           />
         </div>
@@ -739,7 +739,7 @@ const GameEditModal = ({
           }
         >
           <div
-            className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${formData.isPrimary ? "bg-lime-500 border-lime-500" : "border-slate-500"}`}
+            className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${formData.isPrimary ? "bg-primary border-primary" : "border-slate-500"}`}
           >
             {formData.isPrimary && <Check className="w-3.5 h-3.5 text-black" />}
           </div>
@@ -759,7 +759,7 @@ const GameEditModal = ({
           <button
             type="submit"
             disabled={saving || !formData.game.trim()}
-            className="px-5 py-2.5 bg-gradient-to-r from-lime-500 to-green-500 text-black rounded-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg hover:shadow-lime-500/30 transition-all"
+            className="px-5 py-2.5 bg-gradient-to-r from-primary to-secondary text-black rounded-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg hover:shadow-primary/30 transition-all"
           >
             {saving ? "Saving..." : editingGame ? "Update" : "Add Game"}
           </button>
@@ -884,7 +884,7 @@ const SocialsEditModal = ({ open, onClose, onSave, currentSocials }) => {
                 onChange={(e) =>
                   setFormData({ ...formData, [key]: e.target.value })
                 }
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:border-lime-500/50"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:border-primary/50"
                 placeholder={placeholder}
               />
             </div>
@@ -902,7 +902,7 @@ const SocialsEditModal = ({ open, onClose, onSave, currentSocials }) => {
           <button
             type="submit"
             disabled={saving}
-            className="px-5 py-2.5 bg-gradient-to-r from-lime-500 to-green-500 text-black rounded-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg hover:shadow-lime-500/30 transition-all"
+            className="px-5 py-2.5 bg-gradient-to-r from-primary to-secondary text-black rounded-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg hover:shadow-primary/30 transition-all"
           >
             {saving ? "Saving..." : "Save Socials"}
           </button>
@@ -1005,12 +1005,12 @@ const NotificationMenu = ({
               <div className="relative">
                 <Avatar
                   src={notif.sender?.avatar}
-                  className="w-10 h-10 border border-lime-500/30"
+                  className="w-10 h-10 border border-primary/30"
                 >
                   {notif.sender?.username?.[0]}
                 </Avatar>
                 {notif.isGrouped && notif.count > 1 && (
-                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-lime-500 rounded-full flex items-center justify-center">
+                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-primary rounded-full flex items-center justify-center">
                     <span className="text-[10px] font-bold text-black">
                       {notif.count}
                     </span>
@@ -1230,7 +1230,7 @@ const ChatModal = ({ open, onClose, recipient, currentUser }) => {
           onClick={onClose}
         >
           {/* Backdrop */}
-          <div className="absolute inset-0 bg-black/70 backdrop-blur-md" />
+          <div className="absolute inset-0 bg-bg-dark/70 backdrop-blur-md" />
 
           {/* Chat Modal with Jelly Effect */}
           <motion.div
@@ -1239,14 +1239,14 @@ const ChatModal = ({ open, onClose, recipient, currentUser }) => {
             animate="visible"
             exit="exit"
             onClick={(e) => e.stopPropagation()}
-            className="relative z-10 w-full max-w-lg h-[600px] bg-gradient-to-b from-[#1a1e22] to-[#0d0f11] border border-white/10 rounded-3xl shadow-2xl shadow-lime-500/10 flex flex-col overflow-hidden"
+            className="relative z-10 w-full max-w-lg h-[600px] bg-gradient-to-b from-[#1a1e22] to-[#0d0f11] border border-white/10 rounded-3xl shadow-2xl shadow-primary/10 flex flex-col overflow-hidden"
           >
             {/* Header */}
-            <div className="p-4 border-b border-white/10 flex items-center gap-3 bg-black/30">
+            <div className="p-4 border-b border-white/10 flex items-center gap-3 bg-bg-dark/30">
               <div className="relative">
                 <Avatar
                   src={recipient?.avatar}
-                  className="w-12 h-12 border-2 border-lime-500/50"
+                  className="w-12 h-12 border-2 border-primary/50"
                 >
                   {recipient?.username?.[0]?.toUpperCase()}
                 </Avatar>
@@ -1260,7 +1260,7 @@ const ChatModal = ({ open, onClose, recipient, currentUser }) => {
                 </h3>
                 <p className="text-xs text-slate-400">
                   {isTyping ? (
-                    <span className="text-lime-400 flex items-center gap-1">
+                    <span className="text-primary flex items-center gap-1">
                       <motion.span
                         animate={{ opacity: [0.4, 1, 0.4] }}
                         transition={{ repeat: Infinity, duration: 1.5 }}
@@ -1294,7 +1294,7 @@ const ChatModal = ({ open, onClose, recipient, currentUser }) => {
                       duration: 1,
                       ease: "linear",
                     }}
-                    className="w-8 h-8 border-2 border-lime-500 border-t-transparent rounded-full"
+                    className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full"
                   />
                 </div>
               ) : messages.length === 0 ? (
@@ -1315,7 +1315,7 @@ const ChatModal = ({ open, onClose, recipient, currentUser }) => {
                     <div
                       className={`max-w-[75%] px-4 py-2.5 rounded-2xl ${
                         isMine(msg)
-                          ? "bg-gradient-to-r from-lime-500 to-green-500 text-black rounded-br-md"
+                          ? "bg-gradient-to-r from-primary to-secondary text-black rounded-br-md"
                           : "bg-white/10 text-white rounded-bl-md"
                       }`}
                     >
@@ -1336,7 +1336,7 @@ const ChatModal = ({ open, onClose, recipient, currentUser }) => {
             </div>
 
             {/* Input */}
-            <div className="p-4 border-t border-white/10 bg-black/30">
+            <div className="p-4 border-t border-white/10 bg-bg-dark/30">
               <div className="flex items-center gap-3">
                 <input
                   type="text"
@@ -1344,14 +1344,14 @@ const ChatModal = ({ open, onClose, recipient, currentUser }) => {
                   onChange={handleTypingChange}
                   onKeyDown={handleKeyDown}
                   placeholder="Type a message..."
-                  className="flex-1 bg-white/5 border border-white/10 rounded-full px-5 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50 transition-colors"
+                  className="flex-1 bg-white/5 border border-white/10 rounded-full px-5 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-primary/50 transition-colors"
                 />
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={handleSend}
                   disabled={!newMessage.trim()}
-                  className="w-12 h-12 rounded-full bg-gradient-to-r from-lime-500 to-green-500 flex items-center justify-center text-black disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-lime-500/30 hover:shadow-lime-500/50 transition-shadow"
+                  className="w-12 h-12 rounded-full bg-gradient-to-r from-primary to-secondary flex items-center justify-center text-black disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-shadow"
                 >
                   <svg
                     className="w-5 h-5"
@@ -1427,7 +1427,7 @@ const FindModal = ({ open, onClose, onConnect, connections = [] }) => {
         },
       }}
     >
-      <Box className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-[#1b1f23] border border-white/10 rounded-2xl p-6 shadow-2xl outline-none">
+      <Box className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-bg-card border border-white/10 rounded-2xl p-6 shadow-2xl outline-none">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-white">Find Players</h2>
           <IconButton
@@ -1456,7 +1456,7 @@ const FindModal = ({ open, onClose, onConnect, connections = [] }) => {
               className="flex items-center justify-between p-3 hover:bg-white/5 rounded-xl transition-colors"
             >
               <div className="flex items-center gap-3">
-                <Avatar src={user.avatar} className="border border-lime-500/30">
+                <Avatar src={user.avatar} className="border border-primary/30">
                   {user.username[0]}
                 </Avatar>
                 <div>
@@ -1470,7 +1470,7 @@ const FindModal = ({ open, onClose, onConnect, connections = [] }) => {
               </div>
               <button
                 onClick={() => onConnect(user._id)}
-                className="px-3 py-1 bg-lime-500/10 text-lime-500 border border-lime-500/50 rounded-full text-xs font-bold hover:bg-lime-500 hover:text-black transition-all"
+                className="px-3 py-1 bg-primary/10 text-primary border border-primary/50 rounded-full text-xs font-bold hover:bg-primary hover:text-black transition-all"
               >
                 Connect
               </button>
@@ -1506,7 +1506,7 @@ const NavigationDialog = ({ open, onClose }) => {
           onClick={onClose}
         >
           {/* Blur Background */}
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-md" />
+          <div className="absolute inset-0 bg-bg-dark/60 backdrop-blur-md" />
 
           {/* Dialog Content */}
           <motion.div
@@ -1514,7 +1514,7 @@ const NavigationDialog = ({ open, onClose }) => {
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="relative z-10 bg-[#1b1f23] border border-white/10 rounded-2xl p-8 shadow-2xl min-w-[300px]"
+            className="relative z-10 bg-bg-card border border-white/10 rounded-2xl p-8 shadow-2xl min-w-[300px]"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center mb-8">
@@ -1535,7 +1535,7 @@ const NavigationDialog = ({ open, onClose }) => {
                   onClick={onClose}
                   className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-white/10 transition-all group"
                 >
-                  <span className="w-2 h-2 rounded-full bg-lime-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <span className="w-2 h-2 rounded-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity" />
                   <span className="text-lg font-medium">{item.name}</span>
                 </Link>
               ))}
@@ -1722,7 +1722,7 @@ const Navbar = ({ user, logout, onConnectionUpdate, onOpenChat, onEditProfile })
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md border-b border-white/10 h-16">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-bg-dark/80 backdrop-blur-md border-b border-white/10 h-16">
         <div className="max-w-7xl mx-auto px-4 h-full flex items-center justify-between">
           <div className="flex items-center gap-4">
             {/* Hamburger Menu Button */}
@@ -1739,8 +1739,8 @@ const Navbar = ({ user, logout, onConnectionUpdate, onOpenChat, onEditProfile })
 
             <Link to="/" className="flex items-center gap-2 group">
               <div className="relative">
-                <Gamepad2 className="w-8 h-8 text-lime-500 transition-transform group-hover:rotate-12" />
-                <div className="absolute inset-0 bg-lime-500 blur-lg opacity-20 group-hover:opacity-40 transition-opacity" />
+                <Gamepad2 className="w-8 h-8 text-primary transition-transform group-hover:rotate-12" />
+                <div className="absolute inset-0 bg-primary blur-lg opacity-20 group-hover:opacity-40 transition-opacity" />
               </div>
               <span className="font-bold text-xl tracking-tight hidden md:block">
                 Ping
@@ -1765,7 +1765,7 @@ const Navbar = ({ user, logout, onConnectionUpdate, onOpenChat, onEditProfile })
               </div>
               {/* Search Results Dropdown */}
               {showSearchDropdown && searchResults.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-[#1b1f23] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50 max-h-80 overflow-y-auto">
+                <div className="absolute top-full left-0 right-0 mt-2 bg-bg-card border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50 max-h-80 overflow-y-auto">
                   {searchResults.map((result) => (
                     <div
                       key={result._id}
@@ -1774,7 +1774,7 @@ const Navbar = ({ user, logout, onConnectionUpdate, onOpenChat, onEditProfile })
                     >
                       <Avatar
                         src={result.avatar}
-                        className="w-9 h-9 border border-lime-500/30"
+                        className="w-9 h-9 border border-primary/30"
                       >
                         {result.username?.[0]?.toUpperCase()}
                       </Avatar>
@@ -1813,7 +1813,7 @@ const Navbar = ({ user, logout, onConnectionUpdate, onOpenChat, onEditProfile })
               >
                 <Avatar
                   src={user?.avatar}
-                  className="w-8 h-8 border border-lime-500/50 cursor-pointer hover:border-lime-500 transition-colors"
+                  className="w-8 h-8 border border-primary/50 cursor-pointer hover:border-primary transition-colors"
                 >
                   {user?.username?.charAt(0).toUpperCase()}
                 </Avatar>
@@ -1852,7 +1852,7 @@ const Navbar = ({ user, logout, onConnectionUpdate, onOpenChat, onEditProfile })
   );
 };
 
-const StatBar = ({ label, value, color = "bg-lime-500" }) => (
+const StatBar = ({ label, value, color = "bg-primary" }) => (
   <div className="mb-3">
     <div className="flex justify-between text-xs mb-1">
       <span className="text-slate-400">{label}</span>
@@ -1871,13 +1871,13 @@ const StatBar = ({ label, value, color = "bg-lime-500" }) => (
 
 const GameCard = ({ game, role, rank, icon: Icon }) => (
   <div className="bg-white/5 border border-white/5 rounded-xl p-4 flex items-center gap-4 hover:bg-white/10 transition-colors cursor-pointer group">
-    <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-slate-800 to-black flex items-center justify-center border border-white/10 group-hover:border-lime-500/50 transition-colors">
-      <Icon className="w-6 h-6 text-lime-500" />
+    <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-slate-800 to-black flex items-center justify-center border border-white/10 group-hover:border-primary/50 transition-colors">
+      <Icon className="w-6 h-6 text-primary" />
     </div>
     <div>
       <h4 className="font-bold text-slate-200">{game}</h4>
       <p className="text-xs text-slate-400">
-        {role} • <span className="text-lime-500">{rank}</span>
+        {role} • <span className="text-primary">{rank}</span>
       </p>
     </div>
   </div>
@@ -1887,14 +1887,14 @@ const GameCard = ({ game, role, rank, icon: Icon }) => (
 const TeamHistoryCard = ({ team }) => (
   <div className="relative min-w-[220px] max-w-[220px] group flex-shrink-0">
     {/* Glowing lime aura effect */}
-    <div className="absolute inset-0 bg-lime-500/20 blur-xl rounded-2xl opacity-40 group-hover:opacity-70 transition-opacity duration-300" />
-    <div className="absolute inset-0 bg-lime-400/10 blur-2xl rounded-2xl opacity-30 group-hover:opacity-50 transition-opacity duration-500 scale-110" />
+    <div className="absolute inset-0 bg-primary/20 blur-xl rounded-2xl opacity-40 group-hover:opacity-70 transition-opacity duration-300" />
+    <div className="absolute inset-0 bg-primary/10 blur-2xl rounded-2xl opacity-30 group-hover:opacity-50 transition-opacity duration-500 scale-110" />
 
     {/* Card content */}
-    <div className="relative bg-[#1b1f23] border border-lime-500/30 group-hover:border-lime-500/60 rounded-2xl p-5 transition-all duration-300 h-full">
+    <div className="relative bg-bg-card border border-primary/30 group-hover:border-primary/60 rounded-2xl p-5 transition-all duration-300 h-full">
       <div className="flex items-center gap-3 mb-3">
         {/* Team Logo */}
-        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-slate-700 to-slate-900 border-2 border-lime-500/40 flex items-center justify-center overflow-hidden">
+        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-slate-700 to-slate-900 border-2 border-primary/40 flex items-center justify-center overflow-hidden">
           {team.logo ? (
             <img
               src={team.logo}
@@ -1902,7 +1902,7 @@ const TeamHistoryCard = ({ team }) => (
               className="w-full h-full object-cover"
             />
           ) : (
-            <span className="text-lime-500 font-bold text-lg">
+            <span className="text-primary font-bold text-lg">
               {team.name?.[0]}
             </span>
           )}
@@ -1946,11 +1946,11 @@ const TeamHistoryTimeline = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.25 }}
-      className="bg-[#1b1f23] border border-white/5 rounded-2xl p-6 mb-6"
+      className="bg-bg-card border border-white/5 rounded-2xl p-6 mb-6"
     >
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <History className="w-5 h-5 text-lime-500" />
+          <History className="w-5 h-5 text-primary" />
           <h3 className="font-bold text-lg text-white">
             Team History Timeline
           </h3>
@@ -1960,7 +1960,7 @@ const TeamHistoryTimeline = ({
             onClick={onAdd}
             className="p-2 hover:bg-white/10 rounded-lg transition-colors"
           >
-            <Pencil className="w-4 h-4 text-slate-400 hover:text-lime-500" />
+            <Pencil className="w-4 h-4 text-slate-400 hover:text-primary" />
           </button>
         )}
       </div>
@@ -1969,7 +1969,7 @@ const TeamHistoryTimeline = ({
         {/* Left Arrow */}
         <button
           onClick={scrollLeft}
-          className="absolute -left-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/90 backdrop-blur-md border border-lime-500/30 flex items-center justify-center text-white hover:bg-lime-500 hover:text-black transition-all opacity-0 group-hover:opacity-100 shadow-lg shadow-black/50"
+          className="absolute -left-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-bg-dark/90 backdrop-blur-md border border-primary/30 flex items-center justify-center text-white hover:bg-primary hover:text-black transition-all opacity-0 group-hover:opacity-100 shadow-lg shadow-black/50"
         >
           <ChevronLeft className="w-5 h-5" />
         </button>
@@ -2002,10 +2002,10 @@ const TeamHistoryTimeline = ({
                 <div className="flame-glow-border" />
 
                 {/* Card content */}
-                <div className="relative bg-[#1b1f23] border border-lime-500/30 group-hover/card:border-lime-500/60 rounded-2xl p-5 transition-all duration-300 h-full z-10">
+                <div className="relative bg-bg-card border border-primary/30 group-hover/card:border-primary/60 rounded-2xl p-5 transition-all duration-300 h-full z-10">
                   <div className="flex items-center gap-3 mb-3">
                     {/* Team Logo */}
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-slate-700 to-slate-900 border-2 border-lime-500/40 flex items-center justify-center overflow-hidden">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-slate-700 to-slate-900 border-2 border-primary/40 flex items-center justify-center overflow-hidden">
                       {team.logo ? (
                         <img
                           src={team.logo}
@@ -2013,7 +2013,7 @@ const TeamHistoryTimeline = ({
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <span className="text-lime-500 font-bold text-lg">
+                        <span className="text-primary font-bold text-lg">
                           {team.name?.[0]}
                         </span>
                       )}
@@ -2030,7 +2030,7 @@ const TeamHistoryTimeline = ({
                           onClick={() => onEdit(team)}
                           className="p-1.5 hover:bg-white/10 rounded-lg transition-colors"
                         >
-                          <Pencil className="w-3 h-3 text-slate-400 hover:text-lime-500" />
+                          <Pencil className="w-3 h-3 text-slate-400 hover:text-primary" />
                         </button>
                         <button
                           onClick={() => onDelete(team._id)}
@@ -2059,9 +2059,9 @@ const TeamHistoryTimeline = ({
           {isOwnProfile && (
             <div
               onClick={onAdd}
-              className="relative min-w-[220px] max-w-[220px] flex-shrink-0 border-2 border-dashed border-white/10 rounded-2xl p-5 flex flex-col items-center justify-center text-slate-500 hover:border-lime-500/50 hover:text-lime-500 transition-all cursor-pointer group h-[140px]"
+              className="relative min-w-[220px] max-w-[220px] flex-shrink-0 border-2 border-dashed border-white/10 rounded-2xl p-5 flex flex-col items-center justify-center text-slate-500 hover:border-primary/50 hover:text-primary transition-all cursor-pointer group h-[140px]"
             >
-              <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center mb-2 group-hover:bg-lime-500/20 transition-colors">
+              <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center mb-2 group-hover:bg-primary/20 transition-colors">
                 <span className="text-2xl">+</span>
               </div>
               <span className="text-xs font-medium">Add Team</span>
@@ -2072,7 +2072,7 @@ const TeamHistoryTimeline = ({
         {/* Right Arrow */}
         <button
           onClick={scrollRight}
-          className="absolute -right-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/90 backdrop-blur-md border border-lime-500/30 flex items-center justify-center text-white hover:bg-lime-500 hover:text-black transition-all opacity-0 group-hover:opacity-100 shadow-lg shadow-black/50"
+          className="absolute -right-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-bg-dark/90 backdrop-blur-md border border-primary/30 flex items-center justify-center text-white hover:bg-primary hover:text-black transition-all opacity-0 group-hover:opacity-100 shadow-lg shadow-black/50"
         >
           <ChevronRight className="w-5 h-5" />
         </button>
@@ -2093,11 +2093,11 @@ const ExperienceTournaments = ({
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: 0.3 }}
-    className="bg-[#1b1f23] border border-white/5 rounded-2xl p-6 mb-6"
+    className="bg-bg-card border border-white/5 rounded-2xl p-6 mb-6"
   >
     <div className="flex items-center justify-between mb-6">
       <div className="flex items-center gap-2">
-        <Medal className="w-5 h-5 text-lime-500" />
+        <Medal className="w-5 h-5 text-primary" />
         <h3 className="font-bold text-lg text-white">
           Experience and Tournaments
         </h3>
@@ -2107,7 +2107,7 @@ const ExperienceTournaments = ({
           onClick={onAdd}
           className="p-2 hover:bg-white/10 rounded-lg transition-colors"
         >
-          <Pencil className="w-4 h-4 text-slate-400 hover:text-lime-500" />
+          <Pencil className="w-4 h-4 text-slate-400 hover:text-primary" />
         </button>
       )}
     </div>
@@ -2117,18 +2117,18 @@ const ExperienceTournaments = ({
         tournaments.map((tournament) => (
           <div
             key={tournament._id || tournament.id}
-            className="bg-white/5 border border-white/5 rounded-xl px-5 py-4 hover:bg-white/10 hover:border-lime-500/30 transition-all group"
+            className="bg-white/5 border border-white/5 rounded-xl px-5 py-4 hover:bg-white/10 hover:border-primary/30 transition-all group"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <Trophy className="w-5 h-5 text-lime-500 opacity-60 group-hover:opacity-100 transition-opacity" />
+                <Trophy className="w-5 h-5 text-primary opacity-60 group-hover:opacity-100 transition-opacity" />
                 <span className="font-medium text-slate-200">
                   {tournament.name}
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 {tournament.placement && (
-                  <span className="text-xs text-lime-500 font-bold bg-lime-500/10 px-3 py-1 rounded-full">
+                  <span className="text-xs text-primary font-bold bg-primary/10 px-3 py-1 rounded-full">
                     {tournament.placement}
                   </span>
                 )}
@@ -2138,7 +2138,7 @@ const ExperienceTournaments = ({
                       onClick={() => onEdit(tournament)}
                       className="p-1.5 hover:bg-white/10 rounded-lg transition-colors"
                     >
-                      <Pencil className="w-3 h-3 text-slate-400 hover:text-lime-500" />
+                      <Pencil className="w-3 h-3 text-slate-400 hover:text-primary" />
                     </button>
                     <button
                       onClick={() => onDelete(tournament._id)}
@@ -2162,7 +2162,7 @@ const ExperienceTournaments = ({
       {isOwnProfile && (
         <div
           onClick={onAdd}
-          className="border-2 border-dashed border-white/10 rounded-xl px-5 py-4 flex items-center justify-center text-slate-500 hover:border-lime-500/50 hover:text-lime-500 transition-all cursor-pointer"
+          className="border-2 border-dashed border-white/10 rounded-xl px-5 py-4 flex items-center justify-center text-slate-500 hover:border-primary/50 hover:text-primary transition-all cursor-pointer"
         >
           <span className="text-sm font-medium">+ Add Tournament</span>
         </div>
@@ -2177,11 +2177,11 @@ const SetupConfig = ({ setup, isOwnProfile, onEdit, onCopy, copiedField }) => (
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: 0.35 }}
-    className="bg-[#1b1f23] border border-white/5 rounded-2xl p-6 mb-6"
+    className="bg-bg-card border border-white/5 rounded-2xl p-6 mb-6"
   >
     <div className="flex items-center justify-between mb-6">
       <div className="flex items-center gap-2">
-        <Monitor className="w-5 h-5 text-lime-500" />
+        <Monitor className="w-5 h-5 text-primary" />
         <h3 className="font-bold text-lg text-white">Setup & Config</h3>
       </div>
       {isOwnProfile && (
@@ -2189,7 +2189,7 @@ const SetupConfig = ({ setup, isOwnProfile, onEdit, onCopy, copiedField }) => (
           onClick={onEdit}
           className="p-2 hover:bg-white/10 rounded-lg transition-colors"
         >
-          <Pencil className="w-4 h-4 text-slate-400 hover:text-lime-500" />
+          <Pencil className="w-4 h-4 text-slate-400 hover:text-primary" />
         </button>
       )}
     </div>
@@ -2197,7 +2197,7 @@ const SetupConfig = ({ setup, isOwnProfile, onEdit, onCopy, copiedField }) => (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
       <div className="bg-white/5 border border-white/10 rounded-xl px-5 py-4 group relative">
         <div className="flex items-center gap-3">
-          <Target className="w-5 h-5 text-lime-500 opacity-60 group-hover:opacity-100 transition-opacity" />
+          <Target className="w-5 h-5 text-primary opacity-60 group-hover:opacity-100 transition-opacity" />
           <div className="flex-1">
             <span className="font-medium text-slate-200 block">
               DPI + Game sens
@@ -2216,9 +2216,9 @@ const SetupConfig = ({ setup, isOwnProfile, onEdit, onCopy, copiedField }) => (
             className="p-1.5 hover:bg-white/10 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
           >
             {copiedField === "dpi" ? (
-              <Check className="w-4 h-4 text-lime-500" />
+              <Check className="w-4 h-4 text-primary" />
             ) : (
-              <Copy className="w-4 h-4 text-slate-400 hover:text-lime-500" />
+              <Copy className="w-4 h-4 text-slate-400 hover:text-primary" />
             )}
           </button>
         </div>
@@ -2226,7 +2226,7 @@ const SetupConfig = ({ setup, isOwnProfile, onEdit, onCopy, copiedField }) => (
 
       <div className="bg-white/5 border border-white/10 rounded-xl px-5 py-4 group relative">
         <div className="flex items-center gap-3">
-          <Monitor className="w-5 h-5 text-lime-500 opacity-60 group-hover:opacity-100 transition-opacity" />
+          <Monitor className="w-5 h-5 text-primary opacity-60 group-hover:opacity-100 transition-opacity" />
           <div className="flex-1">
             <span className="font-medium text-slate-200 block">
               Aspect ratio
@@ -2246,9 +2246,9 @@ const SetupConfig = ({ setup, isOwnProfile, onEdit, onCopy, copiedField }) => (
             className="p-1.5 hover:bg-white/10 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
           >
             {copiedField === "aspect" ? (
-              <Check className="w-4 h-4 text-lime-500" />
+              <Check className="w-4 h-4 text-primary" />
             ) : (
-              <Copy className="w-4 h-4 text-slate-400 hover:text-lime-500" />
+              <Copy className="w-4 h-4 text-slate-400 hover:text-primary" />
             )}
           </button>
         </div>
@@ -2257,7 +2257,7 @@ const SetupConfig = ({ setup, isOwnProfile, onEdit, onCopy, copiedField }) => (
 
     <div className="bg-white/5 border border-white/10 rounded-xl px-5 py-4 group mb-6">
       <div className="flex items-center gap-3">
-        <Mouse className="w-5 h-5 text-lime-500 opacity-60 group-hover:opacity-100 transition-opacity" />
+        <Mouse className="w-5 h-5 text-primary opacity-60 group-hover:opacity-100 transition-opacity" />
         <div className="flex-1 min-w-0">
           <span className="font-medium text-slate-200 block">
             Preferred Mouse and crosshair code
@@ -2272,9 +2272,9 @@ const SetupConfig = ({ setup, isOwnProfile, onEdit, onCopy, copiedField }) => (
           className="p-1.5 hover:bg-white/10 rounded-lg transition-colors opacity-0 group-hover:opacity-100 flex-shrink-0"
         >
           {copiedField === "crosshair" ? (
-            <Check className="w-4 h-4 text-lime-500" />
+            <Check className="w-4 h-4 text-primary" />
           ) : (
-            <Copy className="w-4 h-4 text-slate-400 hover:text-lime-500" />
+            <Copy className="w-4 h-4 text-slate-400 hover:text-primary" />
           )}
         </button>
       </div>
@@ -2285,7 +2285,7 @@ const SetupConfig = ({ setup, isOwnProfile, onEdit, onCopy, copiedField }) => (
       <motion.button
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
-        className="px-6 py-3 bg-gradient-to-r from-lime-500 to-green-500 text-black rounded-xl font-bold hover:shadow-lg hover:shadow-lime-500/30 transition-all flex items-center gap-2"
+        className="px-6 py-3 bg-gradient-to-r from-primary to-secondary text-black rounded-xl font-bold hover:shadow-lg hover:shadow-primary/30 transition-all flex items-center gap-2"
       >
         <Download className="w-4 h-4" />
         Download as PDF
@@ -2306,7 +2306,7 @@ const EditModal = ({ open, onClose, title, children }) => (
         onClick={onClose}
       >
         {/* Blur Backdrop */}
-        <div className="absolute inset-0 bg-black/60 backdrop-blur-md" />
+        <div className="absolute inset-0 bg-bg-dark/60 backdrop-blur-md" />
 
         {/* Modal Content */}
         <motion.div
@@ -2314,7 +2314,7 @@ const EditModal = ({ open, onClose, title, children }) => (
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          className="relative z-10 bg-[#1b1f23] border border-white/10 rounded-2xl p-6 shadow-2xl w-full max-w-lg max-h-[80vh] overflow-y-auto"
+          className="relative z-10 bg-bg-card border border-white/10 rounded-2xl p-6 shadow-2xl w-full max-w-lg max-h-[80vh] overflow-y-auto"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex justify-between items-center mb-6">
@@ -2383,7 +2383,7 @@ const TeamEditModal = ({ open, onClose, onSave, editingTeam }) => {
             type="text"
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50"
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-primary/50"
             placeholder="Enter team name"
             required
           />
@@ -2397,7 +2397,7 @@ const TeamEditModal = ({ open, onClose, onSave, editingTeam }) => {
             type="text"
             value={formData.logo}
             onChange={(e) => setFormData({ ...formData, logo: e.target.value })}
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50"
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-primary/50"
             placeholder="https://example.com/logo.png"
           />
         </div>
@@ -2412,7 +2412,7 @@ const TeamEditModal = ({ open, onClose, onSave, editingTeam }) => {
               setFormData({ ...formData, details: e.target.value })
             }
             rows={3}
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50 resize-none"
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-primary/50 resize-none"
             placeholder="Describe your role and experience with this team..."
           />
         </div>
@@ -2428,7 +2428,7 @@ const TeamEditModal = ({ open, onClose, onSave, editingTeam }) => {
           <button
             type="submit"
             disabled={saving || !formData.name.trim()}
-            className="px-5 py-2.5 bg-gradient-to-r from-lime-500 to-green-500 text-black rounded-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg hover:shadow-lime-500/30 transition-all"
+            className="px-5 py-2.5 bg-gradient-to-r from-primary to-secondary text-black rounded-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg hover:shadow-primary/30 transition-all"
           >
             {saving ? "Saving..." : editingTeam ? "Update" : "Add Team"}
           </button>
@@ -2486,7 +2486,7 @@ const TournamentEditModal = ({ open, onClose, onSave, editingTournament }) => {
             type="text"
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50"
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-primary/50"
             placeholder="Enter tournament name"
             required
           />
@@ -2502,7 +2502,7 @@ const TournamentEditModal = ({ open, onClose, onSave, editingTournament }) => {
             onChange={(e) =>
               setFormData({ ...formData, placement: e.target.value })
             }
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50"
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-primary/50"
             placeholder="e.g., 1st Place, Top 8, etc."
           />
         </div>
@@ -2518,7 +2518,7 @@ const TournamentEditModal = ({ open, onClose, onSave, editingTournament }) => {
           <button
             type="submit"
             disabled={saving || !formData.name.trim()}
-            className="px-5 py-2.5 bg-gradient-to-r from-lime-500 to-green-500 text-black rounded-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg hover:shadow-lime-500/30 transition-all"
+            className="px-5 py-2.5 bg-gradient-to-r from-primary to-secondary text-black rounded-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg hover:shadow-primary/30 transition-all"
           >
             {saving
               ? "Saving..."
@@ -2583,7 +2583,7 @@ const SetupEditModal = ({ open, onClose, onSave, currentSetup }) => {
               onChange={(e) =>
                 setFormData({ ...formData, dpi: Number(e.target.value) })
               }
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50"
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-primary/50"
               placeholder="800"
             />
           </div>
@@ -2602,7 +2602,7 @@ const SetupEditModal = ({ open, onClose, onSave, currentSetup }) => {
                   sensitivity: Number(e.target.value),
                 })
               }
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50"
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-primary/50"
               placeholder="0.35"
             />
           </div>
@@ -2619,7 +2619,7 @@ const SetupEditModal = ({ open, onClose, onSave, currentSetup }) => {
               onChange={(e) =>
                 setFormData({ ...formData, aspectRatio: e.target.value })
               }
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50"
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-primary/50"
               placeholder="16:9"
             />
           </div>
@@ -2634,7 +2634,7 @@ const SetupEditModal = ({ open, onClose, onSave, currentSetup }) => {
               onChange={(e) =>
                 setFormData({ ...formData, resolution: e.target.value })
               }
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50"
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-primary/50"
               placeholder="1920x1080"
             />
           </div>
@@ -2650,7 +2650,7 @@ const SetupEditModal = ({ open, onClose, onSave, currentSetup }) => {
             onChange={(e) =>
               setFormData({ ...formData, mouse: e.target.value })
             }
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50"
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-primary/50"
             placeholder="e.g., Logitech G Pro X Superlight"
           />
         </div>
@@ -2665,7 +2665,7 @@ const SetupEditModal = ({ open, onClose, onSave, currentSetup }) => {
             onChange={(e) =>
               setFormData({ ...formData, crosshairCode: e.target.value })
             }
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50"
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-primary/50"
             placeholder="0;P;c;5;h;0;m;1;0l;4;0o;2;0a;1;0f;0;1b;0"
           />
         </div>
@@ -2681,7 +2681,7 @@ const SetupEditModal = ({ open, onClose, onSave, currentSetup }) => {
           <button
             type="submit"
             disabled={saving}
-            className="px-5 py-2.5 bg-gradient-to-r from-lime-500 to-green-500 text-black rounded-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg hover:shadow-lime-500/30 transition-all"
+            className="px-5 py-2.5 bg-gradient-to-r from-primary to-secondary text-black rounded-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg hover:shadow-primary/30 transition-all"
           >
             {saving ? "Saving..." : "Save Setup"}
           </button>
@@ -2745,10 +2745,10 @@ const ConnectionsModal = ({ open, onClose, onMessage, onConnect, currentUser }) 
         },
       }}
     >
-      <Box className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl bg-[#1b1f23] border border-white/10 rounded-2xl p-6 shadow-2xl outline-none max-h-[80vh] flex flex-col">
+      <Box className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl bg-bg-card border border-white/10 rounded-2xl p-6 shadow-2xl outline-none max-h-[80vh] flex flex-col">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-            <Users className="w-6 h-6 text-lime-500" />
+            <Users className="w-6 h-6 text-primary" />
             All Players
           </h2>
           <IconButton
@@ -2773,19 +2773,19 @@ const ConnectionsModal = ({ open, onClose, onMessage, onConnect, currentUser }) 
         <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 space-y-3">
           {loading ? (
             <div className="flex justify-center py-10">
-              <Loader2 className="w-8 h-8 text-lime-500 animate-spin" />
+              <Loader2 className="w-8 h-8 text-primary animate-spin" />
             </div>
           ) : filteredUsers.length > 0 ? (
             filteredUsers.map((user) => (
               <div
                 key={user._id}
-                className="flex items-center justify-between p-4 bg-white/5 border border-white/5 hover:border-lime-500/30 rounded-xl transition-all group"
+                className="flex items-center justify-between p-4 bg-white/5 border border-white/5 hover:border-primary/30 rounded-xl transition-all group"
               >
                 <div className="flex items-center gap-4">
                   <div className="relative">
                     <Avatar
                       src={user.avatar}
-                      className="w-12 h-12 border border-lime-500/30"
+                      className="w-12 h-12 border border-primary/30"
                     >
                       {user.username?.[0]}
                     </Avatar>
@@ -2797,7 +2797,7 @@ const ConnectionsModal = ({ open, onClose, onMessage, onConnect, currentUser }) 
                     <h4 className="font-bold text-slate-200 text-lg flex items-center gap-2">
                       {user.username}
                       {user.connectionStatus === "connected" && (
-                        <span className="text-[10px] bg-lime-500/20 text-lime-500 px-2 py-0.5 rounded-full border border-lime-500/30">
+                        <span className="text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded-full border border-primary/30">
                           Connected
                         </span>
                       )}
@@ -2844,7 +2844,7 @@ const ConnectionsModal = ({ open, onClose, onMessage, onConnect, currentUser }) 
                   ) : (
                     <button
                       onClick={() => handleConnect(user._id)}
-                      className="px-4 py-2 bg-lime-500 text-black rounded-lg font-bold hover:bg-lime-400 transition-all flex items-center gap-2 shadow-lg shadow-lime-500/10"
+                      className="px-4 py-2 bg-primary text-black rounded-lg font-bold hover:bg-primary transition-all flex items-center gap-2 shadow-lg shadow-primary/10"
                     >
                       <Plus className="w-4 h-4" /> Connect
                     </button>
@@ -2918,7 +2918,7 @@ const EditProfileModal = ({ open, onClose, user, onSave }) => {
             onChange={(e) =>
               setFormData({ ...formData, username: e.target.value })
             }
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50"
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-primary/50"
             placeholder="Username"
             required
             minLength={3}
@@ -2936,7 +2936,7 @@ const EditProfileModal = ({ open, onClose, user, onSave }) => {
             onChange={(e) =>
               setFormData({ ...formData, tagline: e.target.value })
             }
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50"
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-primary/50"
             placeholder="e.g. Professional FPS Player | Content Creator"
             maxLength={100}
           />
@@ -2950,7 +2950,7 @@ const EditProfileModal = ({ open, onClose, user, onSave }) => {
             value={formData.bio}
             onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
             rows={4}
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50 resize-none"
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-primary/50 resize-none"
             placeholder="Tell us about yourself..."
             maxLength={160}
           />
@@ -2970,7 +2970,7 @@ const EditProfileModal = ({ open, onClose, user, onSave }) => {
           <button
             type="submit"
             disabled={saving}
-            className="px-5 py-2.5 bg-gradient-to-r from-lime-500 to-green-500 text-black rounded-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg hover:shadow-lime-500/30 transition-all"
+            className="px-5 py-2.5 bg-gradient-to-r from-primary to-secondary text-black rounded-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg hover:shadow-primary/30 transition-all"
           >
             {saving ? "Saving..." : "Save Changes"}
           </button>
@@ -3362,12 +3362,12 @@ const Dashboard = () => {
   // If viewing another user but profile not found
   if (!isOwnProfile && !viewedUser && !profileLoading) {
     return (
-      <div className="min-h-screen bg-black text-slate-200 flex items-center justify-center">
+      <div className="min-h-screen bg-bg-dark text-slate-200 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">User not found</h1>
           <button
             onClick={() => navigate("/dashboard")}
-            className="px-6 py-2 bg-lime-500 text-black rounded-full font-bold hover:bg-lime-400 transition-colors"
+            className="px-6 py-2 bg-primary text-black rounded-full font-bold hover:bg-primary transition-colors"
           >
             Back to Dashboard
           </button>
@@ -3381,10 +3381,10 @@ const Dashboard = () => {
   const secondaryGames = gameExperiences.filter((g) => !g.isPrimary);
 
   return (
-    <div className="min-h-screen bg-black text-slate-200 font-sans selection:bg-lime-500/30 overflow-hidden relative">
+    <div className="min-h-screen bg-bg-dark text-slate-200 font-sans selection:bg-primary/30 overflow-hidden relative">
       {/* Mouse Glow Effect */}
       <div
-        className="fixed w-[300px] h-[300px] bg-lime-400 rounded-full filter blur-[100px] opacity-20 pointer-events-none z-0 transition-opacity duration-300"
+        className="fixed w-[300px] h-[300px] bg-primary rounded-full filter blur-[100px] opacity-20 pointer-events-none z-0 transition-opacity duration-300"
         style={{
           left: `${mousePos.x - 150}px`,
           top: `${mousePos.y - 150}px`,
@@ -3429,7 +3429,7 @@ const Dashboard = () => {
                 />
                 <label
                   htmlFor="banner-upload"
-                  className="flex items-center gap-2 px-4 py-2 bg-black/50 backdrop-blur-md rounded-full cursor-pointer hover:bg-black/70 transition-colors border border-white/20"
+                  className="flex items-center gap-2 px-4 py-2 bg-bg-dark/50 backdrop-blur-md rounded-full cursor-pointer hover:bg-bg-dark/70 transition-colors border border-white/20"
                 >
                   {uploadingBanner ? (
                     <motion.div
@@ -3439,7 +3439,7 @@ const Dashboard = () => {
                         duration: 1,
                         ease: "linear",
                       }}
-                      className="w-4 h-4 border-2 border-lime-500 border-t-transparent rounded-full"
+                      className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full"
                     />
                   ) : (
                     <Camera className="w-4 h-4 text-white" />
@@ -3455,7 +3455,7 @@ const Dashboard = () => {
           {/* Avatar & Info */}
           <div className="absolute -bottom-48 left-0 right-0 flex flex-col items-center z-20">
             <div className="relative">
-              <div className="w-32 h-32 rounded-full p-1 bg-black relative group">
+              <div className="w-32 h-32 rounded-full p-1 bg-bg-dark relative group">
                 <Avatar
                   src={displayUser?.avatar}
                   className="w-full h-full border-4 border-[#1b1f23]"
@@ -3465,7 +3465,7 @@ const Dashboard = () => {
                 </Avatar>
                 {/* Upload avatar button - only show for own profile */}
                 {isOwnProfile && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-full">
+                  <div className="absolute inset-0 flex items-center justify-center bg-bg-dark/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-full">
                     <input
                       type="file"
                       accept="image/*"
@@ -3487,7 +3487,7 @@ const Dashboard = () => {
                             duration: 1,
                             ease: "linear",
                           }}
-                          className="w-8 h-8 border-2 border-lime-500 border-t-transparent rounded-full"
+                          className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full"
                         />
                       ) : (
                         <>
@@ -3507,7 +3507,7 @@ const Dashboard = () => {
             <div className="mt-4 text-center">
               <h1 className="text-3xl font-bold text-white flex items-center justify-center gap-2">
                 {displayUser?.username}
-                <Zap className="w-5 h-5 text-lime-500 fill-lime-500" />
+                <Zap className="w-5 h-5 text-primary fill-primary" />
               </h1>
               <p className="text-slate-400 font-medium mt-1">
                 {displayUser?.tagline ||
@@ -3528,7 +3528,7 @@ const Dashboard = () => {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={() => setShowChatModal(true)}
-                    className="px-6 py-2 bg-gradient-to-r from-lime-500 to-green-500 text-black rounded-full font-bold hover:shadow-lg hover:shadow-lime-500/30 transition-all flex items-center gap-2"
+                    className="px-6 py-2 bg-gradient-to-r from-primary to-secondary text-black rounded-full font-bold hover:shadow-lg hover:shadow-primary/30 transition-all flex items-center gap-2"
                   >
                     <MessageSquare className="w-4 h-4" /> Message
                   </motion.button>
@@ -3539,7 +3539,7 @@ const Dashboard = () => {
                       onClick={() =>
                         handleConnect(viewedUser?._id || viewedUser?.id)
                       }
-                      className="px-6 py-2 bg-white/10 text-lime-400 rounded-full font-bold hover:bg-lime-500/20 transition-all flex items-center gap-2 border border-lime-500/50"
+                      className="px-6 py-2 bg-white/10 text-primary rounded-full font-bold hover:bg-primary/20 transition-all flex items-center gap-2 border border-primary/50"
                     >
                       <Users className="w-4 h-4" /> +Connect
                     </motion.button>
@@ -3563,7 +3563,7 @@ const Dashboard = () => {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               onClick={subscribeUserToPush}
-              className="px-4 py-2 bg-lime-500 text-black font-bold rounded-full flex items-center gap-2 hover:bg-lime-400 transition-colors shadow-lg"
+              className="px-4 py-2 bg-primary text-black font-bold rounded-full flex items-center gap-2 hover:bg-primary transition-colors shadow-lg"
             >
               <Bell className="w-4 h-4" /> Enable Push Notifications
             </motion.button>
@@ -3574,11 +3574,11 @@ const Dashboard = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="md:col-span-2 bg-[#1b1f23] border border-white/5 rounded-2xl p-6 h-[400px] flex flex-col"
+            className="md:col-span-2 bg-bg-card border border-white/5 rounded-2xl p-6 h-[400px] flex flex-col"
           >
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <Gamepad2 className="w-5 h-5 text-lime-500" />
+                <Gamepad2 className="w-5 h-5 text-primary" />
                 <h3 className="font-bold text-lg text-white">
                   Focus Game & Experience
                 </h3>
@@ -3589,7 +3589,7 @@ const Dashboard = () => {
                     setEditingGame(null);
                     setShowGameModal(true);
                   }}
-                  className="p-2 hover:bg-white/10 rounded-lg transition-colors text-lime-500"
+                  className="p-2 hover:bg-white/10 rounded-lg transition-colors text-primary"
                 >
                   <Plus className="w-5 h-5" />
                 </button>
@@ -3600,12 +3600,12 @@ const Dashboard = () => {
               <div className="flex flex-col h-full gap-4 overflow-hidden">
                 {/* Primary Game Box - Highlighted */}
                 {primaryGame && (
-                  <div className="bg-gradient-to-br from-lime-500/10 to-transparent border border-lime-500/50 rounded-xl p-4 flex items-center gap-4 relative group shrink-0">
+                  <div className="bg-gradient-to-br from-primary/10 to-transparent border border-primary/50 rounded-xl p-4 flex items-center gap-4 relative group shrink-0">
                     <div className="absolute top-2 right-2 opacity-100">
                       <Crown className="w-5 h-5 text-yellow-500 fill-yellow-500" />
                     </div>
                     {isOwnProfile && (
-                      <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-black/50 rounded-lg p-1 backdrop-blur-sm z-10">
+                      <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-bg-dark/50 rounded-lg p-1 backdrop-blur-sm z-10">
                         <button
                           onClick={() => {
                             setEditingGame(primaryGame);
@@ -3613,7 +3613,7 @@ const Dashboard = () => {
                           }}
                           className="p-1 hover:bg-white/20 rounded-md transition-colors"
                         >
-                          <Pencil className="w-3.5 h-3.5 text-lime-400" />
+                          <Pencil className="w-3.5 h-3.5 text-primary" />
                         </button>
                         <button
                           onClick={() => handleDeleteGame(primaryGame._id)}
@@ -3624,7 +3624,7 @@ const Dashboard = () => {
                       </div>
                     )}
 
-                    <div className="w-16 h-16 rounded-xl bg-black border-2 border-lime-500/30 flex items-center justify-center shadow-lg shadow-lime-500/10 overflow-hidden">
+                    <div className="w-16 h-16 rounded-xl bg-bg-dark border-2 border-primary/30 flex items-center justify-center shadow-lg shadow-primary/10 overflow-hidden">
                       <GameLogo
                         gameName={primaryGame.game}
                         supportedGames={supportedGames}
@@ -3635,7 +3635,7 @@ const Dashboard = () => {
                       <h4 className="text-xl font-bold text-white">
                         {primaryGame.game}
                       </h4>
-                      <p className="text-sm text-lime-400 font-medium mb-1">
+                      <p className="text-sm text-primary font-medium mb-1">
                         {primaryGame.role}
                       </p>
                       <div className="flex items-center gap-2 text-xs text-slate-400">
@@ -3682,7 +3682,7 @@ const Dashboard = () => {
                               </button>
                             </div>
                           )}
-                          <div className="w-10 h-10 rounded-lg bg-black/40 border border-white/10 flex items-center justify-center shrink-0 overflow-hidden">
+                          <div className="w-10 h-10 rounded-lg bg-bg-dark/40 border border-white/10 flex items-center justify-center shrink-0 overflow-hidden">
                             <GameLogo
                               gameName={game.game}
                               supportedGames={supportedGames}
@@ -3696,7 +3696,7 @@ const Dashboard = () => {
                             <div className="flex items-center gap-2 text-xs text-slate-500">
                               <span>{game.role}</span>
                               <span>•</span>
-                              <span className="text-lime-500/80">
+                              <span className="text-primary/80">
                                 {game.rank}
                               </span>
                             </div>
@@ -3723,7 +3723,7 @@ const Dashboard = () => {
                       setEditingGame(null);
                       setShowGameModal(true);
                     }}
-                    className="mt-4 px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm text-lime-500 transition-colors"
+                    className="mt-4 px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm text-primary transition-colors"
                   >
                     Add Your First Game
                   </button>
@@ -3737,10 +3737,10 @@ const Dashboard = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-[#1b1f23] border border-white/5 rounded-2xl p-6 h-[400px] flex flex-col"
+            className="bg-bg-card border border-white/5 rounded-2xl p-6 h-[400px] flex flex-col"
           >
             <div className="flex items-center gap-2 mb-6">
-              <Brain className="w-5 h-5 text-lime-500" />
+              <Brain className="w-5 h-5 text-primary" />
               <h3 className="font-bold text-lg text-white">Stats Graph</h3>
             </div>
 
@@ -3757,16 +3757,16 @@ const Dashboard = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-[#1b1f23] border border-white/5 rounded-2xl p-6 mb-6"
+          className="bg-bg-card border border-white/5 rounded-2xl p-6 mb-6"
         >
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-2">
-              <Users className="w-5 h-5 text-lime-500" />
+              <Users className="w-5 h-5 text-primary" />
               <h3 className="font-bold text-lg text-white">Connections</h3>
             </div>
             <button
               onClick={() => setShowConnectionsModal(true)}
-              className="text-xs text-lime-500 hover:underline bg-transparent border-none cursor-pointer"
+              className="text-xs text-primary hover:underline bg-transparent border-none cursor-pointer"
             >
               View All
             </button>
@@ -3780,7 +3780,7 @@ const Dashboard = () => {
                   onClick={() => navigate(`/dashboard/${conn.username}`)}
                   className="flex flex-col items-center min-w-[80px] group cursor-pointer"
                 >
-                  <div className="w-14 h-14 rounded-full bg-slate-800 border-2 border-slate-700 group-hover:border-lime-500 transition-colors mb-2 overflow-hidden">
+                  <div className="w-14 h-14 rounded-full bg-slate-800 border-2 border-slate-700 group-hover:border-primary transition-colors mb-2 overflow-hidden">
                     <Avatar
                       src={conn.avatar}
                       className="w-full h-full"
@@ -3931,21 +3931,21 @@ const Dashboard = () => {
           {/* Header Section */}
           <div className="flex flex-col items-center mb-8">
             {/* Feed Tabs */}
-            <div className="bg-black/40 backdrop-blur-md border border-white/10 rounded-2xl p-1.5 flex gap-1 shadow-2xl mb-8">
+            <div className="bg-bg-dark/40 backdrop-blur-md border border-white/10 rounded-2xl p-1.5 flex gap-1 shadow-2xl mb-8">
               {["professional", "casual"].map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setPostTab(tab)}
                   className={`relative px-8 py-3 rounded-xl text-sm font-bold transition-all duration-300 overflow-hidden ${
                     postTab === tab
-                      ? "text-black shadow-lg shadow-lime-500/25"
+                      ? "text-black shadow-lg shadow-primary/25"
                       : "text-slate-400 hover:text-white hover:bg-white/5"
                   }`}
                 >
                   {postTab === tab && (
                     <motion.div
                       layoutId="activeTab"
-                      className="absolute inset-0 bg-lime-500 rounded-xl"
+                      className="absolute inset-0 bg-primary rounded-xl"
                       initial={false}
                       transition={{
                         type: "spring",
@@ -3984,13 +3984,13 @@ const Dashboard = () => {
             {/* Navigation Arrows */}
             <button
               onClick={scrollPostsLeft}
-              className="absolute -left-2 md:-left-12 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-black/80 backdrop-blur-md border border-white/10 flex items-center justify-center text-white hover:bg-lime-500 hover:text-black transition-all opacity-0 group-hover:opacity-100 shadow-xl shadow-black/50"
+              className="absolute -left-2 md:-left-12 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-bg-dark/80 backdrop-blur-md border border-white/10 flex items-center justify-center text-white hover:bg-primary hover:text-black transition-all opacity-0 group-hover:opacity-100 shadow-xl shadow-black/50"
             >
               <ChevronLeft className="w-6 h-6" />
             </button>
             <button
               onClick={scrollPostsRight}
-              className="absolute -right-2 md:-right-12 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-black/80 backdrop-blur-md border border-white/10 flex items-center justify-center text-white hover:bg-lime-500 hover:text-black transition-all opacity-0 group-hover:opacity-100 shadow-xl shadow-black/50"
+              className="absolute -right-2 md:-right-12 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-bg-dark/80 backdrop-blur-md border border-white/10 flex items-center justify-center text-white hover:bg-primary hover:text-black transition-all opacity-0 group-hover:opacity-100 shadow-xl shadow-black/50"
             >
               <ChevronRight className="w-6 h-6" />
             </button>
@@ -4002,7 +4002,7 @@ const Dashboard = () => {
             >
               {postsLoading ? (
                 <div className="w-full flex justify-center py-20">
-                  <Loader2 className="w-10 h-10 text-lime-500 animate-spin" />
+                  <Loader2 className="w-10 h-10 text-primary animate-spin" />
                 </div>
               ) : posts.length > 0 ? (
                 posts.map((post) => (
@@ -4019,7 +4019,7 @@ const Dashboard = () => {
                   </div>
                 ))
               ) : (
-                <div className="w-full text-center py-20 text-slate-500 bg-[#1b1f23] border border-white/5 rounded-2xl mx-auto max-w-4xl">
+                <div className="w-full text-center py-20 text-slate-500 bg-bg-card border border-white/5 rounded-2xl mx-auto max-w-4xl">
                   <MessageSquare className="w-16 h-16 mx-auto mb-4 opacity-20" />
                   <p className="text-lg font-medium">
                     No posts yet in {postTab} feed.

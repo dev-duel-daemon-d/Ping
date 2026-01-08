@@ -17,10 +17,12 @@ import {
   Monitor
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 
 const Settings = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { mode, setMode, accentColor, changeAccentColor } = useTheme();
   const [activeTab, setActiveTab] = useState('account');
 
   // --- Mock State for UI Demo ---
@@ -48,10 +50,10 @@ const Settings = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-slate-200 font-sans selection:bg-lime-500/30">
+    <div className="min-h-screen bg-bg-dark text-slate-200 font-sans selection:bg-primary/30">
       
       {/* Header */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md border-b border-white/10 h-16">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-bg-dark/80 backdrop-blur-md border-b border-white/10 h-16">
         <div className="max-w-7xl mx-auto px-4 h-full flex items-center justify-between">
           <button 
             onClick={() => navigate('/dashboard')}
@@ -69,7 +71,7 @@ const Settings = () => {
         
         {/* Sidebar Navigation */}
         <aside className="w-full md:w-64 flex-shrink-0">
-          <div className="bg-[#1b1f23] border border-white/5 rounded-2xl p-4 sticky top-24">
+          <div className="bg-bg-card border border-white/5 rounded-2xl p-4 sticky top-24">
             <div className="space-y-2">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
@@ -80,7 +82,7 @@ const Settings = () => {
                     onClick={() => setActiveTab(tab.id)}
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                       isActive 
-                        ? 'bg-lime-500 text-black font-bold shadow-lg shadow-lime-500/20' 
+                        ? 'bg-primary text-black font-bold shadow-lg shadow-primary/20' 
                         : 'text-slate-400 hover:bg-white/5 hover:text-white'
                     }`}
                   >
@@ -110,7 +112,7 @@ const Settings = () => {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.3 }}
-            className="bg-[#1b1f23] border border-white/5 rounded-2xl p-6 md:p-8 min-h-[500px]"
+            className="bg-bg-card border border-white/5 rounded-2xl p-6 md:p-8 min-h-[500px]"
           >
             {/* --- Account Settings --- */}
             {activeTab === 'account' && (
@@ -128,7 +130,7 @@ const Settings = () => {
                       type="email" 
                       value={user?.email || ''} 
                       disabled 
-                      className="flex-1 bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-slate-400 cursor-not-allowed"
+                      className="flex-1 bg-bg-dark/30 border border-white/10 rounded-xl px-4 py-3 text-slate-400 cursor-not-allowed"
                     />
                     {/* Placeholder for future implementation */}
                     <button className="px-6 py-3 bg-white/5 text-white font-bold rounded-xl hover:bg-white/10 transition-colors border border-white/10">
@@ -179,7 +181,7 @@ const Settings = () => {
                 {/* Profile Visibility */}
                 <div className="space-y-4">
                   <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                    <Shield className="w-5 h-5 text-lime-500" /> Profile Visibility
+                    <Shield className="w-5 h-5 text-primary" /> Profile Visibility
                   </h3>
                   <div className="grid gap-3">
                     {['public', 'connections', 'private'].map((option) => (
@@ -187,7 +189,7 @@ const Settings = () => {
                         key={option}
                         className={`flex items-center p-4 border rounded-xl cursor-pointer transition-all ${
                           privacy.profileVisibility === option 
-                            ? 'bg-lime-500/10 border-lime-500' 
+                            ? 'bg-primary/10 border-primary' 
                             : 'bg-white/5 border-white/5 hover:bg-white/10'
                         }`}
                       >
@@ -200,10 +202,10 @@ const Settings = () => {
                           className="hidden"
                         />
                         <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center mr-4 ${
-                          privacy.profileVisibility === option ? 'border-lime-500' : 'border-slate-500'
+                          privacy.profileVisibility === option ? 'border-primary' : 'border-slate-500'
                         }`}>
                           {privacy.profileVisibility === option && (
-                            <div className="w-2.5 h-2.5 rounded-full bg-lime-500" />
+                            <div className="w-2.5 h-2.5 rounded-full bg-primary" />
                           )}
                         </div>
                         <div>
@@ -228,7 +230,7 @@ const Settings = () => {
                   <div 
                     onClick={() => setPrivacy({...privacy, onlineStatus: !privacy.onlineStatus})}
                     className={`w-14 h-8 rounded-full p-1 cursor-pointer transition-colors ${
-                      privacy.onlineStatus ? 'bg-lime-500' : 'bg-slate-700'
+                      privacy.onlineStatus ? 'bg-primary' : 'bg-slate-700'
                     }`}
                   >
                     <motion.div 
@@ -263,7 +265,7 @@ const Settings = () => {
                     <div 
                       onClick={() => setNotifications({...notifications, push: !notifications.push})}
                       className={`w-12 h-7 rounded-full p-1 cursor-pointer transition-colors ${
-                        notifications.push ? 'bg-lime-500' : 'bg-slate-700'
+                        notifications.push ? 'bg-primary' : 'bg-slate-700'
                       }`}
                     >
                       <motion.div 
@@ -287,7 +289,7 @@ const Settings = () => {
                     <div 
                       onClick={() => setNotifications({...notifications, email: !notifications.email})}
                       className={`w-12 h-7 rounded-full p-1 cursor-pointer transition-colors ${
-                        notifications.email ? 'bg-lime-500' : 'bg-slate-700'
+                        notifications.email ? 'bg-primary' : 'bg-slate-700'
                       }`}
                     >
                       <motion.div 
@@ -309,36 +311,57 @@ const Settings = () => {
                 </div>
 
                 <div className="space-y-6">
-                  <div className="grid grid-cols-3 gap-4">
-                    {['Dark', 'Light', 'System'].map((mode) => (
-                      <button 
-                        key={mode}
-                        className={`flex flex-col items-center justify-center gap-3 p-4 border rounded-2xl transition-all ${
-                          mode === 'Dark' 
-                            ? 'bg-white/10 border-lime-500 text-white' 
-                            : 'bg-white/5 border-white/5 text-slate-400 hover:bg-white/10'
-                        }`}
-                      >
-                        {mode === 'Dark' && <Moon className="w-6 h-6" />}
-                        {mode === 'Light' && <Sun className="w-6 h-6" />}
-                        {mode === 'System' && <Monitor className="w-6 h-6" />}
-                        <span className="font-bold text-sm">{mode}</span>
-                      </button>
-                    ))}
+                  <div>
+                    <h3 className="font-bold text-white mb-4">Color Mode</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                      {[
+                        { id: 'dark', label: 'Dark', icon: Moon },
+                        { id: 'light', label: 'Light', icon: Sun },
+                      ].map((item) => (
+                        <button 
+                          key={item.id}
+                          onClick={() => setMode(item.id)}
+                          className={`flex flex-col items-center justify-center gap-3 p-4 border rounded-2xl transition-all ${
+                            mode === item.id 
+                              ? 'bg-primary/10 border-primary text-white' 
+                              : 'bg-white/5 border-white/5 text-slate-400 hover:bg-white/10'
+                          }`}
+                          style={{
+                            borderColor: mode === item.id ? accentColor : '',
+                            backgroundColor: mode === item.id ? `${accentColor}15` : ''
+                          }}
+                        >
+                          <item.icon className="w-6 h-6" style={{ color: mode === item.id ? accentColor : '' }} />
+                          <span className="font-bold text-sm">{item.label}</span>
+                        </button>
+                      ))}
+                    </div>
                   </div>
 
                   <div>
                     <h3 className="font-bold text-white mb-4">Accent Color</h3>
-                    <div className="flex gap-4">
-                      {['#84cc16', '#0ea5e9', '#d946ef', '#f97316', '#ef4444'].map((color) => (
-                        <button
-                          key={color}
-                          className="w-10 h-10 rounded-full border-2 border-transparent hover:scale-110 transition-transform"
-                          style={{ 
-                            backgroundColor: color,
-                            borderColor: color === '#84cc16' ? 'white' : 'transparent' // Mock selection
-                          }}
-                        />
+                    <div className="flex flex-wrap gap-4">
+                      {[
+                        { name: 'Lime', hex: '#84cc16' },
+                        { name: 'Sky', hex: '#0ea5e9' },
+                        { name: 'Purple', hex: '#d946ef' },
+                        { name: 'Orange', hex: '#f97316' },
+                        { name: 'Red', hex: '#ef4444' },
+                        { name: 'Cyan', hex: '#06b6d4' },
+                        { name: 'Rose', hex: '#f43f5e' }
+                      ].map((color) => (
+                        <div key={color.hex} className="flex flex-col items-center gap-2">
+                          <button
+                            onClick={() => changeAccentColor(color.hex)}
+                            className="w-12 h-12 rounded-full border-4 transition-all hover:scale-110"
+                            style={{ 
+                              backgroundColor: color.hex,
+                              borderColor: accentColor === color.hex ? 'white' : 'transparent',
+                              boxShadow: accentColor === color.hex ? `0 0 15px ${color.hex}` : 'none'
+                            }}
+                          />
+                          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{color.name}</span>
+                        </div>
                       ))}
                     </div>
                   </div>
