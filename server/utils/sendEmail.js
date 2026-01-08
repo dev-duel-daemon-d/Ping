@@ -2,7 +2,7 @@ import nodemailer from "nodemailer";
 
 export const sendEmail = async ({ email, subject, html }) => {
   try {
-    const port = parseInt(process.env.SMTP_PORT || "587");
+    const port = parseInt(process.env.SMTP_PORT || "2525");
     // const secure = port === 465;
 
     // Create a transporter using environment variables
