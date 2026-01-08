@@ -1,8 +1,11 @@
 import React from 'react';
 import { Menu, MenuItem, Typography, Avatar, Button } from '@mui/material';
 import { Check } from 'lucide-react';
+import { useTheme } from '../../context/ThemeContext';
 
 const NotificationMenu = ({ anchorEl, open, onClose, notifications, onAccept, onMarkRead, onOpenChat }) => {
+  const { accentColor } = useTheme();
+
   // Group message notifications by sender - only show unread
   const groupedNotifications = React.useMemo(() => {
     const messagesByUser = new Map();
@@ -81,11 +84,14 @@ const NotificationMenu = ({ anchorEl, open, onClose, notifications, onAccept, on
           >
             <div className="flex items-center gap-3 w-full">
               <div className="relative">
-                <Avatar src={notif.sender?.avatar} className="w-10 h-10 border border-lime-500/30">
+                <Avatar src={notif.sender?.avatar} className="w-10 h-10 border border-primary/30">
                   {notif.sender?.username?.[0]}
                 </Avatar>
                 {notif.isGrouped && notif.count > 1 && (
-                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-lime-500 rounded-full flex items-center justify-center">
+                  <div
+                    className="absolute -top-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center"
+                    style={{ backgroundColor: accentColor }}
+                  >
                     <span className="text-[10px] font-bold text-black">{notif.count}</span>
                   </div>
                 )}
@@ -117,7 +123,14 @@ const NotificationMenu = ({ anchorEl, open, onClose, notifications, onAccept, on
                     e.stopPropagation();
                     onAccept(notif.relatedId, notif._id);
                   }}
-                  sx={{ bgcolor: '#84cc16', color: 'black', '&:hover': { bgcolor: '#65a30d' } }}
+                  sx={{
+                    bgcolor: accentColor,
+                    color: 'black',
+                    '&:hover': {
+                      bgcolor: accentColor,
+                      opacity: 0.85
+                    }
+                  }}
                 >
                   Accept
                 </Button>

@@ -3,12 +3,21 @@ import { useNavigate } from 'react-router-dom';
 import { Menu, MenuItem } from '@mui/material';
 import { Settings, Users, LogOut } from 'lucide-react';
 
-const ProfileMenu = ({ anchorEl, open, onClose, onLogout }) => {
+const ProfileMenu = ({ anchorEl, open, onClose, onLogout, onEditProfile }) => {
   const navigate = useNavigate();
+
+  const handleEditProfile = () => {
+    if (onEditProfile) {
+      onEditProfile();
+    } else {
+      navigate('/dashboard');
+    }
+    onClose();
+  };
 
   const menuItems = [
     { icon: <Settings className="w-4 h-4" />, label: "Settings", action: () => { navigate('/settings'); onClose(); } },
-    { icon: <Users className="w-4 h-4" />, label: "Edit Profile", action: () => { navigate('/edit-profile'); onClose(); } },
+    { icon: <Users className="w-4 h-4" />, label: "Edit Profile", action: handleEditProfile },
     { icon: <LogOut className="w-4 h-4" />, label: "Logout", action: onLogout, danger: true },
   ];
 

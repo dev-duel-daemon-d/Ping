@@ -70,6 +70,7 @@ import {
   postService, // Add postService
 } from "../services/api";
 import { subscribeUserToPush } from "../utils/pushNotifications";
+import Navbar from "../components/navigation/Navbar";
 
 // --- Custom Icons for Socials ---
 const DiscordIcon = ({ className }) => (
@@ -1313,11 +1314,10 @@ const ChatModal = ({ open, onClose, recipient, currentUser }) => {
                     className={`flex ${isMine(msg) ? "justify-end" : "justify-start"}`}
                   >
                     <div
-                      className={`max-w-[75%] px-4 py-2.5 rounded-2xl ${
-                        isMine(msg)
-                          ? "bg-gradient-to-r from-primary to-secondary text-black rounded-br-md"
-                          : "bg-white/10 text-white rounded-bl-md"
-                      }`}
+                      className={`max-w-[75%] px-4 py-2.5 rounded-2xl ${isMine(msg)
+                        ? "bg-gradient-to-r from-primary to-secondary text-black rounded-br-md"
+                        : "bg-white/10 text-white rounded-bl-md"
+                        }`}
                     >
                       <p className="text-sm leading-relaxed">{msg.content}</p>
                       <p
@@ -1489,7 +1489,8 @@ const FindModal = ({ open, onClose, onConnect, connections = [] }) => {
 
 const NavigationDialog = ({ open, onClose }) => {
   const navItems = [
-    { name: "Home", path: "/" },
+    { name: "Feed", path: "/feed" },
+    { name: "Dashboard", path: "/dashboard" },
     { name: "Contests", path: "/contests" },
     { name: "Premium", path: "/premium" },
     { name: "Teams", path: "/teams" },
@@ -1615,7 +1616,10 @@ const ProfileMenu = ({ anchorEl, open, onClose, onLogout, onEditProfile }) => {
   );
 };
 
-const Navbar = ({ user, logout, onConnectionUpdate, onOpenChat, onEditProfile }) => {
+// NOTE: Local navigation components below are UNUSED. 
+// The Dashboard now uses the shared Navbar from "../components/navigation/Navbar"
+
+const _LocalNavbar_UNUSED = ({ user, logout, onConnectionUpdate, onOpenChat, onEditProfile }) => {
   const [notifications, setNotifications] = useState([]);
   const [notifAnchorEl, setNotifAnchorEl] = useState(null);
   const [profileAnchorEl, setProfileAnchorEl] = useState(null);
@@ -2907,7 +2911,7 @@ const EditProfileModal = ({ open, onClose, user, onSave }) => {
             {error}
           </div>
         )}
-        
+
         <div>
           <label className="block text-sm font-medium text-slate-400 mb-2">
             Username
@@ -3348,7 +3352,7 @@ const Dashboard = () => {
       // But for now, a reload ensures everything (including token claims if any) matches, 
       // though typically a reload isn't needed if we update the context.
       // Assuming useAuth provides a way to update user or we just reload.
-      window.location.reload(); 
+      window.location.reload();
     } catch (error) {
       console.error("Failed to save profile", error);
       throw error; // Re-throw for modal to handle
@@ -3659,58 +3663,58 @@ const Dashboard = () => {
                 <div className="flex-1 overflow-y-auto custom-scrollbar space-y-3 pr-2">
                   {secondaryGames.length > 0
                     ? secondaryGames.map((game) => (
-                        <div
-                          key={game._id}
-                          className="bg-white/5 border border-white/5 rounded-xl p-3 flex items-center gap-3 hover:bg-white/10 transition-colors group relative"
-                        >
-                          {isOwnProfile && (
-                            <div className="absolute right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                              <button
-                                onClick={() => {
-                                  setEditingGame(game);
-                                  setShowGameModal(true);
-                                }}
-                                className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
-                              >
-                                <Pencil className="w-3.5 h-3.5 text-slate-400 hover:text-white" />
-                              </button>
-                              <button
-                                onClick={() => handleDeleteGame(game._id)}
-                                className="p-1.5 hover:bg-red-500/20 rounded-lg transition-colors"
-                              >
-                                <Trash2 className="w-3.5 h-3.5 text-slate-400 hover:text-red-500" />
-                              </button>
-                            </div>
-                          )}
-                          <div className="w-10 h-10 rounded-lg bg-bg-dark/40 border border-white/10 flex items-center justify-center shrink-0 overflow-hidden">
-                            <GameLogo
-                              gameName={game.game}
-                              supportedGames={supportedGames}
-                              className="w-full h-full p-1.5"
-                            />
+                      <div
+                        key={game._id}
+                        className="bg-white/5 border border-white/5 rounded-xl p-3 flex items-center gap-3 hover:bg-white/10 transition-colors group relative"
+                      >
+                        {isOwnProfile && (
+                          <div className="absolute right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button
+                              onClick={() => {
+                                setEditingGame(game);
+                                setShowGameModal(true);
+                              }}
+                              className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
+                            >
+                              <Pencil className="w-3.5 h-3.5 text-slate-400 hover:text-white" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteGame(game._id)}
+                              className="p-1.5 hover:bg-red-500/20 rounded-lg transition-colors"
+                            >
+                              <Trash2 className="w-3.5 h-3.5 text-slate-400 hover:text-red-500" />
+                            </button>
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <h4 className="font-bold text-slate-200 text-sm truncate">
-                              {game.game}
-                            </h4>
-                            <div className="flex items-center gap-2 text-xs text-slate-500">
-                              <span>{game.role}</span>
-                              <span>•</span>
-                              <span className="text-primary/80">
-                                {game.rank}
-                              </span>
-                            </div>
+                        )}
+                        <div className="w-10 h-10 rounded-lg bg-bg-dark/40 border border-white/10 flex items-center justify-center shrink-0 overflow-hidden">
+                          <GameLogo
+                            gameName={game.game}
+                            supportedGames={supportedGames}
+                            className="w-full h-full p-1.5"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-bold text-slate-200 text-sm truncate">
+                            {game.game}
+                          </h4>
+                          <div className="flex items-center gap-2 text-xs text-slate-500">
+                            <span>{game.role}</span>
+                            <span>•</span>
+                            <span className="text-primary/80">
+                              {game.rank}
+                            </span>
                           </div>
                         </div>
-                      ))
+                      </div>
+                    ))
                     : !primaryGame && (
-                        <div className="flex flex-col items-center justify-center h-full text-slate-500 text-sm">
-                          <p>No games added yet.</p>
-                          {isOwnProfile && (
-                            <p>Click the + button to add your experience.</p>
-                          )}
-                        </div>
-                      )}
+                      <div className="flex flex-col items-center justify-center h-full text-slate-500 text-sm">
+                        <p>No games added yet.</p>
+                        {isOwnProfile && (
+                          <p>Click the + button to add your experience.</p>
+                        )}
+                      </div>
+                    )}
                 </div>
               </div>
             ) : (
@@ -3936,11 +3940,10 @@ const Dashboard = () => {
                 <button
                   key={tab}
                   onClick={() => setPostTab(tab)}
-                  className={`relative px-8 py-3 rounded-xl text-sm font-bold transition-all duration-300 overflow-hidden ${
-                    postTab === tab
-                      ? "text-black shadow-lg shadow-primary/25"
-                      : "text-slate-400 hover:text-white hover:bg-white/5"
-                  }`}
+                  className={`relative px-8 py-3 rounded-xl text-sm font-bold transition-all duration-300 overflow-hidden ${postTab === tab
+                    ? "text-black shadow-lg shadow-primary/25"
+                    : "text-slate-400 hover:text-white hover:bg-white/5"
+                    }`}
                 >
                   {postTab === tab && (
                     <motion.div
