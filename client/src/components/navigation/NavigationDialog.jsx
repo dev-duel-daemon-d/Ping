@@ -6,7 +6,8 @@ import { X } from 'lucide-react';
 
 const NavigationDialog = ({ open, onClose }) => {
   const navItems = [
-    { name: "Home", path: "/" },
+    { name: "Feed", path: "/feed" },
+    { name: "Dashboard", path: "/dashboard" },
     { name: "Contests", path: "/contests" },
     { name: "Premium", path: "/premium" },
     { name: "Teams", path: "/teams" },

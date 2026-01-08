@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { 
-  Heart, 
-  MessageSquare, 
-  Share2, 
-  MoreVertical, 
+import {
+  Heart,
+  MessageSquare,
+  Share2,
+  MoreVertical,
   Trash2,
   Send,
   Loader2,
@@ -34,7 +34,7 @@ const PostCard = ({ post, onDelete }) => {
   const handleLike = async () => {
     const prevLikes = [...likes];
     const userId = user._id || user.id;
-    
+
     if (isLiked) {
       setLikes(likes.filter(id => id !== userId));
     } else {
@@ -86,8 +86,8 @@ const PostCard = ({ post, onDelete }) => {
   };
 
   return (
-    <div className="bg-[#1b1f23]/60 backdrop-blur-md rounded-2xl border border-white/5 overflow-hidden mb-6 flex flex-col relative group hover:border-lime-500/20 transition-all duration-300 shadow-xl shadow-black/20 h-[520px]">
-      
+    <div className="bg-[#1b1f23]/60 backdrop-blur-md rounded-2xl border border-white/5 overflow-hidden mb-6 flex flex-col relative group hover:border-lime-500/20 transition-all duration-300 shadow-xl shadow-black/20">
+
       {/* Type Indicator Strip */}
       {post.type === 'professional' && (
         <div className="absolute top-0 left-0 bottom-0 w-1 bg-gradient-to-b from-lime-500 to-transparent opacity-50" />
@@ -98,8 +98,8 @@ const PostCard = ({ post, onDelete }) => {
         <div className="flex gap-4">
           <Link to={`/dashboard/${post.author.username}`}>
             <div className="relative">
-              <Avatar 
-                src={post.author.avatar} 
+              <Avatar
+                src={post.author.avatar}
                 className="w-12 h-12 border-2 border-white/10 group-hover:border-lime-500/50 transition-colors shadow-lg"
               >
                 {post.author.username?.[0]?.toUpperCase()}
@@ -113,7 +113,7 @@ const PostCard = ({ post, onDelete }) => {
               )}
             </div>
           </Link>
-          
+
           <div className="min-w-0">
             <div className="flex items-center gap-2">
               <Link to={`/dashboard/${post.author.username}`} className="font-bold text-slate-100 text-base hover:text-lime-400 transition-colors truncate block">
@@ -134,7 +134,7 @@ const PostCard = ({ post, onDelete }) => {
 
         {isAuthor && (
           <div className="relative z-10 shrink-0">
-            <button 
+            <button
               onClick={(e) => setAnchorEl(e.currentTarget)}
               className="text-slate-500 hover:text-white p-2 rounded-xl hover:bg-white/5 transition-colors"
             >
@@ -165,61 +165,54 @@ const PostCard = ({ post, onDelete }) => {
       {/* Post Content */}
       <div className="px-5 pb-3 shrink-0">
         {post.content && (
-          <p className="text-slate-200 leading-relaxed text-[15px] line-clamp-2 min-h-[3rem]">
+          <p className="text-slate-200 leading-relaxed text-[15px]">
             {post.content}
           </p>
         )}
       </div>
 
-      {/* Media - Fixed aspect ratio area */}
-      <div 
-        className="flex-1 bg-black/40 relative overflow-hidden flex items-center justify-center border-y border-white/5 cursor-pointer"
-        onClick={() => post.media && setShowImageModal(true)}
-      >
-        {post.media ? (
-          <>
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-10" />
-            <img 
-              src={post.media} 
-              alt="Post content" 
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-            />
-          </>
-        ) : (
-          <div className="flex flex-col items-center gap-3 opacity-10">
-             <Gamepad2 size={64} />
-             <span className="text-sm font-bold uppercase tracking-widest">Ping</span>
-          </div>
-        )}
-      </div>
+      {/* Media - Only show if media exists */}
+      {post.media && (
+        <div
+          className="bg-black/40 relative overflow-hidden flex items-center justify-center border-y border-white/5 cursor-pointer max-h-[400px]"
+          onClick={() => setShowImageModal(true)}
+        >
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-10" />
+          <img
+            src={post.media}
+            alt="Post content"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        </div>
+      )}
 
-      <ImageModal 
-        isOpen={showImageModal} 
-        onClose={() => setShowImageModal(false)} 
-        imageSrc={post.media} 
+      <ImageModal
+        isOpen={showImageModal}
+        onClose={() => setShowImageModal(false)}
+        imageSrc={post.media}
       />
 
       {/* Post Actions */}
       <div className="px-5 py-4 flex items-center justify-between shrink-0">
         <div className="flex gap-6">
-          <motion.button 
+          <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={handleLike}
             className={`flex items-center gap-2 text-sm font-medium transition-colors ${isLiked ? 'text-red-500' : 'text-slate-400 hover:text-red-400'}`}
           >
-            <Heart className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} strokeWidth={2} /> 
+            <Heart className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} strokeWidth={2} />
             <span>{likes.length}</span>
           </motion.button>
-          
-          <button 
+
+          <button
             onClick={() => setShowComments(!showComments)}
             className={`flex items-center gap-2 text-sm font-medium transition-colors ${showComments ? 'text-lime-500' : 'text-slate-400 hover:text-lime-400'}`}
           >
-            <MessageSquare className="w-5 h-5" strokeWidth={2} /> 
+            <MessageSquare className="w-5 h-5" strokeWidth={2} />
             <span>{comments.length}</span>
           </button>
         </div>
-        
+
         <button className="text-slate-400 hover:text-white transition-colors">
           <Share2 className="w-5 h-5" strokeWidth={2} />
         </button>
@@ -228,7 +221,7 @@ const PostCard = ({ post, onDelete }) => {
       {/* Comments Section Overlay - to maintain card height */}
       <AnimatePresence>
         {showComments && (
-          <motion.div 
+          <motion.div
             initial={{ y: "100%", opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: "100%", opacity: 0 }}
@@ -236,13 +229,13 @@ const PostCard = ({ post, onDelete }) => {
             className="absolute inset-0 z-20 bg-[#1b1f23] flex flex-col"
           >
             <div className="p-4 border-b border-white/10 flex items-center justify-between">
-               <h4 className="font-bold text-sm text-white flex items-center gap-2">
-                  <MessageSquare size={16} className="text-lime-500" />
-                  Comments
-               </h4>
-               <button onClick={() => setShowComments(false)} className="text-slate-500 hover:text-white transition-colors">
-                  <X size={20} />
-               </button>
+              <h4 className="font-bold text-sm text-white flex items-center gap-2">
+                <MessageSquare size={16} className="text-lime-500" />
+                Comments
+              </h4>
+              <button onClick={() => setShowComments(false)} className="text-slate-500 hover:text-white transition-colors">
+                <X size={20} />
+              </button>
             </div>
 
             <div className="flex-1 p-5 overflow-y-auto custom-scrollbar">
@@ -255,8 +248,8 @@ const PostCard = ({ post, onDelete }) => {
                 ) : (
                   comments.map((comment) => (
                     <div key={comment._id} className="flex gap-3 group/comment">
-                      <Avatar 
-                        src={comment.user?.avatar} 
+                      <Avatar
+                        src={comment.user?.avatar}
                         className="w-8 h-8 border border-white/10 shrink-0"
                       >
                         {comment.user?.username?.[0]?.toUpperCase()}
@@ -269,9 +262,9 @@ const PostCard = ({ post, onDelete }) => {
                           </div>
                           <p className="text-sm text-slate-300 leading-relaxed break-words">{comment.text}</p>
                         </div>
-                        
+
                         {user && (comment.user?._id === user._id || comment.user?._id === user.id) && (
-                          <button 
+                          <button
                             onClick={() => handleDeleteComment(comment._id)}
                             className="text-[10px] text-slate-500 hover:text-red-400 ml-2 mt-1 opacity-0 group-hover/comment:opacity-100 transition-opacity font-medium"
                           >
@@ -287,8 +280,8 @@ const PostCard = ({ post, onDelete }) => {
 
             {/* Add Comment Input */}
             <form onSubmit={handleComment} className="p-4 border-t border-white/5 bg-black/20 flex gap-3 items-center shrink-0">
-              <Avatar 
-                src={user?.avatar} 
+              <Avatar
+                src={user?.avatar}
                 className="w-8 h-8 border border-lime-500/20"
               >
                 {user?.username?.[0]?.toUpperCase()}
@@ -301,7 +294,7 @@ const PostCard = ({ post, onDelete }) => {
                   placeholder="Write a comment..."
                   className="w-full bg-[#1b1f23] border border-white/10 rounded-xl pl-4 pr-12 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-lime-500/50 transition-all"
                 />
-                <button 
+                <button
                   type="submit"
                   disabled={!newComment.trim() || commenting}
                   className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 bg-lime-500 rounded-lg text-black disabled:opacity-50 disabled:bg-transparent disabled:text-slate-600 hover:bg-lime-400 transition-all"

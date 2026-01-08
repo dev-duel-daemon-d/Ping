@@ -8,7 +8,7 @@ import NotificationMenu from './NotificationMenu';
 import ProfileMenu from './ProfileMenu';
 import NavigationDialog from './NavigationDialog';
 
-const Navbar = ({ user, logout, onConnectionUpdate, onOpenChat }) => {
+const Navbar = ({ user, logout, onConnectionUpdate, onOpenChat, onEditProfile }) => {
   const [notifications, setNotifications] = useState([]);
   const [notifAnchorEl, setNotifAnchorEl] = useState(null);
   const [profileAnchorEl, setProfileAnchorEl] = useState(null);
@@ -223,6 +223,7 @@ const Navbar = ({ user, logout, onConnectionUpdate, onOpenChat }) => {
         open={Boolean(profileAnchorEl)}
         onClose={() => setProfileAnchorEl(null)}
         onLogout={handleLogout}
+        onEditProfile={onEditProfile}
       />
 
       {/* Navigation Dialog */}
