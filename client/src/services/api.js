@@ -137,4 +137,10 @@ export const postService = {
     deleteComment: (id, commentId) => api.delete(`/posts/${id}/comment/${commentId}`),
 }
 
+export const enchantmentService = {
+    toggle: (userId) => api.post(`/enchantments/${userId}`),
+    getStatus: (userId) => api.get(`/enchantments/${userId}/status`),
+    getCount: (userId) => api.get(`/enchantments/${userId}/count`),
+}
+
 export default api

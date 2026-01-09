@@ -44,6 +44,7 @@ import {
   ChevronDown,
   Loader2,
   Clock,
+  Sparkles,
 } from "lucide-react";
 import {
   Avatar,
@@ -68,9 +69,11 @@ import {
   profileService,
   gameService,
   postService, // Add postService
+  enchantmentService,
 } from "../services/api";
 import { subscribeUserToPush } from "../utils/pushNotifications";
 import Navbar from "../components/navigation/Navbar";
+import EnchantmentBubble from "../components/EnchantmentBubble";
 
 // --- Custom Icons for Socials ---
 const DiscordIcon = ({ className }) => (
@@ -2873,6 +2876,9 @@ const EditProfileModal = ({ open, onClose, user, onSave }) => {
     username: "",
     tagline: "",
     bio: "",
+    location: "",
+    phoneNumber: "",
+    languages: [],
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -2883,6 +2889,9 @@ const EditProfileModal = ({ open, onClose, user, onSave }) => {
         username: user.username || "",
         tagline: user.tagline || "",
         bio: user.bio || "",
+        location: user.location || "",
+        phoneNumber: user.phoneNumber || "",
+        languages: user.languages || [],
       });
     }
   }, [user, open]);
@@ -2961,6 +2970,57 @@ const EditProfileModal = ({ open, onClose, user, onSave }) => {
           <div className="text-right text-xs text-slate-500 mt-1">
             {formData.bio.length}/160
           </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-400 mb-2">
+            Location
+          </label>
+          <input
+            type="text"
+            value={formData.location}
+            onChange={(e) =>
+              setFormData({ ...formData, location: e.target.value })
+            }
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-primary/50"
+            placeholder="e.g. Los Angeles, CA"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-400 mb-2">
+            Phone Number
+          </label>
+          <input
+            type="tel"
+            value={formData.phoneNumber}
+            onChange={(e) =>
+              setFormData({ ...formData, phoneNumber: e.target.value })
+            }
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-primary/50"
+            placeholder="e.g. +1 (555) 123-4567"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-400 mb-2">
+            Languages (comma-separated)
+          </label>
+          <input
+            type="text"
+            value={formData.languages.join(", ")}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                languages: e.target.value
+                  .split(",")
+                  .map((lang) => lang.trim())
+                  .filter((lang) => lang.length > 0),
+              })
+            }
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-primary/50"
+            placeholder="e.g. English, Spanish, French"
+          />
         </div>
 
         <div className="flex gap-3 justify-end pt-4">
@@ -3050,6 +3110,11 @@ const Dashboard = () => {
 
   // Copy feedback state
   const [copiedField, setCopiedField] = useState(null);
+
+  // Enchantment state
+  const [hasEnchanted, setHasEnchanted] = useState(false);
+  const [enchantmentCount, setEnchantmentCount] = useState(0);
+  const [enchantmentLoading, setEnchantmentLoading] = useState(false);
 
   // Determine if viewing own profile or another user's
   const isOwnProfile = !viewedUsername || viewedUsername === user?.username;
@@ -3153,6 +3218,73 @@ const Dashboard = () => {
       console.error("Connection request failed", error);
     }
   };
+
+  // Enchantment functions
+  const fetchEnchantmentStatus = async (userId) => {
+    if (!userId) return;
+    try {
+      const res = await enchantmentService.getStatus(userId);
+      setHasEnchanted(res.data.hasEnchanted);
+      setEnchantmentCount(res.data.count);
+    } catch (error) {
+      console.error("Failed to fetch enchantment status", error);
+    }
+  };
+
+  const handleEnchantToggle = async () => {
+    const targetId = viewedUser?._id || viewedUser?.id;
+    if (!targetId || enchantmentLoading) return;
+
+    setEnchantmentLoading(true);
+    try {
+      const res = await enchantmentService.toggle(targetId);
+      setHasEnchanted(res.data.hasEnchanted);
+      setEnchantmentCount(res.data.count);
+    } catch (error) {
+      console.error("Failed to toggle enchantment", error);
+    }
+    setEnchantmentLoading(false);
+  };
+
+  // Fetch enchantment status when viewing another user's profile
+  // For own profile, just show the count (can't enchant self)
+  React.useEffect(() => {
+    if (!isOwnProfile && viewedUser) {
+      const userId = viewedUser._id || viewedUser.id;
+      fetchEnchantmentStatus(userId);
+      // Also get the count from the user object if available
+      if (viewedUser.enchantmentCount !== undefined) {
+        setEnchantmentCount(viewedUser.enchantmentCount);
+      }
+    } else if (isOwnProfile) {
+      // For own profile, show the current user's enchantment count
+      setHasEnchanted(false); // Can't enchant self
+      // Use displayUser to get the count (works for both user and refreshed data)
+      const ownCount = displayUser?.enchantmentCount || user?.enchantmentCount || 0;
+      setEnchantmentCount(ownCount);
+    }
+  }, [viewedUser, isOwnProfile, user, displayUser]);
+
+  // Listen for real-time enchantment updates via socket
+  const { socket } = useSocket();
+  React.useEffect(() => {
+    if (!socket) return;
+
+    const handleEnchantmentUpdate = (data) => {
+      // Check if the update is for the currently displayed user OR for own profile
+      const currentUserId = displayUser?._id || displayUser?.id;
+      const ownUserId = user?._id || user?.id;
+      if (data.userId === currentUserId || (isOwnProfile && data.userId === ownUserId)) {
+        setEnchantmentCount(data.count);
+      }
+    };
+
+    socket.on("enchantment:update", handleEnchantmentUpdate);
+
+    return () => {
+      socket.off("enchantment:update", handleEnchantmentUpdate);
+    };
+  }, [socket, displayUser, user, isOwnProfile]);
 
   // Fetch profile data (teams, tournaments, setup)
   const fetchProfileData = async () => {
@@ -3467,6 +3599,10 @@ const Dashboard = () => {
                 >
                   {displayUser?.username?.charAt(0).toUpperCase()}
                 </Avatar>
+
+                {/* Enchantment Bubble - displays to the right of avatar */}
+                <EnchantmentBubble count={enchantmentCount} />
+
                 {/* Upload avatar button - only show for own profile */}
                 {isOwnProfile && (
                   <div className="absolute inset-0 flex items-center justify-center bg-bg-dark/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-full">
@@ -3536,6 +3672,23 @@ const Dashboard = () => {
                   >
                     <MessageSquare className="w-4 h-4" /> Message
                   </motion.button>
+
+                  {/* Enchant Button */}
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={handleEnchantToggle}
+                    disabled={enchantmentLoading}
+                    className={`px-6 py-2 rounded-full font-bold transition-all flex items-center gap-2 border disabled:opacity-50
+                      ${hasEnchanted
+                        ? "bg-primary/20 text-primary border-primary"
+                        : "bg-white/10 text-white border-white/20 hover:border-primary/50 hover:text-primary"
+                      }`}
+                  >
+                    <Sparkles className={`w-4 h-4 ${hasEnchanted ? "fill-primary" : ""}`} />
+                    {enchantmentLoading ? "..." : hasEnchanted ? "Enchanted ✓" : "Enchant"}
+                  </motion.button>
+
                   {!isConnected && (
                     <motion.button
                       whileHover={{ scale: 1.05 }}
