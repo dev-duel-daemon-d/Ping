@@ -23,6 +23,7 @@ const userResponse = (user) => ({
     gamingAccounts: user.gamingAccounts,
     status: user.status,
     lastSeen: user.lastSeen,
+    hasPassword: !!user.password,
 })
 
 // @route   POST /api/auth/google

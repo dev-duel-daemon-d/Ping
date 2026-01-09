@@ -20,6 +20,7 @@ const userResponse = (user) => ({
     gamingAccounts: user.gamingAccounts,
     status: user.status,
     lastSeen: user.lastSeen,
+    hasPassword: !!user.password,
 })
 
 // @route   GET /api/users/explore
@@ -147,6 +148,46 @@ router.put(
             }
         } catch (error) {
             console.error('Update profile error:', error)
+            res.status(500).json({ message: 'Server error' })
+        }
+    }
+)
+
+// @route   PUT /api/users/change-password
+// @desc    Change user password
+// @access  Private
+router.put(
+    '/change-password',
+    [
+        protect,
+        body('newPassword').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
+        validate,
+    ],
+    async (req, res) => {
+        try {
+            const user = await User.findById(req.user._id)
+
+            if (user) {
+                // If user has a password, verify current password
+                if (user.password) {
+                    if (!req.body.currentPassword) {
+                        return res.status(400).json({ message: 'Current password is required' })
+                    }
+                    const isMatch = await user.matchPassword(req.body.currentPassword)
+                    if (!isMatch) {
+                        return res.status(400).json({ message: 'Invalid current password' })
+                    }
+                }
+
+                user.password = req.body.newPassword
+                const updatedUser = await user.save()
+                
+                res.json({ message: 'Password updated successfully', user: userResponse(updatedUser) })
+            } else {
+                res.status(404).json({ message: 'User not found' })
+            }
+        } catch (error) {
+            console.error('Change password error:', error)
             res.status(500).json({ message: 'Server error' })
         }
     }

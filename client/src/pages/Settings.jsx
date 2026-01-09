@@ -28,6 +28,16 @@ const Settings = () => {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [deleting, setDeleting] = useState(false);
 
+  // Password State
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
+  const [passwordError, setPasswordError] = useState('');
+  const [passwordSuccess, setPasswordSuccess] = useState('');
+  const [passwordLoading, setPasswordLoading] = useState(false);
+
   useEffect(() => {
     const handleMouseMove = (e) => {
       setMousePos({ x: e.clientX, y: e.clientY });
@@ -39,6 +49,36 @@ const Settings = () => {
       window.removeEventListener("mousemove", handleMouseMove);
     };
   }, []);
+
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    setPasswordError('');
+    setPasswordSuccess('');
+
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      setPasswordError("New passwords don't match");
+      return;
+    }
+
+    if (passwordData.newPassword.length < 6) {
+      setPasswordError("Password must be at least 6 characters");
+      return;
+    }
+
+    setPasswordLoading(true);
+    try {
+      await userService.changePassword({
+        currentPassword: passwordData.currentPassword,
+        newPassword: passwordData.newPassword
+      });
+      setPasswordSuccess("Password updated successfully");
+      setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+    } catch (err) {
+      setPasswordError(err.response?.data?.message || "Failed to update password");
+    } finally {
+      setPasswordLoading(false);
+    }
+  };
 
   const handleDeleteAccount = async () => {
     if (window.confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
@@ -184,9 +224,55 @@ const Settings = () => {
                   <p className="text-sm text-slate-400 mb-4">
                     Change your password regularly to keep your account secure.
                   </p>
-                  <button className="px-6 py-3 bg-white/5 text-white font-bold rounded-xl hover:bg-white/10 transition-colors border border-white/10">
-                    Update Password
-                  </button>
+                  
+                  {passwordError && (
+                    <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-400 rounded-lg text-sm">
+                      {passwordError}
+                    </div>
+                  )}
+                  {passwordSuccess && (
+                    <div className="p-3 bg-green-500/10 border border-green-500/20 text-green-500 rounded-lg text-sm">
+                      {passwordSuccess}
+                    </div>
+                  )}
+
+                  <form onSubmit={handlePasswordChange} className="space-y-4 max-w-md">
+                    {user?.hasPassword && (
+                      <input 
+                        type="password"
+                        placeholder="Current Password"
+                        value={passwordData.currentPassword}
+                        onChange={(e) => setPasswordData({...passwordData, currentPassword: e.target.value})}
+                        className="input-field"
+                        required
+                      />
+                    )}
+                    <input 
+                      type="password"
+                      placeholder="New Password"
+                      value={passwordData.newPassword}
+                      onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
+                      className="input-field"
+                      required
+                      minLength={6}
+                    />
+                    <input 
+                      type="password"
+                      placeholder="Confirm New Password"
+                      value={passwordData.confirmPassword}
+                      onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
+                      className="input-field"
+                      required
+                      minLength={6}
+                    />
+                    <button 
+                      type="submit"
+                      disabled={passwordLoading}
+                      className="btn-secondary w-full"
+                    >
+                      {passwordLoading ? "Updating..." : "Update Password"}
+                    </button>
+                  </form>
                 </div>
 
                 {/* Danger Zone */}
