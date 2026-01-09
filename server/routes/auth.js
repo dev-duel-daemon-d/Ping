@@ -19,12 +19,15 @@ const userResponse = (user) => ({
     tagline: user.tagline,
     bio: user.bio,
     location: user.location,
+    phoneNumber: user.phoneNumber,
+    languages: user.languages,
     skills: user.skills,
     gamingAccounts: user.gamingAccounts,
     status: user.status,
     lastSeen: user.lastSeen,
     hasPassword: !!user.password,
     preferences: user.preferences,
+    enchantmentCount: user.enchantmentCount,
 })
 
 // @route   POST /api/auth/google
@@ -33,7 +36,7 @@ const userResponse = (user) => ({
 router.post('/google', async (req, res) => {
     try {
         const { token } = req.body;
-        
+
         // Verify Google Token
         const ticket = await googleClient.verifyIdToken({
             idToken: token,
@@ -51,7 +54,7 @@ router.post('/google', async (req, res) => {
                 // If they previously had a different avatar (default), maybe update it? 
                 // Let's keep existing avatar to not override user choice, unless it's empty
                 if (!user.avatar) user.avatar = picture;
-                
+
                 // Ensure they are verified since Google verified the email
                 user.isVerified = true;
                 user.otp = undefined;
@@ -62,10 +65,10 @@ router.post('/google', async (req, res) => {
             // Generate a random password-like string just to satisfy potential internal logic 
             // (though we made it optional in schema, having a strong random one is safe)
             // But better: we rely on schema optionality.
-            
+
             // Generate a unique username based on Google name
             let username = name.split(' ').join('').toLowerCase() + Math.floor(Math.random() * 1000);
-            
+
             // Ensure username uniqueness (simple check)
             const usernameExists = await User.findOne({ username });
             if (usernameExists) {

@@ -44,6 +44,7 @@ import {
   ChevronDown,
   Loader2,
   Clock,
+  Sparkles,
 } from "lucide-react";
 import {
   Avatar,
@@ -68,9 +69,11 @@ import {
   profileService,
   gameService,
   postService, // Add postService
+  enchantmentService,
 } from "../services/api";
 import { subscribeUserToPush } from "../utils/pushNotifications";
 import Navbar from "../components/navigation/Navbar";
+import EnchantmentBubble from "../components/EnchantmentBubble";
 
 // --- Custom Icons for Socials ---
 const DiscordIcon = ({ className }) => (
@@ -2181,7 +2184,7 @@ const SetupConfig = ({ setup, isOwnProfile, onEdit, onCopy, copiedField }) => (
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: 0.35 }}
-    className="bg-bg-card border border-white/5 rounded-2xl p-6 mb-6"
+    className="bg-bg-card border border-white/5 rounded-2xl p-6 h-full"
   >
     <div className="flex items-center justify-between mb-6">
       <div className="flex items-center gap-2">
@@ -2283,20 +2286,115 @@ const SetupConfig = ({ setup, isOwnProfile, onEdit, onCopy, copiedField }) => (
         </button>
       </div>
     </div>
-
-    {/* Download as PDF */}
-    <div className="flex justify-end">
-      <motion.button
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        className="px-6 py-3 bg-gradient-to-r from-primary to-secondary text-black rounded-xl font-bold hover:shadow-lg hover:shadow-primary/30 transition-all flex items-center gap-2"
-      >
-        <Download className="w-4 h-4" />
-        Download as PDF
-      </motion.button>
-    </div>
   </motion.div>
 );
+
+// --- Skills Section ---
+const SkillsSection = ({ skills = [], isOwnProfile, onAddSkill, onRemoveSkill }) => {
+  const [newSkill, setNewSkill] = useState("");
+  const [isAdding, setIsAdding] = useState(false);
+
+  const handleAddSkill = () => {
+    if (newSkill.trim() && !skills.includes(newSkill.trim())) {
+      onAddSkill(newSkill.trim());
+      setNewSkill("");
+      setIsAdding(false);
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleAddSkill();
+    } else if (e.key === "Escape") {
+      setNewSkill("");
+      setIsAdding(false);
+    }
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.35 }}
+      className="bg-bg-card border border-white/5 rounded-2xl p-6 h-full"
+    >
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-2">
+          <Zap className="w-5 h-5 text-primary" />
+          <h3 className="font-bold text-lg text-white">Skills</h3>
+        </div>
+        {isOwnProfile && !isAdding && (
+          <button
+            onClick={() => setIsAdding(true)}
+            className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+          >
+            <Plus className="w-4 h-4 text-slate-400 hover:text-primary" />
+          </button>
+        )}
+      </div>
+
+      {/* Add skill input */}
+      {isOwnProfile && isAdding && (
+        <div className="flex gap-2 mb-4">
+          <input
+            type="text"
+            value={newSkill}
+            onChange={(e) => setNewSkill(e.target.value)}
+            onKeyDown={handleKeyPress}
+            placeholder="Enter a skill..."
+            className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-white placeholder:text-slate-500 focus:outline-none focus:border-primary/50 text-sm"
+            autoFocus
+          />
+          <button
+            onClick={handleAddSkill}
+            disabled={!newSkill.trim()}
+            className="px-4 py-2 bg-primary text-black rounded-xl font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/90 transition-colors"
+          >
+            Add
+          </button>
+          <button
+            onClick={() => {
+              setNewSkill("");
+              setIsAdding(false);
+            }}
+            className="px-3 py-2 bg-white/10 text-white rounded-xl text-sm hover:bg-white/20 transition-colors"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
+      {/* Skills display */}
+      <div className="flex flex-wrap gap-2">
+        {skills.length > 0 ? (
+          skills.map((skill, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="group flex items-center gap-1 px-3 py-1.5 bg-primary/10 border border-primary/30 rounded-full text-sm text-primary"
+            >
+              <span>{skill}</span>
+              {isOwnProfile && (
+                <button
+                  onClick={() => onRemoveSkill(skill)}
+                  className="ml-1 p-0.5 hover:bg-primary/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              )}
+            </motion.div>
+          ))
+        ) : (
+          <p className="text-slate-500 text-sm">
+            {isOwnProfile ? "Click + to add your skills" : "No skills added yet"}
+          </p>
+        )}
+      </div>
+    </motion.div>
+  );
+};
 
 // --- Edit Modal Base Component ---
 const EditModal = ({ open, onClose, title, children }) => (
@@ -2447,6 +2545,7 @@ const TournamentEditModal = ({ open, onClose, onSave, editingTournament }) => {
   const [formData, setFormData] = useState({
     name: "",
     placement: "",
+    description: "",
   });
   const [saving, setSaving] = useState(false);
 
@@ -2455,9 +2554,10 @@ const TournamentEditModal = ({ open, onClose, onSave, editingTournament }) => {
       setFormData({
         name: editingTournament.name || "",
         placement: editingTournament.placement || "",
+        description: editingTournament.description || "",
       });
     } else {
-      setFormData({ name: "", placement: "" });
+      setFormData({ name: "", placement: "", description: "" });
     }
   }, [editingTournament, open]);
 
@@ -2508,6 +2608,21 @@ const TournamentEditModal = ({ open, onClose, onSave, editingTournament }) => {
             }
             className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-primary/50"
             placeholder="e.g., 1st Place, Top 8, etc."
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-400 mb-2">
+            Description (for Portfolio)
+          </label>
+          <textarea
+            value={formData.description}
+            onChange={(e) =>
+              setFormData({ ...formData, description: e.target.value })
+            }
+            rows={4}
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-primary/50 resize-none"
+            placeholder="Describe your experience, achievements, team composition, etc."
           />
         </div>
 
@@ -2873,6 +2988,9 @@ const EditProfileModal = ({ open, onClose, user, onSave }) => {
     username: "",
     tagline: "",
     bio: "",
+    location: "",
+    phoneNumber: "",
+    languages: [],
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -2883,6 +3001,9 @@ const EditProfileModal = ({ open, onClose, user, onSave }) => {
         username: user.username || "",
         tagline: user.tagline || "",
         bio: user.bio || "",
+        location: user.location || "",
+        phoneNumber: user.phoneNumber || "",
+        languages: user.languages || [],
       });
     }
   }, [user, open]);
@@ -2961,6 +3082,57 @@ const EditProfileModal = ({ open, onClose, user, onSave }) => {
           <div className="text-right text-xs text-slate-500 mt-1">
             {formData.bio.length}/160
           </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-400 mb-2">
+            Location
+          </label>
+          <input
+            type="text"
+            value={formData.location}
+            onChange={(e) =>
+              setFormData({ ...formData, location: e.target.value })
+            }
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-primary/50"
+            placeholder="e.g. Los Angeles, CA"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-400 mb-2">
+            Phone Number
+          </label>
+          <input
+            type="tel"
+            value={formData.phoneNumber}
+            onChange={(e) =>
+              setFormData({ ...formData, phoneNumber: e.target.value })
+            }
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-primary/50"
+            placeholder="e.g. +1 (555) 123-4567"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-400 mb-2">
+            Languages (comma-separated)
+          </label>
+          <input
+            type="text"
+            value={formData.languages.join(", ")}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                languages: e.target.value
+                  .split(",")
+                  .map((lang) => lang.trim())
+                  .filter((lang) => lang.length > 0),
+              })
+            }
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-primary/50"
+            placeholder="e.g. English, Spanish, French"
+          />
         </div>
 
         <div className="flex gap-3 justify-end pt-4">
@@ -3050,6 +3222,14 @@ const Dashboard = () => {
 
   // Copy feedback state
   const [copiedField, setCopiedField] = useState(null);
+
+  // Enchantment state
+  const [hasEnchanted, setHasEnchanted] = useState(false);
+  const [enchantmentCount, setEnchantmentCount] = useState(0);
+  const [enchantmentLoading, setEnchantmentLoading] = useState(false);
+
+  // Avatar dropdown menu state
+  const [showAvatarMenu, setShowAvatarMenu] = useState(false);
 
   // Determine if viewing own profile or another user's
   const isOwnProfile = !viewedUsername || viewedUsername === user?.username;
@@ -3153,6 +3333,73 @@ const Dashboard = () => {
       console.error("Connection request failed", error);
     }
   };
+
+  // Enchantment functions
+  const fetchEnchantmentStatus = async (userId) => {
+    if (!userId) return;
+    try {
+      const res = await enchantmentService.getStatus(userId);
+      setHasEnchanted(res.data.hasEnchanted);
+      setEnchantmentCount(res.data.count);
+    } catch (error) {
+      console.error("Failed to fetch enchantment status", error);
+    }
+  };
+
+  const handleEnchantToggle = async () => {
+    const targetId = viewedUser?._id || viewedUser?.id;
+    if (!targetId || enchantmentLoading) return;
+
+    setEnchantmentLoading(true);
+    try {
+      const res = await enchantmentService.toggle(targetId);
+      setHasEnchanted(res.data.hasEnchanted);
+      setEnchantmentCount(res.data.count);
+    } catch (error) {
+      console.error("Failed to toggle enchantment", error);
+    }
+    setEnchantmentLoading(false);
+  };
+
+  // Fetch enchantment status when viewing another user's profile
+  // For own profile, just show the count (can't enchant self)
+  React.useEffect(() => {
+    if (!isOwnProfile && viewedUser) {
+      const userId = viewedUser._id || viewedUser.id;
+      fetchEnchantmentStatus(userId);
+      // Also get the count from the user object if available
+      if (viewedUser.enchantmentCount !== undefined) {
+        setEnchantmentCount(viewedUser.enchantmentCount);
+      }
+    } else if (isOwnProfile) {
+      // For own profile, show the current user's enchantment count
+      setHasEnchanted(false); // Can't enchant self
+      // Use displayUser to get the count (works for both user and refreshed data)
+      const ownCount = displayUser?.enchantmentCount || user?.enchantmentCount || 0;
+      setEnchantmentCount(ownCount);
+    }
+  }, [viewedUser, isOwnProfile, user, displayUser]);
+
+  // Listen for real-time enchantment updates via socket
+  const { socket } = useSocket();
+  React.useEffect(() => {
+    if (!socket) return;
+
+    const handleEnchantmentUpdate = (data) => {
+      // Check if the update is for the currently displayed user OR for own profile
+      const currentUserId = displayUser?._id || displayUser?.id;
+      const ownUserId = user?._id || user?.id;
+      if (data.userId === currentUserId || (isOwnProfile && data.userId === ownUserId)) {
+        setEnchantmentCount(data.count);
+      }
+    };
+
+    socket.on("enchantment:update", handleEnchantmentUpdate);
+
+    return () => {
+      socket.off("enchantment:update", handleEnchantmentUpdate);
+    };
+  }, [socket, displayUser, user, isOwnProfile]);
 
   // Fetch profile data (teams, tournaments, setup)
   const fetchProfileData = async () => {
@@ -3359,6 +3606,27 @@ const Dashboard = () => {
     }
   };
 
+  // Skills Handlers
+  const handleAddSkill = async (skill) => {
+    try {
+      const updatedSkills = [...(displayUser?.skills || []), skill];
+      await userService.updateProfile({ skills: updatedSkills });
+      window.location.reload();
+    } catch (error) {
+      console.error("Failed to add skill", error);
+    }
+  };
+
+  const handleRemoveSkill = async (skillToRemove) => {
+    try {
+      const updatedSkills = (displayUser?.skills || []).filter(s => s !== skillToRemove);
+      await userService.updateProfile({ skills: updatedSkills });
+      window.location.reload();
+    } catch (error) {
+      console.error("Failed to remove skill", error);
+    }
+  };
+
   // --- Mock Data --- (REMOVED: games array)
 
   if (loading || profileLoading) return null;
@@ -3459,7 +3727,13 @@ const Dashboard = () => {
           {/* Avatar & Info */}
           <div className="absolute -bottom-48 left-0 right-0 flex flex-col items-center z-20">
             <div className="relative">
-              <div className="w-32 h-32 rounded-full p-1 bg-bg-dark relative group">
+              <div
+                className="w-32 h-32 rounded-full p-1 bg-bg-dark relative group cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowAvatarMenu(!showAvatarMenu);
+                }}
+              >
                 <Avatar
                   src={displayUser?.avatar}
                   className="w-full h-full border-4 border-[#1b1f23]"
@@ -3467,45 +3741,73 @@ const Dashboard = () => {
                 >
                   {displayUser?.username?.charAt(0).toUpperCase()}
                 </Avatar>
-                {/* Upload avatar button - only show for own profile */}
-                {isOwnProfile && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-bg-dark/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-full">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) =>
-                        handleImageUpload(e.target.files[0], "avatar")
-                      }
-                      className="hidden"
-                      id="avatar-upload"
-                    />
-                    <label
-                      htmlFor="avatar-upload"
-                      className="cursor-pointer flex flex-col items-center gap-1"
-                    >
-                      {uploadingAvatar ? (
-                        <motion.div
-                          animate={{ rotate: 360 }}
-                          transition={{
-                            repeat: Infinity,
-                            duration: 1,
-                            ease: "linear",
-                          }}
-                          className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full"
-                        />
-                      ) : (
-                        <>
-                          <Camera className="w-6 h-6 text-white" />
-                          <span className="text-white text-xs">Change</span>
-                        </>
-                      )}
-                    </label>
+
+                {/* Enchantment Bubble - displays to the right of avatar */}
+                <EnchantmentBubble count={enchantmentCount} />
+
+                {/* Loading / Hover Overlay */}
+                {(isOwnProfile || uploadingAvatar) && (
+                  <div className={`absolute inset-0 flex items-center justify-center bg-bg-dark/60 ${uploadingAvatar ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'} transition-opacity rounded-full z-10`}>
+                    {uploadingAvatar ? (
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{
+                          repeat: Infinity,
+                          duration: 1,
+                          ease: "linear",
+                        }}
+                        className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full"
+                      />
+                    ) : (
+                      <Settings className="w-8 h-8 text-white drop-shadow-md" />
+                    )}
                   </div>
                 )}
               </div>
+
+              {/* Status Dot */}
               <div
-                className={`absolute bottom-2 right-2 w-6 h-6 ${displayUser?.status === "online" ? "bg-green-500" : "bg-slate-600"} border-4 border-black rounded-full`}
+                className={`absolute bottom-2 right-2 w-6 h-6 ${displayUser?.status === "online" ? "bg-green-500" : "bg-slate-600"} border-4 border-black rounded-full z-20`}
               />
+
+              {/* Avatar Dropdown Menu */}
+              <AnimatePresence>
+                {showAvatarMenu && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="absolute top-full mt-4 left-1/2 -translate-x-1/2 w-56 bg-[#1a1f2e] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-[60]"
+                  >
+                    {isOwnProfile && (
+                      <label className="flex items-center gap-3 px-4 py-3 hover:bg-white/5 cursor-pointer transition-colors text-sm text-slate-200 hover:text-white border-b border-white/5">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            handleImageUpload(e.target.files[0], "avatar");
+                            setShowAvatarMenu(false);
+                          }}
+                          className="hidden"
+                        />
+                        <Camera className="w-4 h-4 text-primary" />
+                        Change Avatar
+                      </label>
+                    )}
+
+                    <button
+                      onClick={() => {
+                        window.print();
+                        setShowAvatarMenu(false);
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/5 cursor-pointer transition-colors text-sm text-slate-200 hover:text-white text-left"
+                    >
+                      <Download className="w-4 h-4 text-primary" />
+                      Download PDF
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             <div className="mt-4 text-center">
@@ -3536,6 +3838,23 @@ const Dashboard = () => {
                   >
                     <MessageSquare className="w-4 h-4" /> Message
                   </motion.button>
+
+                  {/* Enchant Button */}
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={handleEnchantToggle}
+                    disabled={enchantmentLoading}
+                    className={`px-6 py-2 rounded-full font-bold transition-all flex items-center gap-2 border disabled:opacity-50
+                      ${hasEnchanted
+                        ? "bg-primary/20 text-primary border-primary"
+                        : "bg-white/10 text-white border-white/20 hover:border-primary/50 hover:text-primary"
+                      }`}
+                  >
+                    <Sparkles className={`w-4 h-4 ${hasEnchanted ? "fill-primary" : ""}`} />
+                    {enchantmentLoading ? "..." : hasEnchanted ? "Enchanted ✓" : "Enchant"}
+                  </motion.button>
+
                   {!isConnected && (
                     <motion.button
                       whileHover={{ scale: 1.05 }}
@@ -3870,14 +4189,22 @@ const Dashboard = () => {
           }}
           onDelete={handleDeleteTournament}
         />
-        {/* --- Setup & Config --- */}
-        <SetupConfig
-          setup={gamingSetup}
-          isOwnProfile={isOwnProfile}
-          onEdit={() => setShowSetupModal(true)}
-          onCopy={handleCopy}
-          copiedField={copiedField}
-        />
+        {/* --- Setup & Config + Skills Grid --- */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          <SetupConfig
+            setup={gamingSetup}
+            isOwnProfile={isOwnProfile}
+            onEdit={() => setShowSetupModal(true)}
+            onCopy={handleCopy}
+            copiedField={copiedField}
+          />
+          <SkillsSection
+            skills={displayUser?.skills || []}
+            isOwnProfile={isOwnProfile}
+            onAddSkill={handleAddSkill}
+            onRemoveSkill={handleRemoveSkill}
+          />
+        </div>
         {/* Edit Modals */}
         <TeamEditModal
           open={showTeamModal}
@@ -4037,8 +4364,8 @@ const Dashboard = () => {
             </div>
           </div>
         </motion.div>
-      </main>
-    </div>
+      </main >
+    </div >
   );
 };
 

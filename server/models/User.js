@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema(
         password: {
             type: String,
             // Password is required only if googleId is not present
-            required: function() { return !this.googleId }, 
+            required: function () { return !this.googleId },
             minlength: [6, 'Password must be at least 6 characters'],
         },
         googleId: {
@@ -53,6 +53,14 @@ const userSchema = new mongoose.Schema(
             type: String,
             default: '',
         },
+        phoneNumber: {
+            type: String,
+            default: '',
+        },
+        languages: {
+            type: [String],
+            default: [],
+        },
         skills: {
             type: [String],
             default: [],
@@ -76,6 +84,7 @@ const userSchema = new mongoose.Schema(
         tournamentExperience: [{
             name: { type: String, required: true },
             placement: { type: String, default: '' },
+            description: { type: String, default: '' },
             date: { type: Date }
         }],
         // Gaming Setup Config
@@ -129,6 +138,10 @@ const userSchema = new mongoose.Schema(
         },
         preferences: {
             showOnlineStatus: { type: Boolean, default: true }
+        },
+        enchantmentCount: {
+            type: Number,
+            default: 0,
         },
         otp: {
             type: String,

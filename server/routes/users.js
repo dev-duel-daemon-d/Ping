@@ -17,12 +17,15 @@ const userResponse = (user) => ({
     tagline: user.tagline,
     bio: user.bio,
     location: user.location,
+    phoneNumber: user.phoneNumber,
+    languages: user.languages,
     skills: user.skills,
     gamingAccounts: user.gamingAccounts,
     status: user.status,
     lastSeen: user.lastSeen,
     hasPassword: !!user.password,
     preferences: user.preferences,
+    enchantmentCount: user.enchantmentCount,
 })
 
 // @route   GET /api/users/explore
@@ -45,16 +48,16 @@ router.get('/explore', protect, async (req, res) => {
         // 3. Create a map for quick lookup
         const connectionMap = new Map()
         connections.forEach(conn => {
-            const otherId = conn.requester.toString() === currentUserId.toString() 
-                ? conn.recipient.toString() 
+            const otherId = conn.requester.toString() === currentUserId.toString()
+                ? conn.recipient.toString()
                 : conn.requester.toString()
-            
+
             let status = 'none'
             if (conn.status === 'accepted') {
                 status = 'connected'
             } else if (conn.status === 'pending') {
-                status = conn.requester.toString() === currentUserId.toString() 
-                    ? 'pending_sent' 
+                status = conn.requester.toString() === currentUserId.toString()
+                    ? 'pending_sent'
                     : 'pending_received'
             }
             connectionMap.set(otherId, status)
@@ -111,6 +114,8 @@ router.put(
         body('tagline').optional().isLength({ max: 100 }).withMessage('Tagline cannot exceed 100 characters'),
         body('bio').optional().isLength({ max: 160 }).withMessage('Bio cannot exceed 160 characters'),
         body('location').optional().trim(),
+        body('phoneNumber').optional().trim(),
+        body('languages').optional().isArray().withMessage('Languages must be an array'),
         body('skills').optional().isArray().withMessage('Skills must be an array'),
         body('gamingAccounts').optional().isObject().withMessage('Gaming accounts must be an object'),
         validate,
@@ -132,10 +137,12 @@ router.put(
                 user.tagline = req.body.tagline ?? user.tagline
                 user.bio = req.body.bio ?? user.bio
                 user.location = req.body.location ?? user.location
+                user.phoneNumber = req.body.phoneNumber ?? user.phoneNumber
+                user.languages = req.body.languages ?? user.languages
                 user.skills = req.body.skills ?? user.skills
                 user.avatar = req.body.avatar ?? user.avatar
                 user.bannerImage = req.body.bannerImage ?? user.bannerImage
-                
+
                 if (req.body.gamingAccounts) {
                     user.gamingAccounts = {
                         ...user.gamingAccounts,
@@ -183,7 +190,7 @@ router.put(
 
                 user.password = req.body.newPassword
                 const updatedUser = await user.save()
-                
+
                 res.json({ message: 'Password updated successfully', user: userResponse(updatedUser) })
             } else {
                 res.status(404).json({ message: 'User not found' })
@@ -214,12 +221,12 @@ router.put(
 
             const { showOnlineStatus } = req.body
             const io = req.app.get('io')
-            
+
             // If checking user.preferences directly, ensure it exists (schema default handles this for new users, but older docs might not have it)
             if (!user.preferences) user.preferences = { showOnlineStatus: true }
 
             user.preferences.showOnlineStatus = showOnlineStatus
-            
+
             // Handle Status Update based on preference change
             const connectedUsers = getConnectedUsers()
             const isConnected = connectedUsers.has(user._id.toString())
