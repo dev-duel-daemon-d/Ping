@@ -290,13 +290,7 @@ const YouTubeIcon = ({ className }) => (
 
     <defs></defs>
 
-    <g
-      id="Icons"
-      stroke="none"
-      strokeWidth="1"
-      fill="none"
-      fillRule="evenodd"
-    >
+    <g id="Icons" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
       <g
         id="Color-"
         transform="translate(-200.000000, -368.000000)"
@@ -485,10 +479,10 @@ const SocialsDisplay = ({ socials, isOwnProfile, onEdit }) => {
                 // Could add a toast here
                 alert(`Copied ${handle} to clipboard!`);
               }}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-full border ${social.bg} ${social.border} ${social.color} ${social.hover} transition-all cursor-pointer group`}
+              className={`flex items-center justify-center sm:justify-start gap-0 sm:gap-2 p-2 sm:px-3 sm:py-1.5 rounded-full border ${social.bg} ${social.border} ${social.color} ${social.hover} transition-all cursor-pointer group`}
             >
-              <Icon className="w-3.5 h-3.5" />
-              <span className="text-xs font-bold">
+              <Icon className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
+              <span className="text-xs font-bold hidden sm:block">
                 {social.key === "steam" ? "Steam" : handle}
               </span>
             </div>
@@ -501,10 +495,10 @@ const SocialsDisplay = ({ socials, isOwnProfile, onEdit }) => {
             href={`${social.urlPrefix}${handle}`}
             target="_blank"
             rel="noopener noreferrer"
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-full border ${social.bg} ${social.border} ${social.color} ${social.hover} transition-all cursor-pointer group no-underline`}
+            className={`flex items-center justify-center sm:justify-start gap-0 sm:gap-2 p-2 sm:px-3 sm:py-1.5 rounded-full border ${social.bg} ${social.border} ${social.color} ${social.hover} transition-all cursor-pointer group no-underline`}
           >
-            <Icon className="w-3.5 h-3.5" />
-            <span className="text-xs font-bold">
+            <Icon className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
+            <span className="text-xs font-bold hidden sm:block">
               {social.key === "steam" ? "Steam" : handle}
             </span>
           </a>
@@ -1317,10 +1311,11 @@ const ChatModal = ({ open, onClose, recipient, currentUser }) => {
                     className={`flex ${isMine(msg) ? "justify-end" : "justify-start"}`}
                   >
                     <div
-                      className={`max-w-[75%] px-4 py-2.5 rounded-2xl ${isMine(msg)
-                        ? "bg-gradient-to-r from-primary to-secondary text-black rounded-br-md"
-                        : "bg-white/10 text-white rounded-bl-md"
-                        }`}
+                      className={`max-w-[75%] px-4 py-2.5 rounded-2xl ${
+                        isMine(msg)
+                          ? "bg-gradient-to-r from-primary to-secondary text-black rounded-br-md"
+                          : "bg-white/10 text-white rounded-bl-md"
+                      }`}
                     >
                       <p className="text-sm leading-relaxed">{msg.content}</p>
                       <p
@@ -1619,10 +1614,16 @@ const ProfileMenu = ({ anchorEl, open, onClose, onLogout, onEditProfile }) => {
   );
 };
 
-// NOTE: Local navigation components below are UNUSED. 
+// NOTE: Local navigation components below are UNUSED.
 // The Dashboard now uses the shared Navbar from "../components/navigation/Navbar"
 
-const _LocalNavbar_UNUSED = ({ user, logout, onConnectionUpdate, onOpenChat, onEditProfile }) => {
+const _LocalNavbar_UNUSED = ({
+  user,
+  logout,
+  onConnectionUpdate,
+  onOpenChat,
+  onEditProfile,
+}) => {
   const [notifications, setNotifications] = useState([]);
   const [notifAnchorEl, setNotifAnchorEl] = useState(null);
   const [profileAnchorEl, setProfileAnchorEl] = useState(null);
@@ -2290,7 +2291,12 @@ const SetupConfig = ({ setup, isOwnProfile, onEdit, onCopy, copiedField }) => (
 );
 
 // --- Skills Section ---
-const SkillsSection = ({ skills = [], isOwnProfile, onAddSkill, onRemoveSkill }) => {
+const SkillsSection = ({
+  skills = [],
+  isOwnProfile,
+  onAddSkill,
+  onRemoveSkill,
+}) => {
   const [newSkill, setNewSkill] = useState("");
   const [isAdding, setIsAdding] = useState(false);
 
@@ -2388,7 +2394,9 @@ const SkillsSection = ({ skills = [], isOwnProfile, onAddSkill, onRemoveSkill })
           ))
         ) : (
           <p className="text-slate-500 text-sm">
-            {isOwnProfile ? "Click + to add your skills" : "No skills added yet"}
+            {isOwnProfile
+              ? "Click + to add your skills"
+              : "No skills added yet"}
           </p>
         )}
       </div>
@@ -2811,7 +2819,13 @@ const SetupEditModal = ({ open, onClose, onSave, currentSetup }) => {
 };
 
 // --- Connections Modal ---
-const ConnectionsModal = ({ open, onClose, onMessage, onConnect, currentUser }) => {
+const ConnectionsModal = ({
+  open,
+  onClose,
+  onMessage,
+  onConnect,
+  currentUser,
+}) => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -3375,7 +3389,8 @@ const Dashboard = () => {
       // For own profile, show the current user's enchantment count
       setHasEnchanted(false); // Can't enchant self
       // Use displayUser to get the count (works for both user and refreshed data)
-      const ownCount = displayUser?.enchantmentCount || user?.enchantmentCount || 0;
+      const ownCount =
+        displayUser?.enchantmentCount || user?.enchantmentCount || 0;
       setEnchantmentCount(ownCount);
     }
   }, [viewedUser, isOwnProfile, user, displayUser]);
@@ -3389,7 +3404,10 @@ const Dashboard = () => {
       // Check if the update is for the currently displayed user OR for own profile
       const currentUserId = displayUser?._id || displayUser?.id;
       const ownUserId = user?._id || user?.id;
-      if (data.userId === currentUserId || (isOwnProfile && data.userId === ownUserId)) {
+      if (
+        data.userId === currentUserId ||
+        (isOwnProfile && data.userId === ownUserId)
+      ) {
         setEnchantmentCount(data.count);
       }
     };
@@ -3596,7 +3614,7 @@ const Dashboard = () => {
       const res = await userService.updateProfile(formData);
       // Determine if we need to reload or just update local state
       // Since userService.updateProfile returns the updated user, we should update the auth context if possible
-      // But for now, a reload ensures everything (including token claims if any) matches, 
+      // But for now, a reload ensures everything (including token claims if any) matches,
       // though typically a reload isn't needed if we update the context.
       // Assuming useAuth provides a way to update user or we just reload.
       window.location.reload();
@@ -3619,7 +3637,9 @@ const Dashboard = () => {
 
   const handleRemoveSkill = async (skillToRemove) => {
     try {
-      const updatedSkills = (displayUser?.skills || []).filter(s => s !== skillToRemove);
+      const updatedSkills = (displayUser?.skills || []).filter(
+        (s) => s !== skillToRemove,
+      );
       await userService.updateProfile({ skills: updatedSkills });
       window.location.reload();
     } catch (error) {
@@ -3725,7 +3745,7 @@ const Dashboard = () => {
           </div>
 
           {/* Avatar & Info */}
-          <div className="absolute -bottom-48 left-0 right-0 flex flex-col items-center z-20">
+          <div className="absolute -bottom-[13rem] lg:-bottom-48 left-0 right-0 flex flex-col items-center z-20">
             <div className="relative">
               <div
                 className="w-32 h-32 rounded-full p-1 bg-bg-dark relative group cursor-pointer"
@@ -3747,7 +3767,9 @@ const Dashboard = () => {
 
                 {/* Loading / Hover Overlay */}
                 {(isOwnProfile || uploadingAvatar) && (
-                  <div className={`absolute inset-0 flex items-center justify-center bg-bg-dark/60 ${uploadingAvatar ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'} transition-opacity rounded-full z-10`}>
+                  <div
+                    className={`absolute inset-0 flex items-center justify-center bg-bg-dark/60 ${uploadingAvatar ? "opacity-100" : "opacity-0 group-hover:opacity-100"} transition-opacity rounded-full z-10`}
+                  >
                     {uploadingAvatar ? (
                       <motion.div
                         animate={{ rotate: 360 }}
@@ -3829,12 +3851,12 @@ const Dashboard = () => {
 
               {/* Message, Connect, and Back buttons for viewing other profiles */}
               {!isOwnProfile && (
-                <div className="mt-4 flex gap-3 justify-center flex-wrap">
+                <div className="mt-4 flex gap-2 sm:gap-3 justify-center flex-wrap">
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={() => setShowChatModal(true)}
-                    className="px-6 py-2 bg-gradient-to-r from-primary to-secondary text-black rounded-full font-bold hover:shadow-lg hover:shadow-primary/30 transition-all flex items-center gap-2"
+                    className="px-4 py-1.5 sm:px-6 sm:py-2 bg-gradient-to-r from-primary to-secondary text-black rounded-full font-bold hover:shadow-lg hover:shadow-primary/30 transition-all flex items-center gap-2 text-sm sm:text-base"
                   >
                     <MessageSquare className="w-4 h-4" /> Message
                   </motion.button>
@@ -3845,14 +3867,21 @@ const Dashboard = () => {
                     whileTap={{ scale: 0.9 }}
                     onClick={handleEnchantToggle}
                     disabled={enchantmentLoading}
-                    className={`px-6 py-2 rounded-full font-bold transition-all flex items-center gap-2 border disabled:opacity-50
-                      ${hasEnchanted
-                        ? "bg-primary/20 text-primary border-primary"
-                        : "bg-white/10 text-white border-white/20 hover:border-primary/50 hover:text-primary"
+                    className={`px-4 py-1.5 sm:px-6 sm:py-2 rounded-full font-bold transition-all flex items-center gap-2 border disabled:opacity-50 text-sm sm:text-base
+                      ${
+                        hasEnchanted
+                          ? "bg-primary/20 text-primary border-primary"
+                          : "bg-white/10 text-white border-white/20 hover:border-primary/50 hover:text-primary"
                       }`}
                   >
-                    <Sparkles className={`w-4 h-4 ${hasEnchanted ? "fill-primary" : ""}`} />
-                    {enchantmentLoading ? "..." : hasEnchanted ? "Enchanted ✓" : "Enchant"}
+                    <Sparkles
+                      className={`w-4 h-4 ${hasEnchanted ? "fill-primary" : ""}`}
+                    />
+                    {enchantmentLoading
+                      ? "..."
+                      : hasEnchanted
+                        ? "Enchanted ✓"
+                        : "Enchant"}
                   </motion.button>
 
                   {!isConnected && (
@@ -3862,14 +3891,14 @@ const Dashboard = () => {
                       onClick={() =>
                         handleConnect(viewedUser?._id || viewedUser?.id)
                       }
-                      className="px-6 py-2 bg-white/10 text-primary rounded-full font-bold hover:bg-primary/20 transition-all flex items-center gap-2 border border-primary/50"
+                      className="px-4 py-1.5 sm:px-6 sm:py-2 bg-white/10 text-primary rounded-full font-bold hover:bg-primary/20 transition-all flex items-center gap-2 border border-primary/50 text-sm sm:text-base"
                     >
                       <Users className="w-4 h-4" /> +Connect
                     </motion.button>
                   )}
                   <button
                     onClick={() => navigate("/dashboard")}
-                    className="px-6 py-2 bg-white/10 text-white rounded-full font-bold hover:bg-white/20 transition-colors border border-white/20"
+                    className="px-4 py-1.5 sm:px-6 sm:py-2 bg-white/10 text-white rounded-full font-bold hover:bg-white/20 transition-colors border border-white/20 text-sm sm:text-base"
                   >
                     Back
                   </button>
@@ -3982,58 +4011,58 @@ const Dashboard = () => {
                 <div className="flex-1 overflow-y-auto custom-scrollbar space-y-3 pr-2">
                   {secondaryGames.length > 0
                     ? secondaryGames.map((game) => (
-                      <div
-                        key={game._id}
-                        className="bg-white/5 border border-white/5 rounded-xl p-3 flex items-center gap-3 hover:bg-white/10 transition-colors group relative"
-                      >
-                        {isOwnProfile && (
-                          <div className="absolute right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button
-                              onClick={() => {
-                                setEditingGame(game);
-                                setShowGameModal(true);
-                              }}
-                              className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
-                            >
-                              <Pencil className="w-3.5 h-3.5 text-slate-400 hover:text-white" />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteGame(game._id)}
-                              className="p-1.5 hover:bg-red-500/20 rounded-lg transition-colors"
-                            >
-                              <Trash2 className="w-3.5 h-3.5 text-slate-400 hover:text-red-500" />
-                            </button>
+                        <div
+                          key={game._id}
+                          className="bg-white/5 border border-white/5 rounded-xl p-3 flex items-center gap-3 hover:bg-white/10 transition-colors group relative"
+                        >
+                          {isOwnProfile && (
+                            <div className="absolute right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <button
+                                onClick={() => {
+                                  setEditingGame(game);
+                                  setShowGameModal(true);
+                                }}
+                                className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
+                              >
+                                <Pencil className="w-3.5 h-3.5 text-slate-400 hover:text-white" />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteGame(game._id)}
+                                className="p-1.5 hover:bg-red-500/20 rounded-lg transition-colors"
+                              >
+                                <Trash2 className="w-3.5 h-3.5 text-slate-400 hover:text-red-500" />
+                              </button>
+                            </div>
+                          )}
+                          <div className="w-10 h-10 rounded-lg bg-bg-dark/40 border border-white/10 flex items-center justify-center shrink-0 overflow-hidden">
+                            <GameLogo
+                              gameName={game.game}
+                              supportedGames={supportedGames}
+                              className="w-full h-full p-1.5"
+                            />
                           </div>
-                        )}
-                        <div className="w-10 h-10 rounded-lg bg-bg-dark/40 border border-white/10 flex items-center justify-center shrink-0 overflow-hidden">
-                          <GameLogo
-                            gameName={game.game}
-                            supportedGames={supportedGames}
-                            className="w-full h-full p-1.5"
-                          />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-bold text-slate-200 text-sm truncate">
-                            {game.game}
-                          </h4>
-                          <div className="flex items-center gap-2 text-xs text-slate-500">
-                            <span>{game.role}</span>
-                            <span>•</span>
-                            <span className="text-primary/80">
-                              {game.rank}
-                            </span>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-bold text-slate-200 text-sm truncate">
+                              {game.game}
+                            </h4>
+                            <div className="flex items-center gap-2 text-xs text-slate-500">
+                              <span>{game.role}</span>
+                              <span>•</span>
+                              <span className="text-primary/80">
+                                {game.rank}
+                              </span>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))
+                      ))
                     : !primaryGame && (
-                      <div className="flex flex-col items-center justify-center h-full text-slate-500 text-sm">
-                        <p>No games added yet.</p>
-                        {isOwnProfile && (
-                          <p>Click the + button to add your experience.</p>
-                        )}
-                      </div>
-                    )}
+                        <div className="flex flex-col items-center justify-center h-full text-slate-500 text-sm">
+                          <p>No games added yet.</p>
+                          {isOwnProfile && (
+                            <p>Click the + button to add your experience.</p>
+                          )}
+                        </div>
+                      )}
                 </div>
               </div>
             ) : (
@@ -4267,10 +4296,11 @@ const Dashboard = () => {
                 <button
                   key={tab}
                   onClick={() => setPostTab(tab)}
-                  className={`relative px-8 py-3 rounded-xl text-sm font-bold transition-all duration-300 overflow-hidden ${postTab === tab
-                    ? "text-black shadow-lg shadow-primary/25"
-                    : "text-slate-400 hover:text-white hover:bg-white/5"
-                    }`}
+                  className={`relative px-8 py-3 rounded-xl text-sm font-bold transition-all duration-300 overflow-hidden ${
+                    postTab === tab
+                      ? "text-black shadow-lg shadow-primary/25"
+                      : "text-slate-400 hover:text-white hover:bg-white/5"
+                  }`}
                 >
                   {postTab === tab && (
                     <motion.div
@@ -4364,8 +4394,8 @@ const Dashboard = () => {
             </div>
           </div>
         </motion.div>
-      </main >
-    </div >
+      </main>
+    </div>
   );
 };
 
