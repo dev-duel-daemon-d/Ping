@@ -84,6 +84,7 @@ const userSchema = new mongoose.Schema(
         tournamentExperience: [{
             name: { type: String, required: true },
             placement: { type: String, default: '' },
+            description: { type: String, default: '' },
             date: { type: Date }
         }],
         // Gaming Setup Config
