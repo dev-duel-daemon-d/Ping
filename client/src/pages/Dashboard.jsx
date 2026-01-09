@@ -2941,7 +2941,7 @@ const ConnectionsModal = ({
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <Link
                     to={`/dashboard/${user.username}`}
                     onClick={onClose}
@@ -2956,9 +2956,10 @@ const ConnectionsModal = ({
                         onMessage(user);
                         onClose();
                       }}
-                      className="px-4 py-2 bg-white/10 text-white rounded-lg font-bold hover:bg-white/20 transition-all flex items-center gap-2"
+                      className="p-2 sm:px-4 sm:py-2 bg-white/10 text-white rounded-lg font-bold hover:bg-white/20 transition-all flex items-center gap-2"
                     >
-                      <MessageSquare className="w-4 h-4" /> Message
+                      <MessageSquare className="w-4 h-4" />
+                      <span className="hidden sm:inline">Message</span>
                     </button>
                   ) : user.connectionStatus === "pending_sent" ? (
                     <button
