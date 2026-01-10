@@ -2825,6 +2825,7 @@ const ConnectionsModal = ({
   onMessage,
   onConnect,
   currentUser,
+  targetUserId,
 }) => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -2839,10 +2840,15 @@ const ConnectionsModal = ({
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const res = await userService.getExploreUsers();
-      setUsers(res.data);
+      if (targetUserId) {
+        const res = await connectionService.getConnections(targetUserId);
+        setUsers(res.data.map(user => ({ ...user, connectionStatus: "connected" })));
+      } else {
+        const res = await userService.getExploreUsers();
+        setUsers(res.data);
+      }
     } catch (error) {
-      console.error("Failed to fetch explore users", error);
+      console.error("Failed to fetch users", error);
     }
     setLoading(false);
   };
@@ -2882,7 +2888,7 @@ const ConnectionsModal = ({
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-white flex items-center gap-2">
             <Users className="w-6 h-6 text-primary" />
-            All Players
+            {targetUserId ? "All Connections" : "All Players"}
           </h2>
           <IconButton
             onClick={onClose}
@@ -2892,16 +2898,18 @@ const ConnectionsModal = ({
           </IconButton>
         </div>
 
-        <div className="bg-white/5 rounded-xl px-4 py-3 border border-white/10 mb-6 flex items-center">
-          <Search className="w-5 h-5 text-slate-400 mr-3" />
-          <InputBase
-            placeholder="Search players..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full text-slate-200"
-            sx={{ color: "inherit" }}
-          />
-        </div>
+        {!targetUserId && (
+          <div className="bg-white/5 rounded-xl px-4 py-3 border border-white/10 mb-6 flex items-center">
+            <Search className="w-5 h-5 text-slate-400 mr-3" />
+            <InputBase
+              placeholder="Search players..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full text-slate-200"
+              sx={{ color: "inherit" }}
+            />
+          </div>
+        )}
 
         <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 space-y-3">
           {loading ? (
@@ -2950,7 +2958,18 @@ const ConnectionsModal = ({
                     <Users className="w-5 h-5" />
                   </Link>
 
-                  {user.connectionStatus === "connected" ? (
+                  {targetUserId ? (
+                    <button
+                      onClick={() => {
+                        onMessage(user);
+                        onClose();
+                      }}
+                      className="p-2 sm:px-4 sm:py-2 bg-white/10 text-white rounded-lg font-bold hover:bg-white/20 transition-all flex items-center gap-2"
+                    >
+                      <MessageSquare className="w-4 h-4" />
+                      <span className="hidden sm:inline">Message</span>
+                    </button>
+                  ) : user.connectionStatus === "connected" ? (
                     <button
                       onClick={() => {
                         onMessage(user);
@@ -2988,7 +3007,7 @@ const ConnectionsModal = ({
             ))
           ) : (
             <div className="text-center text-slate-500 py-10">
-              No players found
+              {targetUserId ? "No connections yet" : "No players found"}
             </div>
           )}
         </div>
@@ -3261,9 +3280,9 @@ const Dashboard = () => {
     );
   }, [connections, viewedUser, isOwnProfile]);
 
-  const fetchConnections = async () => {
+  const fetchConnections = async (userId = null) => {
     try {
-      const response = await connectionService.getConnections();
+      const response = await connectionService.getConnections(userId);
       setConnections(response.data);
     } catch (error) {
       console.error("Failed to fetch connections", error);
@@ -3314,9 +3333,18 @@ const Dashboard = () => {
 
   React.useEffect(() => {
     if (user) {
-      fetchConnections();
+      const targetId = isOwnProfile
+        ? user._id || user.id
+        : viewedUser?._id || viewedUser?.id;
+
+      if (!isOwnProfile && !targetId) {
+        setConnections([]);
+        return;
+      }
+
+      fetchConnections(targetId);
     }
-  }, [user]);
+  }, [user, viewedUsername, viewedUser, isOwnProfile]);
 
   // Fetch viewed user's profile when navigating to /dashboard/:username
   React.useEffect(() => {
@@ -4178,8 +4206,9 @@ const Dashboard = () => {
           open={showConnectionsModal}
           onClose={() => setShowConnectionsModal(false)}
           onMessage={openChatWithUser}
-          onConnect={fetchConnections}
+          onConnect={() => fetchConnections(isOwnProfile ? null : viewedUser?._id)}
           currentUser={user}
+          targetUserId={isOwnProfile ? null : viewedUser?._id}
         />
         {/* Chat Modal */}
         <ChatModal
