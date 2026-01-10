@@ -56,13 +56,34 @@ export const subscribeUserToPush = async () => {
 
       // Send subscription to server
       await api.post('/notifications/subscribe', subscription);
-      alert('Notifications enabled successfully!');
+      return true;
 
     } catch (error) {
       console.error('Error subscribing to push:', error);
-      alert('Failed to enable notifications. Check console for details.');
+      return false;
     }
   } else {
-    alert('Push notifications are not supported in this browser.');
+    console.error('Push notifications are not supported in this browser.');
+    return false;
   }
+};
+
+export const unsubscribeUserFromPush = async () => {
+  if ('serviceWorker' in navigator && 'PushManager' in window) {
+    try {
+      const registration = await navigator.serviceWorker.ready;
+      const subscription = await registration.pushManager.getSubscription();
+
+      if (subscription) {
+        await subscription.unsubscribe();
+        // Optionally notify server to remove subscription
+        // await api.post('/notifications/unsubscribe', { endpoint: subscription.endpoint });
+      }
+      return true;
+    } catch (error) {
+      console.error('Error unsubscribing from push:', error);
+      return false;
+    }
+  }
+  return false;
 };

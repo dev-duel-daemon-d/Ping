@@ -110,16 +110,17 @@ router.put('/accept/:requestId', protect, async (req, res) => {
 // @access  Private
 router.get('/', protect, async (req, res) => {
     try {
+        const targetUserId = req.query.userId || req.user._id
+
         const connections = await Connection.find({
             $or: [
-                { requester: req.user._id, status: 'accepted' },
-                { recipient: req.user._id, status: 'accepted' }
+                { requester: targetUserId, status: 'accepted' },
+                { recipient: targetUserId, status: 'accepted' }
             ]
         }).populate('requester recipient', 'username avatar bio status')
 
-        // Filter out the current user from the results to just get the "friend"
         const friends = connections.map(conn => {
-            return conn.requester._id.toString() === req.user._id.toString()
+            return conn.requester._id.toString() === targetUserId.toString()
                 ? conn.recipient
                 : conn.requester
         })

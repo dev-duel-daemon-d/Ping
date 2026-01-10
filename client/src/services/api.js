@@ -61,7 +61,9 @@ export const userService = {
 export const connectionService = {
     sendRequest: (userId) => api.post(`/connections/request/${userId}`),
     acceptRequest: (requestId) => api.put(`/connections/accept/${requestId}`),
-    getConnections: () => api.get('/connections'),
+    getConnections: (userId) => userId
+        ? api.get(`/connections?userId=${userId}`)
+        : api.get('/connections'),
     getPendingRequests: () => api.get('/connections/pending'),
 }
 

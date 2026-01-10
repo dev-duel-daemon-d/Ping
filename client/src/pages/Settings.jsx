@@ -20,6 +20,7 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { userService } from '../services/api';
 import ChangePasswordDialog from '../components/ChangePasswordDialog';
+import { subscribeUserToPush, unsubscribeUserFromPush } from '../utils/pushNotifications';
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -60,10 +61,48 @@ const Settings = () => {
 
   // --- Mock State for UI Demo ---
   const [notifications, setNotifications] = useState({
-    push: true,
+    push: false,
     email: false,
     marketing: false
   });
+
+  // Check for existing push subscription
+  useEffect(() => {
+    const checkSubscription = async () => {
+      if ('serviceWorker' in navigator && 'PushManager' in window) {
+        try {
+          const registration = await navigator.serviceWorker.ready;
+          const subscription = await registration.pushManager.getSubscription();
+          if (subscription) {
+            setNotifications(prev => ({ ...prev, push: true }));
+          }
+        } catch (error) {
+          console.error("Error checking subscription:", error);
+        }
+      }
+    };
+    checkSubscription();
+  }, []);
+
+  const handlePushToggle = async () => {
+    if (notifications.push) {
+      // Unsubscribe
+      const success = await unsubscribeUserFromPush();
+      if (success) {
+        setNotifications(prev => ({ ...prev, push: false }));
+      } else {
+        alert("Failed to disable push notifications.");
+      }
+    } else {
+      // Subscribe
+      const success = await subscribeUserToPush();
+      if (success) {
+        setNotifications(prev => ({ ...prev, push: true }));
+      } else {
+        alert("Failed to enable push notifications. Make sure you have allowed permissions.");
+      }
+    }
+  };
   
   const [privacy, setPrivacy] = useState({
     profileVisibility: 'public',
@@ -343,7 +382,7 @@ const Settings = () => {
                       </div>
                     </div>
                     <div 
-                      onClick={() => setNotifications({...notifications, push: !notifications.push})}
+                      onClick={handlePushToggle}
                       className={`w-12 h-7 rounded-full p-1 cursor-pointer transition-colors ${
                         notifications.push ? 'bg-primary' : 'bg-slate-700'
                       }`}
