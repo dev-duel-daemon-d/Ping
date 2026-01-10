@@ -11,6 +11,7 @@ const router = express.Router()
 const userResponse = (user) => ({
     id: user._id,
     username: user.username,
+    fullName: user.fullName,
     email: user.email,
     avatar: user.avatar,
     bannerImage: user.bannerImage,
@@ -111,6 +112,7 @@ router.put(
     [
         protect,
         body('username').optional().trim().isLength({ min: 3, max: 30 }).withMessage('Username must be between 3 and 30 characters'),
+        body('fullName').optional().trim().isLength({ max: 50 }).withMessage('Full name cannot exceed 50 characters'),
         body('tagline').optional().isLength({ max: 100 }).withMessage('Tagline cannot exceed 100 characters'),
         body('bio').optional().isLength({ max: 160 }).withMessage('Bio cannot exceed 160 characters'),
         body('location').optional().trim(),
@@ -134,6 +136,7 @@ router.put(
                     user.username = req.body.username
                 }
 
+                user.fullName = req.body.fullName ?? user.fullName
                 user.tagline = req.body.tagline ?? user.tagline
                 user.bio = req.body.bio ?? user.bio
                 user.location = req.body.location ?? user.location

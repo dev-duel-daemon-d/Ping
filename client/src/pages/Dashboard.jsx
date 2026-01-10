@@ -3020,6 +3020,7 @@ const ConnectionsModal = ({
 const EditProfileModal = ({ open, onClose, user, onSave }) => {
   const [formData, setFormData] = useState({
     username: "",
+    fullName: "",
     tagline: "",
     bio: "",
     location: "",
@@ -3033,6 +3034,7 @@ const EditProfileModal = ({ open, onClose, user, onSave }) => {
     if (user) {
       setFormData({
         username: user.username || "",
+        fullName: user.fullName || "",
         tagline: user.tagline || "",
         bio: user.bio || "",
         location: user.location || "",
@@ -3082,6 +3084,22 @@ const EditProfileModal = ({ open, onClose, user, onSave }) => {
             required
             minLength={3}
             maxLength={30}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-400 mb-2">
+            Full Name
+          </label>
+          <input
+            type="text"
+            value={formData.fullName}
+            onChange={(e) =>
+              setFormData({ ...formData, fullName: e.target.value })
+            }
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-primary/50"
+            placeholder="John Doe"
+            maxLength={50}
           />
         </div>
 
